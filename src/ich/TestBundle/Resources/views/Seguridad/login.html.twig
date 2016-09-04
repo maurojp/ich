@@ -1,0 +1,38 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('public/css/seguridad.css') }}">
+{% endblock %}
+
+{% block body %}
+	{{ parent() }}
+
+    <div class="container">
+		<form action="{{ path('ich_test_login_check') }}" method="post" class="form-signin">
+			<h3 class="form-signin-heading">{{ 'Ingreso como Consultor' }}</h3>
+
+            {% if error %}
+            <div class="text-danger">
+                <p>
+                    <strong>
+                        {{ error.messageKey }}
+                    </strong>
+                </p>
+            </div>
+            {% endif %}
+
+		    <label for="username" class="sr-only">Nombre de Usuario :</label>
+		    <input type="text" id="username" class="form-control" name="_usuario" value="{{ last_username }}" placeholder="Su nombre..." required autofocus />
+
+		    <label for="password" class="sr-only">Password :</label>
+		    <input type="password" id="password" class="form-control" name="_password" placeholder="Su contraseña..." required />
+		    
+		    <input type="hidden" name="_target_path" value="ich_test_homepage" />
+
+		    <button type="submit" class="btn btn-lg btn-primary btn-block">Ingresar</button>
+		    
+		    <a href="{{ path('ich_test_prelogin') }}" class="btn btn-lg btn-default btn-block">Volver</a>
+		</form>
+    </div> <!-- /container -->
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('public/css/seguridad.css') }}">
+{% endblock %}
+
+{% block body %}
+	{{ parent() }}
+
+    <div class="container">
+		{{ form_start(form, {'attr' : {'class' : 'form-signin'} }) }}
+		
+		<h3 class="form-signin-heading">{{ 'Completar Cuestionario' }}</h3>
+		<h4 class="text-danger"> {{ form_errors(form) }} </h4>
+		
+        {{ form_widget(form.nroDocumento, {'attr' : {'class' : 'form-control', 'placeholder' : 'Numero de Documento'} }) }}
+        {{ form_widget(form.clave, {'attr' : {'class' : 'form-control', 'placeholder' : 'Clave'} }) }}
+        {{ form_widget(form.ingresar, {'attr' : {'label' : 'Ingresar', 'class' : 'btn btn-lg btn-primary btn-block', 'placeholder' : 'Clave'} }) }}
+        
+        <a href="{{ path('ich_test_prelogin') }}" class="btn btn-lg btn-default btn-block">Volver</a>
+        
+        {{ form_end(form) }}
+    </div> <!-- /container -->
+{% endblock %}

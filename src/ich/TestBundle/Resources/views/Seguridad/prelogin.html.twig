@@ -1,0 +1,27 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('public/css/seguridad.css') }}">
+{% endblock %}
+
+{% block body %}
+	{{ parent() }}
+
+    <div class="container">
+		<h2 class="form-signin-heading text-center">Bienvenido - Seleccione un Modo de Acceso</h2>
+		    <br>
+		    <br>
+            <div class"row">
+                <div class="col-md-6">
+                    <a href= "{{ path('ich_test_login') }}" class="btn btn-primary btn-lg btn-block">
+                    Ingreso como Consultor
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href= "{{ path('ich_test_ingresocandidato') }}" class="btn btn-primary btn-lg btn-block">
+                    Completar Cuestionario
+                    </a>
+                </div>
+    </div> <!-- /container -->
+{% endblock %}

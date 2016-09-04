@@ -4,10 +4,24 @@ security:
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory:
-            memory: ~
+        our_db_provider:
+            entity:
+                class: ichTestBundle:Usuario
+                property: usuario
 
     firewalls:
+        default:
+            anonymous: ~
+            http_basic: ~
+            form_login:
+                login_path: /login
+                check_path: /login_check
+                username_parameter: _usuario
+                password_parameter: _password
+            logout:
+                path:   /logout
+                target: /login
+                
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -22,3 +36,7 @@ security:
 
             # form_login: ~
             # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+    encoders:
+            ich\TestBundle\Entity\Usuario:
+                algorithm: bcrypt
+                cost: 12

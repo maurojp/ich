@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('public/css/sistema.css') }}">
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container">
+        <h2 class="text-center">
+            Bienvenido
+            {{ app.user.fullname }}
+        </h2>
+    </div>
+{% endblock %}

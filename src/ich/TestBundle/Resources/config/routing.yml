@@ -1,0 +1,28 @@
+#ich_test_homepage:
+#    path:     /
+#    defaults: { _controller: ichTestBundle:Default:index }
+
+# Autenticacion
+
+ich_test_homepage:
+    path:       /
+    defaults:   { _controller: ichTestBundle:Usuario:home }
+
+ich_test_prelogin:
+    path:       /prelogin
+    defaults:   { _controller: ichTestBundle:Seguridad:prelogin }
+    
+ich_test_login:
+    path:       /login
+    defaults:   { _controller: ichTestBundle:Seguridad:login }
+
+ich_test_ingresocandidato:
+    path:       /ingresocandidato
+    defaults:   { _controller: ichTestBundle:Seguridad:ingresocandidato }
+
+ich_test_login_check:
+    path:       /login_check
+    defaults:   { _controller: ichTestBundle:Seguridad:login_check }
+
+ich_test_logout:
+    path:       /logout
