@@ -14,7 +14,7 @@ class Cuestionario
 {
     /**
      * @ORM\ManyToOne(targetEntity="Candidato", inversedBy="cuestionarios")
-     * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
      */
     protected $candidato;
     
