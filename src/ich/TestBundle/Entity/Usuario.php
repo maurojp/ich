@@ -21,6 +21,11 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 class Usuario implements AdvancedUserInterface, \Serializable
 {
     /**
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Auditoria", mappedBy="usuarioId")
+     */
+    protected $auditorias;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -364,6 +369,29 @@ class Usuario implements AdvancedUserInterface, \Serializable
     public function getUsername()
     {
         return $this->usuario;
+    }
+
+     /**
+     * Add auditorias
+     *
+     * @param \ich\TestBundle\Entity\Auditoria $auditorias
+     * @return Usuario
+     */
+    public function addAuditoria(\ich\TestBundle\Entity\Auditoria $auditorias)
+    {
+        $this->auditorias[] = $auditorias;
+
+        return $this;
+    }
+
+    /**
+     * Get auditorias
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAuditorias()
+    {
+        return $this->auditorias;
     }
     
     public function getRoles()

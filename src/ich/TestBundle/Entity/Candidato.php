@@ -106,7 +106,7 @@ class Candidato
 
     public function __construct()
     {
-        $this->cuestiornarios = new ArrayCollection();
+        $this->cuestionarios = new ArrayCollection();
     }
 
     /**
