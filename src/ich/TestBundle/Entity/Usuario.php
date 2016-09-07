@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 class Usuario implements AdvancedUserInterface, \Serializable
 {
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Auditoria", mappedBy="usuarioId")
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Auditoria", mappedBy="usuario")
      */
     protected $auditorias;
 
@@ -370,29 +370,6 @@ class Usuario implements AdvancedUserInterface, \Serializable
     {
         return $this->usuario;
     }
-
-     /**
-     * Add auditorias
-     *
-     * @param \ich\TestBundle\Entity\Auditoria $auditorias
-     * @return Usuario
-     */
-    public function addAuditoria(\ich\TestBundle\Entity\Auditoria $auditorias)
-    {
-        $this->auditorias[] = $auditorias;
-
-        return $this;
-    }
-
-    /**
-     * Get auditorias
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getAuditorias()
-    {
-        return $this->auditorias;
-    }
     
     public function getRoles()
     {
@@ -445,5 +422,45 @@ class Usuario implements AdvancedUserInterface, \Serializable
     public function isEnabled()
     {
         return true;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->auditorias = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add auditorias
+     *
+     * @param \ich\TestBundle\Entity\Auditoria $auditorias
+     * @return Usuario
+     */
+    public function addAuditoria(\ich\TestBundle\Entity\Auditoria $auditorias)
+    {
+        $this->auditorias[] = $auditorias;
+
+        return $this;
+    }
+
+    /**
+     * Remove auditorias
+     *
+     * @param \ich\TestBundle\Entity\Auditoria $auditorias
+     */
+    public function removeAuditoria(\ich\TestBundle\Entity\Auditoria $auditorias)
+    {
+        $this->auditorias->removeElement($auditorias);
+    }
+
+    /**
+     * Get auditorias
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAuditorias()
+    {
+        return $this->auditorias;
     }
 }

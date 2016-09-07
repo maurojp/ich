@@ -106,7 +106,7 @@ class Candidato
 
     public function __construct()
     {
-        $this->cuestiornarios = new ArrayCollection();
+        $this->cuestionarios = new ArrayCollection();
     }
 
     /**
@@ -370,5 +370,38 @@ class Candidato
     public function getEliminado()
     {
         return $this->eliminado;
+    }
+
+    /**
+     * Add cuestionarios
+     *
+     * @param \ich\TestBundle\Entity\Cuestionario $cuestionarios
+     * @return Candidato
+     */
+    public function addCuestionario(\ich\TestBundle\Entity\Cuestionario $cuestionarios)
+    {
+        $this->cuestionarios[] = $cuestionarios;
+
+        return $this;
+    }
+
+    /**
+     * Remove cuestionarios
+     *
+     * @param \ich\TestBundle\Entity\Cuestionario $cuestionarios
+     */
+    public function removeCuestionario(\ich\TestBundle\Entity\Cuestionario $cuestionarios)
+    {
+        $this->cuestionarios->removeElement($cuestionarios);
+    }
+
+    /**
+     * Get cuestionarios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCuestionarios()
+    {
+        return $this->cuestionarios;
     }
 }

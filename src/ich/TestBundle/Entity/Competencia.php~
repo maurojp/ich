@@ -131,27 +131,4 @@ class Competencia
 
  
 
-
-    /**
-     * Set auditoria
-     *
-     * @param \ich\TestBundle\Entity\Auditoria $auditoria
-     * @return Competencia
-     */
-    public function setAuditoria(\ich\TestBundle\Entity\Auditoria $auditoria = null)
-    {
-        $this->auditoria = $auditoria;
-
-        return $this;
-    }
-
-    /**
-     * Get auditoria
-     *
-     * @return \ich\TestBundle\Entity\Auditoria 
-     */
-    public function getAuditoria()
-    {
-        return $this->auditoria;
-    }
 }

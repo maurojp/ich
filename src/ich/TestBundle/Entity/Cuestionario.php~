@@ -14,7 +14,7 @@ class Cuestionario
 {
     /**
      * @ORM\ManyToOne(targetEntity="Candidato", inversedBy="cuestionarios")
-     * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
      */
     protected $candidato;
     
@@ -306,5 +306,28 @@ class Cuestionario
     public function getPuntajeTotal()
     {
         return $this->puntajeTotal;
+    }
+
+    /**
+     * Set candidato
+     *
+     * @param \ich\TestBundle\Entity\Candidato $candidato
+     * @return Cuestionario
+     */
+    public function setCandidato(\ich\TestBundle\Entity\Candidato $candidato = null)
+    {
+        $this->candidato = $candidato;
+
+        return $this;
+    }
+
+    /**
+     * Get candidato
+     *
+     * @return \ich\TestBundle\Entity\Candidato 
+     */
+    public function getCandidato()
+    {
+        return $this->candidato;
     }
 }
