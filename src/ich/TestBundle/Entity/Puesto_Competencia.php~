@@ -3,6 +3,7 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Puesto_Competencia
@@ -29,7 +30,7 @@ class Puesto_Competencia
 
     /**
      * @var int
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="ponderacion", type="integer")
      */
     private $ponderacion;
@@ -56,5 +57,51 @@ class Puesto_Competencia
     public function getPonderacion()
     {
         return $this->ponderacion;
+    }
+
+    /**
+     * Set puesto
+     *
+     * @param \ich\TestBundle\Entity\Puesto $puesto
+     * @return Puesto_Competencia
+     */
+    public function setPuesto(\ich\TestBundle\Entity\Puesto $puesto)
+    {
+        $this->puesto = $puesto;
+
+        return $this;
+    }
+
+    /**
+     * Get puesto
+     *
+     * @return \ich\TestBundle\Entity\Puesto 
+     */
+    public function getPuesto()
+    {
+        return $this->puesto;
+    }
+
+    /**
+     * Set competencia
+     *
+     * @param \ich\TestBundle\Entity\Competencia $competencia
+     * @return Puesto_Competencia
+     */
+    public function setCompetencia(\ich\TestBundle\Entity\Competencia $competencia)
+    {
+        $this->competencia = $competencia;
+
+        return $this;
+    }
+
+    /**
+     * Get competencia
+     *
+     * @return \ich\TestBundle\Entity\Competencia 
+     */
+    public function getCompetencia()
+    {
+        return $this->competencia;
     }
 }

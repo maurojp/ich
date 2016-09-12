@@ -3,6 +3,7 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Puesto_Competencia
@@ -29,7 +30,7 @@ class Puesto_Competencia
 
     /**
      * @var int
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="ponderacion", type="integer")
      */
     private $ponderacion;

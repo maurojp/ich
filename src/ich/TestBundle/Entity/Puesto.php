@@ -3,21 +3,28 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Puesto
  *
  * @ORM\Table(name="puesto")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\PuestoRepository")
+ * @UniqueEntity("codigo")
  */
 class Puesto
 {
 
-     /**
+    /**
      * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="puesto")
      */
     protected $competencias;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Evaluacion", mappedBy="puesto")
+     */
+    protected $evaluaciones;
+    
     /**
      * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Auditoria", inversedBy="puesto") 
      * @ORM\JoinColumn(name="eliminado",referencedColumnName="id", nullable=true)
@@ -42,21 +49,21 @@ class Puesto
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="codigo", type="string", length=10, unique=true)
      */
     private $codigo;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="nombre", type="string", length=30)
      */
     private $nombre;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="descripcion", type="string", length=150)
      */
     private $descripcion;
@@ -143,29 +150,7 @@ class Puesto
     }
 
       
-    /**
-     * Set auditoriaId
-     *
-     * @param \ich\TestBundle\Entity\Auditoria $auditoriaId
-     * @return Puesto
-     */
-    public function setAuditoriaId(\ich\TestBundle\Entity\Auditoria $auditoriaId = null)
-    {
-        $this->auditoriaId = $auditoriaId;
-
-        return $this;
-    }
-
-    /**
-     * Get auditoriaId
-     *
-     * @return \ich\TestBundle\Entity\Auditoria
-     */
-    public function getAuditoriaId()
-    {
-        return $this->auditoriaId;
-    }
-
+ 
     /**
      * Add competencias
      *
@@ -200,28 +185,7 @@ class Puesto
     }
 
 
-/**
-     * Set empresaId
-     *
-     * @param \ich\TestBundle\Entity\Empresa $empresaId
-     * @return Puesto
-     */
-    public function setEmpresaId(\ich\TestBundle\Entity\Empresa $empresaId = null)
-    {
-        $this->empresaId = $empresaId;
 
-        return $this;
-    }
-
-    /**
-     * Get empresaId
-     *
-     * @return \ich\TestBundle\Entity\Empresa
-     */
-    public function getEmpresaId()
-    {
-        return $this->empresaId;
-    }
 
     /**
      * Constructor
@@ -260,7 +224,7 @@ class Puesto
      * @param \ich\TestBundle\Entity\Empresa $empresa
      * @return Puesto
      */
-    public function setEmpresa(\ich\TestBundle\Entity\Empresa $empresa)
+    public function setEmpresa(\ich\TestBundle\Entity\Empresa $empresa = null)
     {
         $this->empresa = $empresa;
 
@@ -275,5 +239,38 @@ class Puesto
     public function getEmpresa()
     {
         return $this->empresa;
+    }
+
+    /**
+     * Add evaluaciones
+     *
+     * @param \ich\TestBundle\Entity\Evaluacion $evaluaciones
+     * @return Puesto
+     */
+    public function addEvaluacione(\ich\TestBundle\Entity\Evaluacion $evaluaciones)
+    {
+        $this->evaluaciones[] = $evaluaciones;
+
+        return $this;
+    }
+
+    /**
+     * Remove evaluaciones
+     *
+     * @param \ich\TestBundle\Entity\Evaluacion $evaluaciones
+     */
+    public function removeEvaluacione(\ich\TestBundle\Entity\Evaluacion $evaluaciones)
+    {
+        $this->evaluaciones->removeElement($evaluaciones);
+    }
+
+    /**
+     * Get evaluaciones
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEvaluaciones()
+    {
+        return $this->evaluaciones;
     }
 }

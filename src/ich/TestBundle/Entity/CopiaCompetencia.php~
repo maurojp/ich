@@ -7,29 +7,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Competencia
+ * CopiaCompetencia
  *
- * @ORM\Table(name="competencia")
+ * @ORM\Table(name="copia_competencia")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CompetenciaRepository")
  * @UniqueEntity("codigo")
  */
-class Competencia
+class CopiaCompetencia
 {
-	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="competencia")
-	 */
-	protected $puestos;
-	
-     /**
-     * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Auditoria", inversedBy="competencia") 
-     * @ORM\JoinColumn(name="eliminado",referencedColumnName="id", nullable=true)
-     */
-    protected $auditoria;
-    
+		
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Factor", mappedBy="competencia")
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaFactor", mappedBy="copiaCompetencia")
      */
-    protected $factores;
+    protected $copiaFactores;
 
     /**
      * @var int
@@ -61,7 +51,28 @@ class Competencia
      */
     private $descripcion;
 
+    /**
+     * @var int
+     * @Assert\NotBlank()
+     * @ORM\Column(name="ponderacion", type="integer")
+     */
+    private $ponderacion;
+    
+    /**
+     * @var int
+     * @ORM\Column(name="puntajeObtenido", type="integer", nullable=true)
+     */
+    private $puntajeObtenido;
+    
    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->copiaFactores = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     /**
      * Get id
      *
@@ -76,7 +87,7 @@ class Competencia
      * Set codigo
      *
      * @param string $codigo
-     * @return competencia
+     * @return CopiaCompetencia
      */
     public function setCodigo($codigo)
     {
@@ -99,7 +110,7 @@ class Competencia
      * Set nombre
      *
      * @param string $nombre
-     * @return competencia
+     * @return CopiaCompetencia
      */
     public function setNombre($nombre)
     {
@@ -122,7 +133,7 @@ class Competencia
      * Set descripcion
      *
      * @param string $descripcion
-     * @return competencia
+     * @return CopiaCompetencia
      */
     public function setDescripcion($descripcion)
     {
@@ -141,102 +152,82 @@ class Competencia
         return $this->descripcion;
     }
 
- 
-
-
     /**
-     * Set auditoria
+     * Set ponderacion
      *
-     * @param \ich\TestBundle\Entity\Auditoria $auditoria
-     * @return Competencia
+     * @param integer $ponderacion
+     * @return CopiaCompetencia
      */
-    public function setAuditoria(\ich\TestBundle\Entity\Auditoria $auditoria = null)
+    public function setPonderacion($ponderacion)
     {
-        $this->auditoria = $auditoria;
+        $this->ponderacion = $ponderacion;
 
         return $this;
     }
 
     /**
-     * Get auditoria
+     * Get ponderacion
      *
-     * @return \ich\TestBundle\Entity\Auditoria 
+     * @return integer 
      */
-    public function getAuditoria()
+    public function getPonderacion()
     {
-        return $this->auditoria;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->puestos = new \Doctrine\Common\Collections\ArrayCollection();
+        return $this->ponderacion;
     }
 
     /**
-     * Add puestos
+     * Set puntajeObtenido
      *
-     * @param \ich\TestBundle\Entity\Puesto_Competencia $puestos
-     * @return Competencia
+     * @param integer $puntajeObtenido
+     * @return CopiaCompetencia
      */
-    public function addPuesto(\ich\TestBundle\Entity\Puesto_Competencia $puestos)
+    public function setPuntajeObtenido($puntajeObtenido)
     {
-        $this->puestos[] = $puestos;
+        $this->puntajeObtenido = $puntajeObtenido;
 
         return $this;
     }
 
     /**
-     * Remove puestos
+     * Get puntajeObtenido
      *
-     * @param \ich\TestBundle\Entity\Puesto_Competencia $puestos
+     * @return integer 
      */
-    public function removePuesto(\ich\TestBundle\Entity\Puesto_Competencia $puestos)
+    public function getPuntajeObtenido()
     {
-        $this->puestos->removeElement($puestos);
+        return $this->puntajeObtenido;
     }
 
     /**
-     * Get puestos
+     * Add copiaFactores
+     *
+     * @param \ich\TestBundle\Entity\CopiaFactor $copiaFactores
+     * @return CopiaCompetencia
+     */
+    public function addCopiaFactore(\ich\TestBundle\Entity\CopiaFactor $copiaFactores)
+    {
+        $this->copiaFactores[] = $copiaFactores;
+
+        return $this;
+    }
+
+    /**
+     * Remove copiaFactores
+     *
+     * @param \ich\TestBundle\Entity\CopiaFactor $copiaFactores
+     */
+    public function removeCopiaFactore(\ich\TestBundle\Entity\CopiaFactor $copiaFactores)
+    {
+        $this->copiaFactores->removeElement($copiaFactores);
+    }
+
+    /**
+     * Get copiaFactores
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getPuestos()
+    public function getCopiaFactores()
     {
-        return $this->puestos;
-    }
-
-    /**
-     * Add factores
-     *
-     * @param \ich\TestBundle\Entity\Factor $factores
-     * @return Competencia
-     */
-    public function addFactore(\ich\TestBundle\Entity\Factor $factores)
-    {
-        $this->factores[] = $factores;
-
-        return $this;
-    }
-
-    /**
-     * Remove factores
-     *
-     * @param \ich\TestBundle\Entity\Factor $factores
-     */
-    public function removeFactore(\ich\TestBundle\Entity\Factor $factores)
-    {
-        $this->factores->removeElement($factores);
-    }
-
-    /**
-     * Get factores
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getFactores()
-    {
-        return $this->factores;
+        return $this->copiaFactores;
     }
 }

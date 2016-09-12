@@ -3,6 +3,7 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Auditoria
@@ -18,12 +19,27 @@ class Auditoria
      */
     protected $puesto;
 
-     /**
+    /**
+     * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Factor", mappedBy="auditoria")
+     */
+    protected $factor;
+    
+    /**
      * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Competencia", mappedBy="auditoria")
      */
     protected $competencia;
 
-      /**
+    /**
+     * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Pregunta", mappedBy="auditoria")
+     */
+    protected $pregunta;
+    
+    /**
+     * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", mappedBy="auditoria")
+     */
+    protected $grupoOpciones;
+    
+    /**
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Usuario", inversedBy="auditorias") 
      * @ORM\JoinColumn(name="usuario_id",referencedColumnName="id", nullable=false)
      */
@@ -40,7 +56,7 @@ class Auditoria
 
     /**
      * @var \DateTime
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="fechaHoraEliminacion", type="datetime")
      */
     private $fechaHoraEliminacion;
@@ -147,5 +163,74 @@ class Auditoria
     public function getUsuario()
     {
         return $this->usuario;
+    }
+
+    /**
+     * Set factor
+     *
+     * @param \ich\TestBundle\Entity\Factor $factor
+     * @return Auditoria
+     */
+    public function setFactor(\ich\TestBundle\Entity\Factor $factor = null)
+    {
+        $this->factor = $factor;
+
+        return $this;
+    }
+
+    /**
+     * Get factor
+     *
+     * @return \ich\TestBundle\Entity\Factor 
+     */
+    public function getFactor()
+    {
+        return $this->factor;
+    }
+
+    /**
+     * Set pregunta
+     *
+     * @param \ich\TestBundle\Entity\Pregunta $pregunta
+     * @return Auditoria
+     */
+    public function setPregunta(\ich\TestBundle\Entity\Pregunta $pregunta = null)
+    {
+        $this->pregunta = $pregunta;
+
+        return $this;
+    }
+
+    /**
+     * Get pregunta
+     *
+     * @return \ich\TestBundle\Entity\Pregunta 
+     */
+    public function getPregunta()
+    {
+        return $this->pregunta;
+    }
+
+    /**
+     * Set grupoOpciones
+     *
+     * @param \ich\TestBundle\Entity\GrupoOpciones $grupoOpciones
+     * @return Auditoria
+     */
+    public function setGrupoOpciones(\ich\TestBundle\Entity\GrupoOpciones $grupoOpciones = null)
+    {
+        $this->grupoOpciones = $grupoOpciones;
+
+        return $this;
+    }
+
+    /**
+     * Get grupoOpciones
+     *
+     * @return \ich\TestBundle\Entity\GrupoOpciones 
+     */
+    public function getGrupoOpciones()
+    {
+        return $this->grupoOpciones;
     }
 }

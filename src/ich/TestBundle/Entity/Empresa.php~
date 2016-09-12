@@ -3,7 +3,7 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Empresa
  *
@@ -29,7 +29,7 @@ class Empresa
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
      * @ORM\Column(name="nombre", type="string", length=60)
      */
     private $nombre;
@@ -69,4 +69,44 @@ class Empresa
     }
 
      
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->puestos = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add puestos
+     *
+     * @param \ich\TestBundle\Entity\Puesto $puestos
+     * @return Empresa
+     */
+    public function addPuesto(\ich\TestBundle\Entity\Puesto $puestos)
+    {
+        $this->puestos[] = $puestos;
+
+        return $this;
+    }
+
+    /**
+     * Remove puestos
+     *
+     * @param \ich\TestBundle\Entity\Puesto $puestos
+     */
+    public function removePuesto(\ich\TestBundle\Entity\Puesto $puestos)
+    {
+        $this->puestos->removeElement($puestos);
+    }
+
+    /**
+     * Get puestos
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPuestos()
+    {
+        return $this->puestos;
+    }
 }
