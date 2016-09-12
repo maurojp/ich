@@ -2,6 +2,24 @@
 #    path:     /
 #    defaults: { _controller: ichTestBundle:Default:index }
 
+# Puesto
+
+ich_puesto_index:
+    path:       /puesto/index
+    defaults:   { _controller: ichTestBundle:Puesto:index }
+    
+ich_puesto_add:
+    path:       /puesto/add
+    defaults:   { _controller: ichTestBundle:Puesto:add }
+
+ich_puesto_view:
+    path:       /puesto/view
+    defaults:   { _controller: ichTestBundle:Puesto:view }
+    
+ich_puesto_edit:
+    path:       /puesto/edit
+    defaults:   { _controller: ichTestBundle:Puesto:edit }
+
 # Autenticacion
 
 ich_test_homepage:
