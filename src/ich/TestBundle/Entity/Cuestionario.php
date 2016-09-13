@@ -19,6 +19,13 @@ class Cuestionario
     protected $candidato;
     
     /**
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
+     * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false)
+     */
+    protected $evaluacion;
+    
+    
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -329,5 +336,28 @@ class Cuestionario
     public function getCandidato()
     {
         return $this->candidato;
+    }
+
+    /**
+     * Set evaluacion
+     *
+     * @param \ich\TestBundle\Entity\Evaluacion $evaluacion
+     * @return Cuestionario
+     */
+    public function setEvaluacion(\ich\TestBundle\Entity\Evaluacion $evaluacion)
+    {
+        $this->evaluacion = $evaluacion;
+
+        return $this;
+    }
+
+    /**
+     * Get evaluacion
+     *
+     * @return \ich\TestBundle\Entity\Evaluacion 
+     */
+    public function getEvaluacion()
+    {
+        return $this->evaluacion;
     }
 }

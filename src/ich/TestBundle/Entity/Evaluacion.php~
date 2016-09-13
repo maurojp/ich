@@ -19,6 +19,11 @@ class Evaluacion
 	 */
 	protected $puesto;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion")
+	 */
+	protected $cuestionarios;
+	
     /**
      * @var int
      *

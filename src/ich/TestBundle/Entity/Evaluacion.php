@@ -19,6 +19,11 @@ class Evaluacion
 	 */
 	protected $puesto;
 	
+	/**
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion")
+	 */
+	protected $cuestionarios;
+	
     /**
      * @var int
      *
@@ -120,5 +125,45 @@ class Evaluacion
     public function getPuesto()
     {
         return $this->puesto;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cuestionarios = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add cuestionarios
+     *
+     * @param \ich\TestBundle\Entity\Cuestionario $cuestionarios
+     * @return Evaluacion
+     */
+    public function addCuestionario(\ich\TestBundle\Entity\Cuestionario $cuestionarios)
+    {
+        $this->cuestionarios[] = $cuestionarios;
+
+        return $this;
+    }
+
+    /**
+     * Remove cuestionarios
+     *
+     * @param \ich\TestBundle\Entity\Cuestionario $cuestionarios
+     */
+    public function removeCuestionario(\ich\TestBundle\Entity\Cuestionario $cuestionarios)
+    {
+        $this->cuestionarios->removeElement($cuestionarios);
+    }
+
+    /**
+     * Get cuestionarios
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCuestionarios()
+    {
+        return $this->cuestionarios;
     }
 }

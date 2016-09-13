@@ -19,6 +19,13 @@ class Cuestionario
     protected $candidato;
     
     /**
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
+     * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false)
+     */
+    protected $evaluacion;
+    
+    
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
