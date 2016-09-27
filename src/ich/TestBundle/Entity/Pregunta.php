@@ -22,6 +22,11 @@ class Pregunta
 	protected $factor;
 	
 	/**
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta")
+	 */
+	protected $opcionesRespuesta;
+	
+	/**
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */
@@ -240,5 +245,45 @@ class Pregunta
     public function getAuditoria()
     {
         return $this->auditoria;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->opcionesRespuesta = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add opcionesRespuesta
+     *
+     * @param \ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta
+     * @return Pregunta
+     */
+    public function addOpcionesRespuestum(\ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta)
+    {
+        $this->opcionesRespuesta[] = $opcionesRespuesta;
+
+        return $this;
+    }
+
+    /**
+     * Remove opcionesRespuesta
+     *
+     * @param \ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta
+     */
+    public function removeOpcionesRespuestum(\ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta)
+    {
+        $this->opcionesRespuesta->removeElement($opcionesRespuesta);
+    }
+
+    /**
+     * Get opcionesRespuesta
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getOpcionesRespuesta()
+    {
+        return $this->opcionesRespuesta;
     }
 }
