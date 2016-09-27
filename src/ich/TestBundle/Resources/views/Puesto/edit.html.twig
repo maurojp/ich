@@ -1,0 +1,64 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    
+    {# {{ include('ichTestBundle:Puesto:messages/success.html.twig')}} #}
+    
+    <div class = "main container">
+        <div class = "row well">
+            <div class = "col-md-12">
+                <div class = "page-header">
+                    <h2>Editar Puesto</h2>
+                </div>
+                
+                <fieldset>
+                
+                {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
+                
+                <div class="row">
+                    <div class = 'col-md-6 form-group'>
+                        {{ form_label(form.codigo) }}
+                        {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Código del puesto',
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.codigo) }} </span>
+                    </div>
+                
+                    <div class = 'col-md-6 form-group'>
+                        {{ form_label(form.nombre) }}
+                        {{ form_widget(form.nombre, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Nombre del puesto'
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.nombre) }} </span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class = 'col-md-8 form-group'>
+                        {{ form_label(form.descripcion) }}
+                        {{ form_widget(form.descripcion, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Descripción del puesto'
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.descripcion) }} </span>
+                    </div>
+            
+                    <div class = 'col-md-4 form-group'>
+                        {{ form_label(form.empresa) }}
+                        {{ form_widget(form.empresa, { 'attr' : { 'class' : 'form-control' 
+                            } }) }}
+                    </div>
+                </div>
+                
+                </fieldset>
+                
+                <p>
+                    
+                    {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
+                    
+                </p>
+                {{ form_end(form)}}
+            </div>
+        </div>
+    </div>
+{% endblock %}

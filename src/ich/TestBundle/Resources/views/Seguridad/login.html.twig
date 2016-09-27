@@ -16,7 +16,7 @@
             <div class="text-danger">
                 <p>
                     <strong>
-                        {{ error.messageKey }}
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
                     </strong>
                 </p>
             </div>

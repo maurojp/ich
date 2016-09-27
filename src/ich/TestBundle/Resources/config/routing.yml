@@ -17,8 +17,13 @@ ich_puesto_view:
     defaults:   { _controller: ichTestBundle:Puesto:view }
     
 ich_puesto_edit:
-    path:       /puesto/edit
+    path:       /puesto/edit/{id}
     defaults:   { _controller: ichTestBundle:Puesto:edit }
+    
+ich_puesto_update:
+    path:       /puesto/update/{id}
+    defaults:   { _controller: ichTestBundle:Puesto:update }
+    methods: [POST, PUT]
 
 # Autenticacion
 

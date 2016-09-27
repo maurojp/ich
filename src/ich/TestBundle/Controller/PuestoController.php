@@ -5,7 +5,8 @@ namespace ich\TestBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use ich\TaskBundle\Entity\Puesto;
+use ich\TestBundle\Entity\Puesto;
+use ich\TestBundle\Form\PuestoType;
 
 class PuestoController extends Controller
 {
@@ -26,5 +27,28 @@ class PuestoController extends Controller
             );
             
         return $this->render('ichTestBundle:Puesto:index.html.twig', array('pagination' => $pagination));
+    }
+    
+    public function editAction($id)
+    {
+        $co = $this->getDoctrine()->getManager();
+        
+        $puesto = $co->getRepository('ichTestBundle:Puesto')->find($id);
+        
+        if(!$puesto)
+        {
+            throw $this->createNotFoundException('Puesto no encontrado');
+        }
+        
+        $form = $this->createEditForm($puesto);
+        
+        return $this->render('ichTestBundle:Puesto:edit.html.twig', array('puesto' => $puesto, 'form' => $form->createView()));
+    }
+    
+    private function createEditForm(Puesto $entity)
+    {
+        $form = $this->createForm(new PuestoType(), $entity, array('action' => $this->generateUrl('ich_puesto_update', array('id' => $entity->getID())), 'method' => 'PUT'));
+        
+        return $form;
     }
 }
