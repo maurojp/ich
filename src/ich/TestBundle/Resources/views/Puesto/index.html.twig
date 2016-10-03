@@ -4,10 +4,8 @@
 
 {{ parent() }}
 
-{#
 {{ include('ichTestBundle:Puesto:messages/success.html.twig')}}
-{{ include('ichTestBundle:Puesto:messages/danger.html.twig')}}
-#}
+{# {{ include('ichTestBundle:Puesto:messages/danger.html.twig')}} #}
 
     <div class="container">
         <div class="col-md-12">
@@ -25,7 +23,7 @@
                         </form>
                     </div>
                     <div class="col-md-3">
-                        <a href"{{ path('ich_puesto_add') }}" class="btn btn-lg btn-default">Nuevo Puesto</a>
+                        <a href="{{ path('ich_puesto_add') }}" class="btn btn-lg btn-primary">Nuevo Puesto</a>
                     </div>
                 
                 <br>

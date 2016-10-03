@@ -3,13 +3,11 @@
 {% block body %}
     {{ parent() }}
     
-    {{ include('ichTestBundle:Puesto:messages/success.html.twig')}}
-    
     <div class = "main container">
         <div class = "row well">
             <div class = "col-md-12">
                 <div class = "page-header">
-                    <h2>Editar Puesto</h2>
+                    <h2>Nuevo Puesto</h2>
                 </div>
                 
                 <h4 class="text-danger"> {{ form_errors(form) }} </h4>
@@ -95,6 +93,5 @@
     <div class="col-md-4">{{ form_widget(puestocompetencia.competencia,{'attr' : {'class' : 'form-control'} }) }}</div>
     <div class="col-md-4">{{ form_widget(puestocompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
         <span class="pull-left text-danger">{{ form_errors(puestocompetencia.ponderacion) }}</span>
-    </div>
-    
+    </div>    
 {% endmacro %}

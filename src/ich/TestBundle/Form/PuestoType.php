@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class PuestoType extends AbstractType
 {
@@ -26,6 +27,13 @@ class PuestoType extends AbstractType
                 },
                 'choice_label' => 'getNombre'
             ))
+            ->add('competencias', CollectionType::class, array(
+                'entry_type' => PuestoCompetenciaType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'cascade_validation' => true
+            ))
             ->add('save', 'submit', array('label' => 'Guardar'))
         ;
     }
@@ -36,7 +44,8 @@ class PuestoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ich\TestBundle\Entity\Puesto'
+            'data_class' => 'ich\TestBundle\Entity\Puesto',
+            'cascade_validation' => true
         ));
     }
 }

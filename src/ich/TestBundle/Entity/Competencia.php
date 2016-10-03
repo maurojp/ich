@@ -15,10 +15,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class Competencia
 {
-	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="competencia")
-	 */
-	protected $puestos;
+    /**
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="competencia")
+     */
+    protected $puestos;
 	
      /**
      * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Auditoria", inversedBy="competencia") 

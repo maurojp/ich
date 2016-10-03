@@ -16,7 +16,7 @@ class Puesto
 {
 
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="puesto")
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Puesto_Competencia", mappedBy="puesto", cascade={"persist", "remove"})
      */
     protected $competencias;
 
@@ -154,24 +154,24 @@ class Puesto
     /**
      * Add competencias
      *
-     * @param \ich\TestBundle\Entity\Competencia $competencias
+     * @param \ich\TestBundle\Entity\Puesto_Competencia $competencia
      * @return Puesto
      */
-    public function addCompetencia(\ich\TestBundle\Entity\Competencia $competencias)
+    public function addCompetencia(\ich\TestBundle\Entity\Puesto_Competencia $competencia)
     {
-        $this->competencias[] = $competencias;
-
-        return $this;
+        $competencia->setPuesto($this);
+        
+        $this->competencias->add($competencia);
     }
 
     /**
      * Remove competencias
      *
-     * @param \ich\TestBundle\Entity\Competencia $competencias
+     * @param \ich\TestBundle\Entity\Puesto_Competencia $competencia
      */
-    public function removeCompetencia(\ich\TestBundle\Entity\Competencia $competencias)
+    public function removeCompetencia(\ich\TestBundle\Entity\Puesto_Competencia $competencia)
     {
-        $this->competencias->removeElement($competencias);
+        $this->competencias->removeElement($competencia);
     }
 
     /**
@@ -183,8 +183,6 @@ class Puesto
     {
         return $this->competencias;
     }
-
-
 
 
     /**

@@ -3,34 +3,38 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Puesto_Competencia
  *
- * @ORM\Table(name="puesto_competencia",uniqueConstraints = {
- *      @ORM\UniqueConstraint(columns = {"puesto_id", "competencia_id"}) })
+ * @ORM\Table(name="puesto_competencia")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\Puesto_CompetenciaRepository")
+ * @UniqueEntity(
+ *     fields={"puesto", "competencia"},
+ *     message="Hay competencias duplicadas en el puesto."
+ * )
  */
 class Puesto_Competencia
 {
-	/**
-	 * @var integer
-	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 	
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="competencias") 
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="competencias", cascade={"persist", "remove"}) 
      * @ORM\JoinColumn(name="puesto_id",referencedColumnName="id", nullable=false)
      */
     protected $puesto;
   
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="puestos") 
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="puestos", cascade={"persist"}) 
      * @ORM\JoinColumn(name="competencia_id",referencedColumnName="id", nullable=false)
      */
     protected $competencia;
@@ -41,7 +45,6 @@ class Puesto_Competencia
      * @ORM\Column(name="ponderacion", type="integer")
      */
     private $ponderacion;
-
 
     /**
      * Set ponderacion

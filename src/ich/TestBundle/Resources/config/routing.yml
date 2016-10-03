@@ -12,9 +12,10 @@ ich_puesto_add:
     path:       /puesto/add
     defaults:   { _controller: ichTestBundle:Puesto:add }
 
-ich_puesto_view:
-    path:       /puesto/view
-    defaults:   { _controller: ichTestBundle:Puesto:view }
+ich_puesto_create:
+    path:       /puesto/create
+    defaults:   { _controller: ichTestBundle:Puesto:create }
+    methods: POST
     
 ich_puesto_edit:
     path:       /puesto/edit/{id}
