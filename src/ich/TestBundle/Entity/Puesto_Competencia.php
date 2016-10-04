@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Puesto_Competencia
  *
  * @ORM\Table(name="puesto_competencia")
+ * @ORM\Table(name="puesto_competencia",uniqueConstraints = 
+ *	{ @ORM\UniqueConstraint(columns = {"puesto_id", "competencia_id"}) })
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\Puesto_CompetenciaRepository")
  * @UniqueEntity(
  *     fields={"puesto", "competencia"},
