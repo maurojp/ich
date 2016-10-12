@@ -25,6 +25,33 @@ ich_puesto_update:
     path:       /puesto/update/{id}
     defaults:   { _controller: ichTestBundle:Puesto:update }
     methods: [POST, PUT]
+    
+    
+# Pregunta
+
+
+ich_pregunta_index:
+    path:       /pregunta/index
+    defaults:   { _controller: ichTestBundle:Pregunta:index }
+    
+ich_pregunta_add:
+    path:       /pregunta/add
+    defaults:   { _controller: ichTestBundle:Pregunta:add }
+
+ich_pregunta_create:
+    path:       /pregunta/create
+    defaults:   { _controller: ichTestBundle:Pregunta:create }
+    methods: POST
+    
+ich_pregunta_edit:
+    path:       /pregunta/edit/{id}
+    defaults:   { _controller: ichTestBundle:Pregunta:edit }
+    
+ich_pregunta_update:
+    path:       /pregunta/update/{id}
+    defaults:   { _controller: ichTestBundle:Pregunta:update }
+    methods: [POST, PUT]
+
 
 # Autenticacion
 

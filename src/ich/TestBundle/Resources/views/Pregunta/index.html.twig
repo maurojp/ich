@@ -1,0 +1,72 @@
+{% extends 'layout.html.twig'%}
+
+{% block body %}
+
+{{ parent() }}
+
+{{ include('ichTestBundle:Puesto:messages/success.html.twig')}}
+{# {{ include('ichTestBundle:Puesto:messages/danger.html.twig')}} #}
+
+    <div class="container">
+        <div class="col-md-12">
+                <div class="page-header margin-none">
+                    <h2 class="padding-none">Preguntas</h2>
+                </div>
+            <div class="table-responsive">
+               
+                    <div class="col-md-9">
+                        <form method="get" action="" class="form-inline" role="search">
+                            <div class="form-group">
+                                <input type"text" name="query" value="{{ app.request.get('query') }}" class="form-control" placeholder= "Buscar pregunta..." required />
+                            </div>
+                            <input type="submit" value="Buscar" class="btn btn-default">
+                        </form>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ path('ich_pregunta_add') }}" class="btn btn-lg btn-primary">Nueva Pregunta</a>
+                    </div>
+                
+                <br>
+                
+                {% if not pagination|length %}
+                    <h2>No existen registros.</h2>
+                {% endif %}
+                
+                {% if pagination|length %}
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>    
+                            <th>{{ knp_pagination_sortable(pagination, 'Codigo', 'p.codigo') }}</th>   
+                            <th>{{ knp_pagination_sortable(pagination, 'Nombre', 'p.nombre') }}</th>
+                            <th>{{ knp_pagination_sortable(pagination, 'Descripcion', 'p.descripcion') }}</th>
+                            <th>Empresa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pregunta in pagination %}
+                            <tr>
+                                <td>{{ pregunta.codigo }}</td>
+                                <td>{{ pregunta.nombre }}</td>
+                                <td>{{ pregunta.descripcion }}</td>
+                                <td>{{ pregunta.empresa.nombre }}</td>
+                                <td>
+                                    {# <a href="{{ path('ich_pregunta_view', { id: pregunta.id }) }}" class="btn btn-sm btn-info">Ver</a> #}
+                                    <a href="{{ path('ich_pregunta_edit', { id: pregunta.id }) }}" class="btn btn-sm btn-primary">Editar</a>
+                                    <a href="#" class="btn btn-sm btn-danger btn-delete">Borrar</a>  
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+                
+                {# Navigation Bar #}
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

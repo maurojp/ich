@@ -1,0 +1,100 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    
+    {{ include('ichTestBundle:Pregunta:messages/success.html.twig')}}
+    
+    <div class = "main container">
+        <div class = "row well">
+            <div class = "col-md-12">
+                <div class = "page-header">
+                    <h2>Editar Pregunta</h2>
+                </div>
+                
+                <h4 class="text-danger"> {{ form_errors(form) }} </h4>
+                
+                <fieldset>
+                
+                {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
+                
+                <div class="row">
+                    <div class = 'col-md-6 form-group'>
+                        {{ form_label(form.codigo) }}
+                        {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Código del pregunta',
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.codigo) }} </span>
+                    </div>
+                
+                    <div class = 'col-md-6 form-group'>
+                        {{ form_label(form.nombre) }}
+                        {{ form_widget(form.nombre, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Nombre del pregunta'
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.nombre) }} </span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class = 'col-md-8 form-group'>
+                        {{ form_label(form.descripcion) }}
+                        {{ form_widget(form.descripcion, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Descripción del pregunta'
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.descripcion) }} </span>
+                    </div>
+            
+                    <div class = 'col-md-4 form-group'>
+                        {{ form_label(form.empresa) }}
+                        {{ form_widget(form.empresa, { 'attr' : { 'class' : 'form-control' 
+                            } }) }}
+                    </div>
+                </div>     
+                
+                <div class="col-md-10 table table-striped table-hover">
+                    
+                <h3>{{ form_label(form.competencias) }}</h3>
+                
+                {% if not form.competencias|length %}
+                    <h4 class="text-info">No existen competencias en el pregunta.</h4>
+                {% endif %}
+                
+                <div class="list-group competencias" data-prototype="{{ _self.model_prototype(form.competencias.vars.prototype)|e('html_attr') }}">
+                    {% for preguntacompetencia in form.competencias %}
+                        <div class="row renglon">
+                        {{ _self.model_prototype(preguntacompetencia) }}
+                        </div>
+                    {% endfor %}
+                </div>
+                </div>
+                
+                </fieldset>
+                
+                <p>
+                    
+                    {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
+                    <a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
+                    
+                </p>
+               
+                {{ form_widget(form._token) }}
+                {{ form_end(form,{ 'render_rest' : false}) }}
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ichtest/js/list-forms.js') }}"></script>
+{% endblock %}
+
+{% macro model_prototype(preguntacompetencia) %}
+    <div class="col-md-4">{{ form_widget(preguntacompetencia.competencia,{'attr' : {'class' : 'form-control'} }) }}</div>
+    <div class="col-md-4">{{ form_widget(preguntacompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
+        <span class="pull-left text-danger">{{ form_errors(preguntacompetencia.ponderacion) }}</span>
+    </div>
+    
+{% endmacro %}
