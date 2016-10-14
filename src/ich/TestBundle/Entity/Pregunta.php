@@ -16,17 +16,20 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Pregunta
 {
 	/**
+	 * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Factor", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="factor_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $factor;
 	
 	/**
+	 * @Assert\NotBlank()
 	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta")
 	 */
 	protected $opcionesRespuesta;
 	
 	/**
+	 * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */

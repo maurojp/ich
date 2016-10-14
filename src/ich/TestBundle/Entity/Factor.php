@@ -258,4 +258,9 @@ class Factor
     {
         return $this->auditoria;
     }
+    
+    public function __toString()
+    {
+    	return (string) $this->getNombre();
+    }
 }

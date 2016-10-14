@@ -239,4 +239,9 @@ class Competencia
     {
         return $this->factores;
     }
+    
+    public function __toString()
+    {
+    	return (string) $this->getNombre();
+    }
 }

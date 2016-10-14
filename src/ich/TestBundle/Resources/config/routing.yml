@@ -11,7 +11,7 @@ ich_puesto_index:
 ich_puesto_add:
     path:       /puesto/add
     defaults:   { _controller: ichTestBundle:Puesto:add }
-
+  
 ich_puesto_create:
     path:       /puesto/create
     defaults:   { _controller: ichTestBundle:Puesto:create }
@@ -29,7 +29,11 @@ ich_puesto_update:
     
 # Pregunta
 
-
+ich_pregunta_cargarOpciones:
+    path:       /pregunta/cargarOpciones
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpciones}
+    methods: POST
+    
 ich_pregunta_index:
     path:       /pregunta/index
     defaults:   { _controller: ichTestBundle:Pregunta:index }

@@ -3,13 +3,17 @@
 namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Pregunta_OpcionRespuesta
  *
  * @ORM\Table(name="pregunta__opcion_respuesta",uniqueConstraints = {
  *      @ORM\UniqueConstraint(columns = {"pregunta_id", "opcionRespuesta_id"}) })
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\Pregunta_OpcionRespuestaRepository")
+ * @UniqueEntity(
+ *     fields={"pregunta", "opcionRespuesta"},
+ *     message="Hay opciones de Respuesta duplicadas en la Pregunta."
+ * )
  */
 class Pregunta_OpcionRespuesta
 {
@@ -23,13 +27,13 @@ class Pregunta_OpcionRespuesta
 	private $id;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta")
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta",cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(name="pregunta_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $pregunta;
 		
 	/**
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\OpcionRespuesta",inversedBy="preguntas")
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\OpcionRespuesta",inversedBy="preguntas",cascade={"persist"})
 	 * @ORM\JoinColumn(name="opcionRespuesta_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $opcionRespuesta;

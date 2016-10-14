@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormError;
 use ich\TestBundle\Entity\Pregunta;
+use ich\TestBundle\Entity\Pregunta_OpcionRespuesta;
 use ich\TestBundle\Form\PreguntaType;
 
 class PreguntaController extends Controller
@@ -38,7 +39,7 @@ class PreguntaController extends Controller
         
         $form = $this->createCreateForm($pregunta);
         
-        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('form' => $form->createView()));
+        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('id' =>  $pregunta->getId(), 'form' => $form->createView()));
     }
     
     private function createCreateForm(Pregunta $entity)
@@ -50,7 +51,36 @@ class PreguntaController extends Controller
         return $form;
     }
     
-  
+    public function cargarOpcionesAction(Request $request)
+    {
+    	$grupoOpciones_id = $request->request->get ( 'grupoOpciones_id' );
+    		
+    	$em = $this->getDoctrine ()->getManager ();
+    		
+    	$grupoOpciones = $em->getRepository ( 'ichTestBundle:GrupoOpciones' )->find( $grupoOpciones_id );
+    		
+    	$opcionesRespuesta = $em->getRepository ( 'ichTestBundle:OpcionRespuesta' )->findByGrupoOpciones( $grupoOpciones );
+    	
+    	/*$arrayCollection = new arrayCollection();
+    	
+    	foreach($opcionesRespuesta as $item) {
+    		$preguntaOpcionRespuesta = new Pregunta_OpcionRespuesta();
+    		$preguntaOpcionRespuesta->setOpcionRespuesta($item);
+    		$arrayCollection->add($preguntaOpcionRespuesta);
+    	}*/
+    	
+    	$arrayCollection = array();
+    		
+    	foreach($opcionesRespuesta as $item) {
+    		$arrayCollection[] = array('id' => $item->getId(),'descripcion' => $item->getDescripcion(), 'ponderacion' => 0
+    				
+    		);
+    	}
+    	
+    	return new JsonResponse($arrayCollection);
+    	
+    }
+    
     public function createAction(Request $request)
     {
     	if ($request->isXMLHttpRequest ()) {
@@ -63,14 +93,10 @@ class PreguntaController extends Controller
 			
 			$factores = $em->getRepository ( 'ichTestBundle:Factor' )->findByCompetencia ( $competencia );
 			
-			
 			$arrayCollection = array();
 			
 			foreach($factores as $item) {
-				$arrayCollection[] = array(
-						'id' => $item->getId(),'nombre' => $item->getNombre(),
-						
-				);
+				$arrayCollection[] = array('id' => $item->getId(),'nombre' => $item->getNombre());
 			}
 			return new JsonResponse($arrayCollection);
 

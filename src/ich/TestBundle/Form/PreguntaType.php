@@ -8,6 +8,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormEvents;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\CallbackTransformer;
 
 class PreguntaType extends AbstractType
 {
@@ -15,16 +18,19 @@ class PreguntaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-        ->add('codigo', null, array('label' => 'CÃ³digo'))
+        ->add('codigo', null, array('label' => 'Código'))
         ->add('nombre', null, array('label' => 'Nombre'))
         ->add('pregunta', null, array('label' => 'Pregunta'))
-        ->add('descripcion', null, array('label' => 'DescripciÃ³n'))
+        ->add('descripcion', null, array('label' => 'Descripción'))
         ->add('save', 'submit', array('label' => 'Guardar'))
         ->add('competencia', EntityType::class, array(
                 'class'       => 'ichTestBundle:Competencia',
-                'placeholder' => 'Competencia',
-                'choice_label' => 'getNombre',
+                'placeholder' => 'Seleccione',
                 'mapped' => false,
+            ))
+        ->add('grupoOpciones', EntityType::class, array(
+                'class'       => 'ichTestBundle:GrupoOpciones',
+                'placeholder' => 'Seleccione'
             ));
         
 
@@ -33,7 +39,7 @@ class PreguntaType extends AbstractType
 
             $form->add('factor', EntityType::class, array(
                 'class'       => 'ichTestBundle:Factor',
-                'placeholder' => 'Factor',
+                'placeholder' => 'Seleccione',
                 'choices'     => $factores,
             ));
         };
@@ -41,7 +47,7 @@ class PreguntaType extends AbstractType
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
             function ( $event) use ($formModifier) {
-                // this would be your entity, i.e. SportMeetup
+
                 $data = $event->getData();
                 if (null === $data) {
                     return;
@@ -53,21 +59,54 @@ class PreguntaType extends AbstractType
         $builder->get('competencia')->addEventListener(
             FormEvents::POST_SUBMIT,
             function ( $event) use ($formModifier) {
-                // It's important here to fetch $event->getForm()->getData(), as
-                // $event->getData() will get you the client data (that is, the ID)
+
                 $competencia = $event->getForm()->getData();
 
-                // since we've added the listener to the child, we'll have to pass on
-                // the parent to the callback functions!
                 $formModifier($event->getForm()->getParent(), $competencia);
             }
         );
         
+        
+        
+        
+        $formModifier2 = function (FormInterface $form, $OpcionesRespuesta = null) {
+        	
+     	
+        	$form->add('opcionesRespuesta', CollectionType::class, array(
+            		'entry_type'     => PreguntaOpcionRespuestaType::class,
+            		'by_reference'   => false,
+            		'allow_add'      => true,
+        			'prototype'      => true,
+        			'label' => 'Opciones de Respuesta'
+        			));};
+        
+        $builder->addEventListener(
+        		FormEvents::PRE_SET_DATA,
+        		function ( $event) use ($formModifier2) {
+        
+        			$data = $event->getData();
+        			if (null === $data) {
+        				return;
+        			}
+        			$formModifier2($event->getForm(), $data->getOpcionesRespuesta());
+        		}
+        		);
+        
+        $builder->get('grupoOpciones')->addEventListener(
+        		FormEvents::POST_SUBMIT,
+        		function ( $event) use ($formModifier2) {
+        
+        			$grupoOpciones = $event->getForm()->getData();
+        
+        			$formModifier2($event->getForm()->getParent(), $grupoOpciones);
+        		}
+        		);
+        
        /* $builder->addEventListener(FormEvents::POST_SUBMIT, function ( $event) {
             $event->stopPropagation();
         }, 900);*/
-    } 
-        
+        }
+         
     
     
     /**

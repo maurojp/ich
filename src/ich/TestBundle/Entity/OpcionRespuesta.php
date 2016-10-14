@@ -178,4 +178,9 @@ class OpcionRespuesta
     {
         return $this->grupoOpciones;
     }
+    
+    public function __toString()
+    {
+    	return (string) $this->getDescripcion();
+    }
 }
