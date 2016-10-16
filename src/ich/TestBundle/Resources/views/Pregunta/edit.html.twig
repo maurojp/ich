@@ -3,8 +3,6 @@
 {% block body %}
     {{ parent() }}
     
-    {{ include('ichTestBundle:Pregunta:messages/success.html.twig')}}
-    
     <div class = "main container">
         <div class = "row well">
             <div class = "col-md-12">
@@ -19,82 +17,186 @@
                 {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
                 
                 <div class="row">
-                    <div class = 'col-md-6 form-group'>
+                
+                	<div class = 'col-md-4 form-group'>
+                        {{ form_label(form.competencia) }}
+                        {{ form_widget(form.competencia, { 'attr' : { 'class' : 'form-control' 
+                            } }) }}   
+                    </div>
+                    
+                    <div class = 'col-md-4 form-group'>
+                        {{ form_label(form.factor) }}
+                        {{ form_widget(form.factor, { 'attr' : { 'class' : 'form-control' 
+                            } }) }}
+                            
+                    </div>
+                    
+                    <div class = 'col-md-4 form-group'>
                         {{ form_label(form.codigo) }}
                         {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
-                            'placeholder' : 'Código del pregunta',
+                            'placeholder' : 'Código de la pregunta',
                             } }) }}
                         <span class='text-danger'> {{form_errors(form.codigo) }} </span>
                     </div>
                 
-                    <div class = 'col-md-6 form-group'>
-                        {{ form_label(form.nombre) }}
-                        {{ form_widget(form.nombre, { 'attr' : { 'class' : 'form-control' , 
-                            'placeholder' : 'Nombre del pregunta'
+                    
+                </div>
+                
+           		<div class="row">
+           		
+                	<div class = 'col-md-12 form-group'>
+                        {{ form_label(form.pregunta) }}
+                        {{ form_widget(form.pregunta, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Pregunta'
                             } }) }}
-                        <span class='text-danger'> {{form_errors(form.nombre) }} </span>
+                        <span class='text-danger'> {{form_errors(form.pregunta) }} </span>
                     </div>
+            
+                    
                 </div>
                 
                 <div class="row">
-                    <div class = 'col-md-8 form-group'>
+                    <div class = 'col-md-12 form-group'>
                         {{ form_label(form.descripcion) }}
                         {{ form_widget(form.descripcion, { 'attr' : { 'class' : 'form-control' , 
-                            'placeholder' : 'Descripción del pregunta'
+                            'placeholder' : 'Descripción de la pregunta'
                             } }) }}
                         <span class='text-danger'> {{form_errors(form.descripcion) }} </span>
                     </div>
-            
-                    <div class = 'col-md-4 form-group'>
-                        {{ form_label(form.empresa) }}
-                        {{ form_widget(form.empresa, { 'attr' : { 'class' : 'form-control' 
-                            } }) }}
-                    </div>
+                    
                 </div>     
                 
-                <div class="col-md-10 table table-striped table-hover">
-                    
-                <h3>{{ form_label(form.competencias) }}</h3>
+               
                 
-                {% if not form.competencias|length %}
-                    <h4 class="text-info">No existen competencias en el pregunta.</h4>
+    <br>            				
+  <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModal">Opción de Respuesta</button>
+ 					
+                        
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Opción de Respuesta</h4>
+        </div>
+        <div class="modal-body">
+          <div class = 'col-md-10 form-group'>
+                        {{ form_label(form.grupoOpciones) }}
+                        {{ form_widget(form.grupoOpciones, { 'attr' : { 'class' : 'form-control' , 
+                            'placeholder' : 'Seleccione'
+                            } }) }}
+                        <span class='text-danger'> {{form_errors(form.grupoOpciones) }} </span>
+        </div>
+        
+        <div class="col-md-10 table table-striped table-hover">
+                    
+                <h4>{{ form_label(form.opcionesRespuesta) }}</h4>
+                <h4>{{ form_widget(form.opcionesRespuesta) }}</h4>
+                {% if not form.opcionesRespuesta|length %}
+                    <h4 class="text-info">No existen opciones de Respuesta.</h4>
                 {% endif %}
                 
-                <div class="list-group competencias" data-prototype="{{ _self.model_prototype(form.competencias.vars.prototype)|e('html_attr') }}">
-                    {% for preguntacompetencia in form.competencias %}
+                <div class="list-group opcionesRespuesta" data-prototype="{{ _self.model_prototype(form.opcionesRespuesta.vars.prototype)|e('html_attr') }}">
+                    {% for opcionGrupoOpciones in form.opcionesRespuesta %}
                         <div class="row renglon">
-                        {{ _self.model_prototype(preguntacompetencia) }}
+                        {{ _self.model_prototype(opcionGrupoOpciones) }}
                         </div>
                     {% endfor %}
                 </div>
                 </div>
-                
-                </fieldset>
-                
-                <p>
-                    
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+      
+    </div> 
+  </div>
+  
+</div> 
+                   <br><br><br>
+					</fieldset>
+                 <p>
                     {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
                     <a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
-                    
                 </p>
                
                 {{ form_widget(form._token) }}
                 {{ form_end(form,{ 'render_rest' : false}) }}
-                
+               
             </div>
         </div>
     </div>
 {% endblock %}
 
+
+{% macro model_prototype(opcionGrupoOpciones) %}
+    <div class="col-md-4">{{ form_widget(opcionGrupoOpciones.opcionRespuesta,{'attr' : {'class' : 'form-control'} }) }}</div>
+    <div class="col-md-4">{{ form_widget(opcionGrupoOpciones.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
+        <span class="pull-left text-danger">{{ form_errors(opcionGrupoOpciones.ponderacion) }}</span>
+    </div>    
+{% endmacro %}
+ 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('bundles/ichtest/js/list-forms.js') }}"></script>
+
+<script>
+     
+        $(function(){
+        $("#pregunta_competencia").change(function(){
+        	  
+            	var data = {
+                     competencia_id: $(this).val()     
+                };
+
+                 $.ajax({
+                     type: 'post',
+                     url: '{{ path("ich_pregunta_create") }}',
+                     data: data,
+                    success: function(data) {
+                        var $factor_selector = $('#pregunta_factor');
+
+                        $factor_selector.html('<option>Seleccione</option>');
+
+                        for (var i=0, total = data.length; i < total; i++) {
+                            $factor_selector.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
+                        }
+                        
+                       
+                    }
+                });
+            });
+
+            });
+
+        $("#pregunta_grupoOpciones").change(function(){
+
+            var data = {
+                grupoOpciones_id: $(this).val(),
+            };
+			
+            $.ajax({
+                type: 'post',
+                url: '{{ path("ich_pregunta_cargarOpciones") }}',
+                data: data,
+               success: function(data) {
+                   
+                   var $opcionesRespuesta_selector = $('#pregunta_opcionesRespuesta');
+
+                   $opcionesRespuesta_selector.html('<div>Opciones de Respuesta</div>');
+                   $opcionesRespuesta_selector.html('<datalist id="opciones"></datalist>');
+                   
+                   for (var i=0, total = data.length; i < total; i++) {
+                       $opcionesRespuesta_selector.append('<option value="' + data[i].id + '">' + data[i].descripcion  
+                               + data[i].ponderacion +'</option>');
+                   }
+
+               		}
+               })
+           });
+ 
+    </script>
 {% endblock %}
 
-{% macro model_prototype(preguntacompetencia) %}
-    <div class="col-md-4">{{ form_widget(preguntacompetencia.competencia,{'attr' : {'class' : 'form-control'} }) }}</div>
-    <div class="col-md-4">{{ form_widget(preguntacompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
-        <span class="pull-left text-danger">{{ form_errors(preguntacompetencia.ponderacion) }}</span>
-    </div>
-    
-{% endmacro %}

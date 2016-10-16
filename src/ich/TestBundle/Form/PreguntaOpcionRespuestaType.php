@@ -5,6 +5,7 @@ namespace ich\TestBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\TextType;
 use Doctrine\ORM\EntityRepository;
 
 class PreguntaOpcionRespuestaType extends AbstractType
@@ -16,9 +17,12 @@ class PreguntaOpcionRespuestaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('opcionRespuesta', null, array())
-            ->add('ponderacion', null, array('label' => 'Ponderación'))
-        ;
+            ->add('opcionRespuesta', 'entity', array(
+                'class' => 'ichTestBundle:OpcionRespuesta',
+                'read_only' => true,
+                'choice_label' => 'getDescripcion'
+            ))
+            ->add('ponderacion', null, array('label' => 'Ponderación'));
     }
     
     /**

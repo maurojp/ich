@@ -4,6 +4,8 @@ namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Pregunta_OpcionRespuesta
  *
@@ -27,6 +29,13 @@ class Pregunta_OpcionRespuesta
 	private $id;
 	
 	/**
+	 * @var int
+	 * @Assert\NotBlank()
+	 * @ORM\Column(name="ponderacion", type="integer")
+	 */
+	private $ponderacion;
+	
+	/**
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta",cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(name="pregunta_id",referencedColumnName="id", nullable=false)
 	 */
@@ -39,7 +48,28 @@ class Pregunta_OpcionRespuesta
 	protected $opcionRespuesta;
 	
 
-  
+	/**
+	 * Set ponderacion
+	 *
+	 * @param int $ponderacion
+	 * @return Pregunta_OpcionRespuesta
+	 */
+	public function setPonderacion($ponderacion)
+	{
+		$this->ponderacion = $ponderacion;
+	
+		return $this;
+	}
+	
+	/**
+	 * Get ponderacion
+	 *
+	 * @return int
+	 */
+	public function getPonderacion()
+	{
+		return $this->ponderacion;
+	}
 
     /**
      * Get id

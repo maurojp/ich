@@ -59,13 +59,6 @@ class Pregunta
 
     /**
      * @var string
-     * @Assert\NotBlank()
-     * @ORM\Column(name="nombre", type="string", length=30)
-     */
-    private $nombre;
-
-    /**
-     * @var string
      * 
      * @ORM\Column(name="descripcion", type="string", length=150, nullable=true)
      */
@@ -112,29 +105,7 @@ class Pregunta
         return $this->codigo;
     }
 
-    /**
-     * Set nombre
-     *
-     * @param string $nombre
-     * @return Pregunta
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    /**
-     * Get nombre
-     *
-     * @return string 
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
-
+   
     /**
      * Set descripcion
      *

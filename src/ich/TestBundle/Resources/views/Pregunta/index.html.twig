@@ -37,9 +37,9 @@
                     <thead>
                         <tr>    
                             <th>{{ knp_pagination_sortable(pagination, 'Codigo', 'p.codigo') }}</th>   
-                            <th>{{ knp_pagination_sortable(pagination, 'Nombre', 'p.nombre') }}</th>
+                            <th>{{ knp_pagination_sortable(pagination, 'Pregunta', 'p.pregunta') }}</th>
                             <th>{{ knp_pagination_sortable(pagination, 'Descripcion', 'p.descripcion') }}</th>
-                            <th>Empresa</th>
+                            <th>Grupo Opciones</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -47,9 +47,9 @@
                         {% for pregunta in pagination %}
                             <tr>
                                 <td>{{ pregunta.codigo }}</td>
-                                <td>{{ pregunta.nombre }}</td>
+                                <td>{{ pregunta.pregunta }}</td>
                                 <td>{{ pregunta.descripcion }}</td>
-                                <td>{{ pregunta.empresa.nombre }}</td>
+                                <td>{{ pregunta.grupoOpciones.nombre }}</td>
                                 <td>
                                     {# <a href="{{ path('ich_pregunta_view', { id: pregunta.id }) }}" class="btn btn-sm btn-info">Ver</a> #}
                                     <a href="{{ path('ich_pregunta_edit', { id: pregunta.id }) }}" class="btn btn-sm btn-primary">Editar</a>

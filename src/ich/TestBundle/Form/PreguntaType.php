@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\CallbackTransformer;
+use Doctrine\ORM\PersistentCollection;
 
 class PreguntaType extends AbstractType
 {
@@ -19,7 +20,6 @@ class PreguntaType extends AbstractType
     {
         $builder
         ->add('codigo', null, array('label' => 'Código'))
-        ->add('nombre', null, array('label' => 'Nombre'))
         ->add('pregunta', null, array('label' => 'Pregunta'))
         ->add('descripcion', null, array('label' => 'Descripción'))
         ->add('save', 'submit', array('label' => 'Guardar'))
@@ -52,7 +52,8 @@ class PreguntaType extends AbstractType
                 if (null === $data) {
                     return;
                 }
-                $formModifier($event->getForm(), $data->getFactor());
+               
+                $formModifier($event->getForm(), $data->getFactor()->getCompetencia());
             }
         );
 
@@ -69,15 +70,16 @@ class PreguntaType extends AbstractType
         
         
         
-        $formModifier2 = function (FormInterface $form, $OpcionesRespuesta = null) {
-        	
+        $formModifier2 = function (FormInterface $form, $GrupoOpciones) {
+        	$opcionesRespuesta = null === $GrupoOpciones ? array() : $GrupoOpciones->getOpcionesRespuesta();
      	
         	$form->add('opcionesRespuesta', CollectionType::class, array(
             		'entry_type'     => PreguntaOpcionRespuestaType::class,
             		'by_reference'   => false,
             		'allow_add'      => true,
         			'prototype'      => true,
-        			'label' => 'Opciones de Respuesta'
+        			'label' => 'Opciones de Respuesta',
+        			'cascade_validation' => true
         			));};
         
         $builder->addEventListener(
@@ -88,7 +90,7 @@ class PreguntaType extends AbstractType
         			if (null === $data) {
         				return;
         			}
-        			$formModifier2($event->getForm(), $data->getOpcionesRespuesta());
+        			$formModifier2($event->getForm(), $data->getGrupoOpciones());
         		}
         		);
         

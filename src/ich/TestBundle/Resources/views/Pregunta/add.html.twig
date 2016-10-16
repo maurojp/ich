@@ -44,15 +44,7 @@
                 
            		<div class="row">
            		
-           		<div class = 'col-md-4 form-group'>
-                        {{ form_label(form.nombre) }}
-                        {{ form_widget(form.nombre, { 'attr' : { 'class' : 'form-control' , 
-                            'placeholder' : 'Nombre'
-                            } }) }}
-                        <span class='text-danger'> {{form_errors(form.nombre) }} </span>
-                    </div>
-                    
-                	<div class = 'col-md-8 form-group'>
+                	<div class = 'col-md-12 form-group'>
                         {{ form_label(form.pregunta) }}
                         {{ form_widget(form.pregunta, { 'attr' : { 'class' : 'form-control' , 
                             'placeholder' : 'Pregunta'
@@ -76,12 +68,7 @@
                 
                
                 
-                <p>
-                <div class="row">
-                	<div class="col-md-9">
-                	</div> 
-
-  				<div class="col-md-3">
+    <br>            				
   <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModal">Opción de Respuesta</button>
  					
                         
@@ -107,7 +94,7 @@
         <div class="col-md-10 table table-striped table-hover">
                     
                 <h4>{{ form_label(form.opcionesRespuesta) }}</h4>
-                <h4>{{ form_widget(form.opcionesRespuesta) }}</h4>
+                
                 {% if not form.opcionesRespuesta|length %}
                     <h4 class="text-info">No existen opciones de Respuesta.</h4>
                 {% endif %}
@@ -120,34 +107,29 @@
                     {% endfor %}
                 </div>
                 </div>
+                </fieldset>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
         </div>
       </div>
       
-    </div>
+    </div> 
   </div>
   
 </div> 
                    <br><br><br>
-
-                <div class="row">
-                	<div class="col-md-10">
-                	</div> 
+					
+                 <p>
                     {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
                     <a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
-                </div>    
-                    
-                    
                 </p>
                
-                    {# {{ form_rest(form) }} #}
-                    {# Token CSRF #}
-                    {{ form_widget(form._token) }}
+                {{ form_widget(form._token) }}
+                {{ form_end(form,{ 'render_rest' : false}) }}
                
             </div>
         </div>
-    </div></fieldset>
+    </div>
 {% endblock %}
 
 
