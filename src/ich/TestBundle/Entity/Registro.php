@@ -29,9 +29,9 @@ class Registro
     private $fechaHora;
 
     /**
-     * @var string
+     * @var int
      * @Assert\NotBlank()
-     * @ORM\Column(name="accion", type="string",columnDefinition="ENUM('inicioEjecucion','finEjecucion')", length=20)
+     * @ORM\Column(name="accion", type="integer")
      */
     private $accion;
 
@@ -72,7 +72,7 @@ class Registro
     /**
      * Set accion
      *
-     * @param string $accion
+     * @param integer $accion
      * @return Registro
      */
     public function setAccion($accion)
@@ -85,7 +85,7 @@ class Registro
     /**
      * Get accion
      *
-     * @return string 
+     * @return integer 
      */
     public function getAccion()
     {

@@ -56,9 +56,9 @@ class Cuestionario
     private $estadoEn;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="estado", type="string", columnDefinition="ENUM('ACTIVO', 'COMPLETO', 'INCOMPLETO', 'SIN CONTESTAR')", length=50)
+     * @ORM\Column(name="estado", type="integer")
      */
     private $estado;
 
@@ -180,7 +180,7 @@ class Cuestionario
     /**
      * Set estado
      *
-     * @param string $estado
+     * @param integer $estado
      * @return Cuestionario
      */
     public function setEstado($estado)
@@ -193,7 +193,7 @@ class Cuestionario
     /**
      * Get estado
      *
-     * @return string 
+     * @return integer 
      */
     public function getEstado()
     {

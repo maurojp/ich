@@ -66,11 +66,10 @@ class Usuario implements AdvancedUserInterface, \Serializable
     private $password;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="tipoDocumento", type="string", columnDefinition="ENUM('DNI', 'LE', 'LC', 'PP')", length=50)
+     * @ORM\Column(name="tipoDocumento", type="integer")
      * @Assert\NotBlank()
-     * @Assert\Choice(choices = {"DNI", "LE", "LC", "PP"})
      */
     private $tipoDocumento;
 
@@ -78,6 +77,7 @@ class Usuario implements AdvancedUserInterface, \Serializable
      * @var int
      *
      * @ORM\Column(name="nroDocumento", type="integer")
+     * @Assert\NotBlank()
      */
     private $nroDocumento;
 
@@ -91,11 +91,10 @@ class Usuario implements AdvancedUserInterface, \Serializable
     private $email;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="genero", type="string", columnDefinition="ENUM('M','H')", length=50)
+     * @ORM\Column(name="genero", type="integer")
      * @Assert\NotBlank()
-     * @Assert\Choice(choices = {"M", "H"})
      */
     private $genero;
 
@@ -221,7 +220,7 @@ class Usuario implements AdvancedUserInterface, \Serializable
     /**
      * Set tipoDocumento
      *
-     * @param string $tipoDocumento
+     * @param integer $tipoDocumento
      * @return Usuario
      */
     public function setTipoDocumento($tipoDocumento)
@@ -234,7 +233,7 @@ class Usuario implements AdvancedUserInterface, \Serializable
     /**
      * Get tipoDocumento
      *
-     * @return string 
+     * @return integer 
      */
     public function getTipoDocumento()
     {
@@ -290,7 +289,7 @@ class Usuario implements AdvancedUserInterface, \Serializable
     /**
      * Set genero
      *
-     * @param string $genero
+     * @param integer $genero
      * @return Usuario
      */
     public function setGenero($genero)
@@ -303,7 +302,7 @@ class Usuario implements AdvancedUserInterface, \Serializable
     /**
      * Get genero
      *
-     * @return string 
+     * @return integer 
      */
     public function getGenero()
     {

@@ -49,9 +49,9 @@ class Candidato
     private $apellido;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="tipoDocumento", type="string", columnDefinition="ENUM('DNI', 'LE', 'LC', 'PP')", length=50)
+     * @ORM\Column(name="tipoDocumento", type="integer")
      */
     private $tipoDocumento;
 
@@ -70,9 +70,9 @@ class Candidato
     private $email;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="genero", type="string", columnDefinition="ENUM('M','H')", length=50)
+     * @ORM\Column(name="genero", type="integer")
      */
     private $genero;
 
@@ -191,7 +191,7 @@ class Candidato
     /**
      * Set tipoDocumento
      *
-     * @param string $tipoDocumento
+     * @param integer $tipoDocumento
      * @return Candidato
      */
     public function setTipoDocumento($tipoDocumento)
@@ -204,7 +204,7 @@ class Candidato
     /**
      * Get tipoDocumento
      *
-     * @return string 
+     * @return integer 
      */
     public function getTipoDocumento()
     {
@@ -260,7 +260,7 @@ class Candidato
     /**
      * Set genero
      *
-     * @param string $genero
+     * @param integer $genero
      * @return Candidato
      */
     public function setGenero($genero)
@@ -273,7 +273,7 @@ class Candidato
     /**
      * Get genero
      *
-     * @return string 
+     * @return integer 
      */
     public function getGenero()
     {
