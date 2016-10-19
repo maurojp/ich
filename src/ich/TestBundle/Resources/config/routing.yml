@@ -29,6 +29,17 @@ ich_puesto_update:
     
 # Pregunta
 
+
+ich_pregunta_cargarCompetenciaEdit:
+    path:       /pregunta/cargarCompetenciaEdit
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarCompetenciaEdit}
+    methods: POST
+    
+ich_pregunta_cargarOpcionesEdit:
+    path:       /pregunta/cargarOpcionesEdit
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpcionesEdit}
+    methods: POST
+    
 ich_pregunta_cargarOpciones:
     path:       /pregunta/cargarOpciones
     defaults:   { _controller: ichTestBundle:Pregunta:cargarOpciones}
@@ -56,6 +67,11 @@ ich_pregunta_update:
     defaults:   { _controller: ichTestBundle:Pregunta:update }
     methods: [POST, PUT]
 
+ich_pregunta_delete:
+    path: /pregunta/delete/{id}
+    defaults: { _controller: ichTestBundle:Pregunta:delete }
+    methods: [POST,DELETE]
+    
 
 # Autenticacion
 

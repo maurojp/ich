@@ -7,7 +7,7 @@
         <div class = "row well">
             <div class = "col-md-12">
                 <div class = "page-header">
-                    <h2>Editar Pregunta</h2>
+                    <h2>Modificar Pregunta</h2>
                 </div>
                 
                 <h4 class="text-danger"> {{ form_errors(form) }} </h4>
@@ -69,12 +69,12 @@
                
                 
     <br>            				
-  <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModal">Opción de Respuesta</button>
+  <button type="button" class="btn btn-md btn-primary btn-opResp" data-toggle="modal" data-target="#myModal">Opción de Respuesta</button>
  					
                         
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-lg">
     
       <!-- Modal content-->
       <div class="modal-content">
@@ -94,19 +94,20 @@
         <div class="col-md-10 table table-striped table-hover">
                     
                 <h4>{{ form_label(form.opcionesRespuesta) }}</h4>
-                <h4>{{ form_widget(form.opcionesRespuesta) }}</h4>
+                <div class="text-info noexiste">
                 {% if not form.opcionesRespuesta|length %}
-                    <h4 class="text-info">No existen opciones de Respuesta.</h4>
+                    <h4>No existen opciones de Respuesta.</h4>
                 {% endif %}
-                
-                <div class="list-group opcionesRespuesta" data-prototype="{{ _self.model_prototype(form.opcionesRespuesta.vars.prototype)|e('html_attr') }}">
-                    {% for opcionGrupoOpciones in form.opcionesRespuesta %}
+                </div>
+                <div class="list-group opcionesRespuesta">
+                   
                         <div class="row renglon">
-                        {{ _self.model_prototype(opcionGrupoOpciones) }}
+                        
                         </div>
-                    {% endfor %}
+                    
                 </div>
                 </div>
+                
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
         </div>
@@ -132,18 +133,143 @@
 {% endblock %}
 
 
-{% macro model_prototype(opcionGrupoOpciones) %}
-    <div class="col-md-4">{{ form_widget(opcionGrupoOpciones.opcionRespuesta,{'attr' : {'class' : 'form-control'} }) }}</div>
-    <div class="col-md-4">{{ form_widget(opcionGrupoOpciones.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
-        <span class="pull-left text-danger">{{ form_errors(opcionGrupoOpciones.ponderacion) }}</span>
-    </div>    
-{% endmacro %}
- 
+
 {% block javascripts %}
     {{ parent() }}
 
 <script>
-     
+
+
+var contador = 0;
+
+$(function() {
+    	if (0 == contador)
+    	{
+    	var data = {
+		pregunta_id: {{ pregunta.id }},
+    	};
+    	$.ajax({
+            type: 'post',
+            url: '{{ path("ich_pregunta_cargarOpcionesEdit") }}',
+            data: data,
+           success: function(data) {
+        	   contador++;
+        	   $collectionHolder = $('div.opcionesRespuesta');
+        	    
+        	    // add a delete link to all of the existing tag form li elements
+        	    $collectionHolder.find('div.renglon').each(function() {
+        	        $(this).remove();
+        	    });
+
+    			$('div.noexiste').remove();
+
+    			
+        	    if (0 === data.length)
+        	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
+        	    }
+        	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+        	    var index = $collectionHolder.data('index');
+
+        	    if (0 < data.length)
+        	    {
+        	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
+                newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
+                newFormLi.append($('<div class="col-md-2"><label>Ponderación</label></div>'));
+
+                $collectionHolder.append(newFormLi);
+        	    }
+                
+         	   for (var i=0, total = data.length; i < total; i++) {
+
+                   newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
+                          + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
+                          + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
+                  newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
+                  newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+                  newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number"> <span class="pull-left text-danger"></span>'));
+
+                  
+         	    // increase the index with one for the next item
+        	    $collectionHolder.data('index', index + 1);
+        	    
+        	    // Display the form in the page in an li, before the "Add a tag" link li
+        	    
+        	    $collectionHolder.append(newFormLi);
+               
+               
+                 
+               }
+
+           		}
+           })
+       }});
+
+
+
+    	
+$(function(){
+    $("#pregunta_grupoOpciones").change(function(){
+
+    var data = {
+        grupoOpciones_id: $(this).val(),
+    };
+	
+    $.ajax({
+        type: 'post',
+        url: '{{ path("ich_pregunta_cargarOpciones") }}',
+        data: data,
+       success: function(data) {
+
+    	   $collectionHolder = $('div.opcionesRespuesta');
+    	    
+    	    // add a delete link to all of the existing tag form li elements
+    	    $collectionHolder.find('div.renglon').each(function() {
+    	        $(this).remove();
+    	    });
+
+			$('div.noexiste').remove();
+
+			
+    	    if (0 === data.length)
+    	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
+    	    }
+    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+    	    var index = $collectionHolder.data('index');
+
+    	    if (0 < data.length)
+    	    {
+    	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
+            newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
+            newFormLi.append($('<div class="col-md-2"><label>Ponderación</label></div>'));
+
+            $collectionHolder.append(newFormLi);
+    	    }
+            
+     	   for (var i=0, total = data.length; i < total; i++) {
+
+               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
+                      + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
+                      + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
+              newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
+              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number"> <span class="pull-left text-danger"></span>'));
+
+              
+     	    // increase the index with one for the next item
+    	    $collectionHolder.data('index', index + 1);
+    	    
+    	    // Display the form in the page in an li, before the "Add a tag" link li
+    	    
+    	    $collectionHolder.append(newFormLi);
+           
+           
+             
+           }
+
+       		}
+       })
+   })});
+   
         $(function(){
         $("#pregunta_competencia").change(function(){
         	  
@@ -171,32 +297,27 @@
 
             });
 
-        $("#pregunta_grupoOpciones").change(function(){
 
-            var data = {
-                grupoOpciones_id: $(this).val(),
-            };
-			
-            $.ajax({
-                type: 'post',
-                url: '{{ path("ich_pregunta_cargarOpciones") }}',
-                data: data,
-               success: function(data) {
-                   
-                   var $opcionesRespuesta_selector = $('#pregunta_opcionesRespuesta');
+        $(function(){
+                	var data = {
+                         factor_id: $("#pregunta_factor").val()     
+                    };
 
-                   $opcionesRespuesta_selector.html('<div>Opciones de Respuesta</div>');
-                   $opcionesRespuesta_selector.html('<datalist id="opciones"></datalist>');
-                   
-                   for (var i=0, total = data.length; i < total; i++) {
-                       $opcionesRespuesta_selector.append('<option value="' + data[i].id + '">' + data[i].descripcion  
-                               + data[i].ponderacion +'</option>');
-                   }
+                     $.ajax({
+                         type: 'post',
+                         url: '{{ path("ich_pregunta_cargarCompetenciaEdit") }}',
+                         data: data,
+                        success: function(data) {
 
-               		}
-               })
-           });
- 
+                                var opt= document.getElementById('pregunta_competencia').options[data];
+                                opt.selected =  'selected';
+                           }   
+                           
+                       
+                });
+
+                });
+
     </script>
 {% endblock %}
 

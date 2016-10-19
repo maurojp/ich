@@ -1,0 +1,19 @@
+{{ form_start(form, {'attr': {'id': id}} ) }}
+
+{{ form_widget(form) }}
+
+{{ form_end(form) }}
+
+<script>
+    var message = '{{ message }}';
+    
+    function confirmDelete()
+    {
+        bootbox.confirm(message, function(result) {
+            if(result == true)
+            {
+                document.form.submit();
+            }
+        });
+    }
+</script>

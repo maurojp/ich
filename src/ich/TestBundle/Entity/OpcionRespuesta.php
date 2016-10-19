@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class OpcionRespuesta
 {
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="opcionRespuesta")
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="opcionRespuesta", cascade={"persist", "remove"})
 	 */
 	protected $preguntas;
 	

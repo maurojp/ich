@@ -29,8 +29,9 @@ class PreguntaController extends Controller
             $request->query->getInt('page',1),
             6
             );
+        $deleteFormAjax = $this->createCustomForm(':PREGUNTA_ID', 'DELETE', 'ich_pregunta_delete');
             
-        return $this->render('ichTestBundle:Pregunta:index.html.twig', array('pagination' => $pagination));
+        return $this->render('ichTestBundle:Pregunta:index.html.twig', array('pagination' => $pagination, 'delete_form_ajax' => $deleteFormAjax->createView()));
     }
     
     public function addAction()
@@ -72,13 +73,48 @@ class PreguntaController extends Controller
     	$arrayCollection = array();
     		
     	foreach($opcionesRespuesta as $item) {
-    		$arrayCollection[] = array('id' => $item->getId(),'descripcion' => $item->getDescripcion(), 'ponderacion' => 0
+    		$arrayCollection[] = array('ordenEvaluacion' => $item->getOrdenEvaluacion(), 'id' => $item->getId(),'descripcion' => $item->getDescripcion(), 'ponderacion' => 0
     				
     		);
     	}
     	
     	return new JsonResponse($arrayCollection);
     	
+    }
+    
+    public function cargarCompetenciaEditAction(Request $request)
+    {
+    	 
+    	$factor_id = $request->request->get ( 'factor_id' );
+    
+    	$em = $this->getDoctrine ()->getManager ();
+    	 
+    	$factor = $em->getRepository ( 'ichTestBundle:Factor' )->find( $factor_id );
+	 
+    			return new JsonResponse($factor->getCompetencia()->getId());
+    
+    }
+    
+    
+    public function cargarOpcionesEditAction(Request $request)
+    {
+    	
+    	$pregunta_id = $request->request->get ( 'pregunta_id' );
+ 
+    	$em = $this->getDoctrine ()->getManager ();
+    	
+    	$pregunta = $em->getRepository ( 'ichTestBundle:Pregunta' )->find( $pregunta_id );
+    	
+    	$query = $em->createQuery(
+    			'SELECT op.id, op.descripcion, op.ordenEvaluacion, preOp.ponderacion
+    			FROM ichTestBundle:Pregunta_OpcionRespuesta preOp JOIN ichTestBundle:OpcionRespuesta op
+    			WHERE preOp.pregunta = :p and preOp.opcionRespuesta = op'
+    			)->setParameter('p', $pregunta);
+    			 
+    			$opcionesRespuesta = $query->getResult();
+   
+    	return new JsonResponse($opcionesRespuesta);
+    	 
     }
     
     public function createAction(Request $request)
@@ -108,17 +144,29 @@ class PreguntaController extends Controller
         
         if ($form->isValid())
         {
+        	foreach ($pregunta->getOpcionesRespuesta() as $PreguntaOpcion) {
+        		$PreguntaOpcion->setPregunta($pregunta);}
             $co = $this->getDoctrine()->getManager();
             $co->persist($pregunta);
             $co->flush();
                 
-            $this->addFlash('mensaje', 'La pregunta ha sido creado.');
+            $this->addFlash('mensaje', 'La pregunta ha sido creada.');
                 
             return $this->redirectToRoute('ich_pregunta_index');    
         }
         
         return $this->render('ichTestBundle:Pregunta:add.html.twig', array('form' => $form->createView()));
     }
+    
+    
+    private function createCustomForm($id, $method, $route)
+    {
+    	return $this->createFormBuilder()
+    	->setAction($this->generateUrl($route, array('id' => $id)))
+    	->setMethod($method)
+    	->getForm();
+    }
+    
     
     public function editAction($id)
     {
@@ -128,7 +176,7 @@ class PreguntaController extends Controller
         
         if(!$pregunta)
         {
-            throw $this->createNotFoundException('Pregunta no encontrado');
+            throw $this->createNotFoundException('Pregunta no encontrada');
         }
         
         $form = $this->createEditForm($pregunta);
@@ -181,11 +229,40 @@ class PreguntaController extends Controller
             
             $co->flush();
 
-            $this->addFlash('mensaje', 'Pregunta modificado con éxito.');
-            return $this->redirectToRoute('ich_pregunta_edit', array('id' => $pregunta->getId()));
+            $this->addFlash('mensaje', 'Pregunta modificada con éxito.');
+            return $this->redirectToRoute('ich_pregunta_index', array('id' => $pregunta->getId()));
  
         }
         
         return $this->render('ichTestBundle:Pregunta:edit.html.twig', array('pregunta' => $pregunta, 'form' => $form->createView()));
+    }
+    
+    
+    
+    public function deleteAction(Request $request, $id)
+    {
+    	$em = $this->getDoctrine()->getManager();
+    
+    	$pregunta = $em->getRepository('ichTestBundle:Pregunta')->find($id);
+    
+    	if(!$pregunta)
+    	{
+    		throw $this->createNotFoundException('Pregunta no encontrada.');
+    	}
+
+    	$form = $this->createCustomForm($pregunta->getId(), 'DELETE', 'ich_pregunta_delete');
+    	$form->handleRequest($request);
+    
+    	if($form->isSubmitted() && $form->isValid() && $request->isXMLHttpRequest())
+    	{
+    		$em->remove($pregunta);
+    		$em->flush();
+    		return new Response(
+    				json_encode(array('message' => 'La pregunta ha sido eliminada.')),
+    				200,
+    				array('Content-Type' => 'application/json')
+    				);
+    	
+    	}
     }
 }

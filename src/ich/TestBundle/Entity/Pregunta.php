@@ -24,7 +24,7 @@ class Pregunta
 	
 	/**
 	 * @Assert\NotBlank()
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta")
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",  cascade={"persist", "remove"})
 	 */
 	protected $opcionesRespuesta;
 	

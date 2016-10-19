@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\CallbackTransformer;
 use Doctrine\ORM\PersistentCollection;
+use ich\TestBundle\Form\PreguntaOpcionRespuestaType;
+use ich\TestBundle\Entity\Pregunta_OpcionRespuesta;
 
 class PreguntaType extends AbstractType
 {
@@ -22,16 +24,17 @@ class PreguntaType extends AbstractType
         ->add('codigo', null, array('label' => 'Código'))
         ->add('pregunta', null, array('label' => 'Pregunta'))
         ->add('descripcion', null, array('label' => 'Descripción'))
-        ->add('save', 'submit', array('label' => 'Guardar'))
         ->add('competencia', EntityType::class, array(
                 'class'       => 'ichTestBundle:Competencia',
                 'placeholder' => 'Seleccione',
                 'mapped' => false,
+        		'required' => false,
             ))
         ->add('grupoOpciones', EntityType::class, array(
                 'class'       => 'ichTestBundle:GrupoOpciones',
                 'placeholder' => 'Seleccione'
-            ));
+            ))
+        ->add('save', 'submit', array());
         
 
         $formModifier = function (FormInterface $form, $competencia = null) {
@@ -41,6 +44,7 @@ class PreguntaType extends AbstractType
                 'class'       => 'ichTestBundle:Factor',
                 'placeholder' => 'Seleccione',
                 'choices'     => $factores,
+            		'required' => true,
             ));
         };
         
@@ -52,8 +56,14 @@ class PreguntaType extends AbstractType
                 if (null === $data) {
                     return;
                 }
-               
+                
+                if (null === $data->getFactor()) {
+                	$formModifier($event->getForm(), null);
+                	return;
+                }
+                
                 $formModifier($event->getForm(), $data->getFactor()->getCompetencia());
+                
             }
         );
 
@@ -77,10 +87,10 @@ class PreguntaType extends AbstractType
             		'entry_type'     => PreguntaOpcionRespuestaType::class,
             		'by_reference'   => false,
             		'allow_add'      => true,
-        			'prototype'      => true,
         			'label' => 'Opciones de Respuesta',
-        			'cascade_validation' => true
-        			));};
+        			'cascade_validation' => true,
+        			'attr'           => array('class'=> 'row opcionesRespuesta'))
+        			);};
         
         $builder->addEventListener(
         		FormEvents::PRE_SET_DATA,
