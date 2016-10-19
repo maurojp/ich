@@ -69,8 +69,9 @@
                
                 
     <br>            				
-  <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#myModal">Opción de Respuesta</button>
- 					
+  <button type="button" class="btn btn-md btn-primary " data-toggle="modal" data-target="#myModal">Opciones de Respuesta</button>
+ 	<br><br><div class="row error">
+                         </div>				
                         
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
@@ -80,7 +81,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Opción de Respuesta</h4>
+          <h4 class="modal-title">Opciones de Respuesta</h4>
         </div>
         <div class="modal-body">
           <div class = 'col-md-10 form-group'>
@@ -93,12 +94,7 @@
         
         <div class="col-md-10 table table-striped table-hover">
                     
-                <h4>{{ form_label(form.opcionesRespuesta) }}</h4>
-                <div class="text-info noexiste">
-                {% if not form.opcionesRespuesta|length %}
-                    <h4>No existen opciones de Respuesta.</h4>
-                {% endif %}
-                </div>
+
                 <div class="list-group opcionesRespuesta">
                    
                         <div class="row renglon">
@@ -107,9 +103,9 @@
                     
                 </div>
                 </div>
-                
+                <span class='text-danger'> {{form_errors(form.opcionesRespuesta) }} </span>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-success guardarOp" data-dismiss="modal">Guardar</button>
         </div>
       </div>
       
@@ -117,8 +113,9 @@
   </div>
   
 </div> 
-                   <br><br><br>
+                   <br><br>
 					</fieldset>
+					
                  <p>
                     {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
                     <a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
@@ -138,6 +135,78 @@
     {{ parent() }}
 
 <script>
+
+
+$(function() {
+	 var valid = {{ valid }};
+
+		if (valid == false)
+    	{
+      	
+    		  
+    		var data = {
+    		        grupoOpciones_id: $("#pregunta_grupoOpciones").val(),
+    		    };
+    			
+    		    $.ajax({
+    		        type: 'post',
+    		        url: '{{ path("ich_pregunta_cargarOpciones") }}',
+    		        data: data,
+    		       success: function(data) {
+
+    		    	   $collectionHolder = $('div.opcionesRespuesta');
+    		    	    
+    		    	    // add a delete link to all of the existing tag form li elements
+    		    	    $collectionHolder.find('div.renglon').each(function() {
+    		    	        $(this).remove();
+    		    	    });
+
+    					$('div.noexiste').remove();
+
+    					
+    		    	    if (0 === data.length)
+    		    	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
+    		    	    }
+    		    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+    		    	    var index = $collectionHolder.data('index');
+
+    		    	    if (0 < data.length)
+    		    	    {
+    		    	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
+    		            newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
+    		            newFormLi.append($('<div class="col-md-2"><label>Ponderación</label></div>'));
+
+    		            $collectionHolder.append(newFormLi);
+    		    	    }
+
+    		    	    var ponderaciones = {{ ponderaciones}};
+    		            
+    		     	   for (var i=0, total = data.length; i < total; i++) {
+    		     		  
+    		               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
+    		                      + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
+    		                      + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
+    		              newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
+    		              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+    		              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ ponderaciones[i] +'" type="number">'));
+
+    		              
+    		     	    // increase the index with one for the next item
+    		    	    $collectionHolder.data('index', index + 1);
+    		    	    
+    		    	    // Display the form in the page in an li, before the "Add a tag" link li
+    		    	    
+    		    	    $collectionHolder.append(newFormLi);
+    		           
+    		           
+    		             
+    		           }
+
+    		       		}
+    		       })
+    		   }});
+
+
 
 $(function(){
     $("#pregunta_grupoOpciones").change(function(){
@@ -160,6 +229,10 @@ $(function(){
     	    });
 
 			$('div.noexiste').remove();
+			$('div.ponderacionIncorrecta').remove();
+			var opt= document.getElementById('#modificar');
+			if (null != opt)
+			{opt.type = 'submit'; opt.name = 'pregunta[save]'; opt.id = 'pregunta_save';}
 
 			
     	    if (0 === data.length)
@@ -183,8 +256,8 @@ $(function(){
                       + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
                       + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
               newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
-              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
-              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number"> <span class="pull-left text-danger"></span>'));
+              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number">'));
 
               
      	    // increase the index with one for the next item
@@ -201,6 +274,41 @@ $(function(){
        		}
        })
    })});
+
+
+$('.guardarOp').click(function() {
+	
+	var inputs, index, sum = 0, collectionHolder;
+
+	inputs = document.querySelectorAll("input[type=number]");
+
+	if (0 < inputs.length)
+
+	{
+		for (index = 0; index < inputs.length; ++index) {
+		sum = parseInt(inputs[index].value, 10) + parseInt(sum, 10);
+	}
+
+	collectionHolder = $('div.error');
+	$('div.ponderacionIncorrecta').remove();
+	 
+	if (10 != sum)
+	{
+		collectionHolder.append($('<div class="ponderacionIncorrecta"></div>').append('<span class="text-danger"><ul><li>La Ponderación es incorrecta.</li></ul></span>'));
+
+		var opt= document.getElementById('pregunta_save');
+		opt.type = 'button'; opt.name = '#'; opt.id = '#modificar'; 
+		}
+
+	if (10 == sum)
+	{
+		$('div.ponderacionIncorrecta').remove();
+		var opt= document.getElementById('#modificar');
+		if (null != opt)
+		{opt.type = 'submit'; opt.name = 'pregunta[save]'; opt.id = 'pregunta_save';} 
+	}
+
+}});
    
         $(function(){
         $("#pregunta_competencia").change(function(){

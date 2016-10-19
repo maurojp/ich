@@ -40,7 +40,7 @@ class PreguntaController extends Controller
         
         $form = $this->createCreateForm($pregunta);
         
-        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('id' =>  $pregunta->getId(), 'form' => $form->createView()));
+        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('valid' => json_encode(true), 'ponderaciones' => 0, 'id' =>  $pregunta->getId(), 'form' => $form->createView()));
     }
     
     private function createCreateForm(Pregunta $entity)
@@ -144,8 +144,6 @@ class PreguntaController extends Controller
         
         if ($form->isValid())
         {
-        	foreach ($pregunta->getOpcionesRespuesta() as $PreguntaOpcion) {
-        		$PreguntaOpcion->setPregunta($pregunta);}
             $co = $this->getDoctrine()->getManager();
             $co->persist($pregunta);
             $co->flush();
@@ -155,7 +153,12 @@ class PreguntaController extends Controller
             return $this->redirectToRoute('ich_pregunta_index');    
         }
         
-        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('form' => $form->createView()));
+        $arrayCollection = array();
+        
+        foreach ($pregunta->getOpcionesRespuesta() as $item) {
+        	$arrayCollection[] = array($item->getPonderacion());}
+        	
+        return $this->render('ichTestBundle:Pregunta:add.html.twig', array('valid' => json_encode(false), 'ponderaciones' => json_encode($arrayCollection), 'form' => $form->createView()));
     }
     
     
@@ -181,7 +184,7 @@ class PreguntaController extends Controller
         
         $form = $this->createEditForm($pregunta);
         
-        return $this->render('ichTestBundle:Pregunta:edit.html.twig', array('pregunta' => $pregunta, 'form' => $form->createView()));
+        return $this->render('ichTestBundle:Pregunta:edit.html.twig', array('valid' => json_encode(true),'pregunta' => $pregunta, 'form' => $form->createView()));
     }
     
     private function createEditForm(Pregunta $entity)
@@ -202,29 +205,13 @@ class PreguntaController extends Controller
             throw $this->createNotFoundException('La pregunta no existe');
         }
         
-        // Crea un ArrayCollection de las tareas antes del HandleRequest
-        
-        $originalOpcionesRespuesta = new ArrayCollection();
-        
-        foreach ($pregunta->getOpcionesRespuesta() as $opcionRespuesta) {
-            $originalOpcionesRespuesta->add($opcionRespuesta);
-        }
-        
+
         $form = $this->createEditForm($pregunta);
         
         $form->handleRequest($request);
         
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            // Quito las opcionRespuestas removidas
-            foreach ($originalOpcionesRespuesta as $opcionRespuesta) {
-                if (false === $pregunta->getOpcionesRespuesta()->contains($opcionRespuesta)) {
-                   
-                    $co->remove($opcionRespuesta);
-                   
-                }
-            }
-                        
+        if ($form->isValid())
+        {           
             $co->persist($pregunta);
             
             $co->flush();
@@ -234,7 +221,7 @@ class PreguntaController extends Controller
  
         }
         
-        return $this->render('ichTestBundle:Pregunta:edit.html.twig', array('pregunta' => $pregunta, 'form' => $form->createView()));
+        return $this->render('ichTestBundle:Pregunta:edit.html.twig', array('valid' => json_encode(false),'pregunta' => $pregunta, 'form' => $form->createView()));
     }
     
     

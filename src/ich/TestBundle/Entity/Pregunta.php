@@ -24,13 +24,13 @@ class Pregunta
 	
 	/**
 	 * @Assert\NotBlank()
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",  cascade={"persist", "remove"})
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",cascade={"persist"})
 	 */
 	protected $opcionesRespuesta;
 	
 	/**
 	 * @Assert\NotBlank()
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas")
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas", cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $grupoOpciones;
@@ -181,7 +181,7 @@ class Pregunta
      * @param \ich\TestBundle\Entity\GrupoOpciones $grupoOpciones
      * @return Pregunta
      */
-    public function setGrupoOpciones(\ich\TestBundle\Entity\GrupoOpciones $grupoOpciones)
+    public function setGrupoOpciones(\ich\TestBundle\Entity\GrupoOpciones $grupoOpciones = null)
     {
         $this->grupoOpciones = $grupoOpciones;
 
@@ -236,11 +236,12 @@ class Pregunta
      */
     public function addOpcionesRespuestum(\ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta)
     {
-        $this->opcionesRespuesta[] = $opcionesRespuesta;
-
-        return $this;
+    	$opcionesRespuesta->setPregunta($this);
+    	$this->opcionesRespuesta[] = $opcionesRespuesta;
+    
+    	return $this;
     }
-
+    
     /**
      * Remove opcionesRespuesta
      *
@@ -248,7 +249,7 @@ class Pregunta
      */
     public function removeOpcionesRespuestum(\ich\TestBundle\Entity\Pregunta_OpcionRespuesta $opcionesRespuesta)
     {
-        $this->opcionesRespuesta->removeElement($opcionesRespuesta);
+    	$this->opcionesRespuesta->removeElement($opcionesRespuesta);
     }
 
     /**

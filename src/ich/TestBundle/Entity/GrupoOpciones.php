@@ -206,8 +206,36 @@ class GrupoOpciones
         return $this->auditoria;
     }
     
+    
+    /**
+     * Set grupoOpciones
+     *
+     * @param string $grupoOpciones
+     * @return GrupoOpciones
+     */
+    public function setGrupoOpciones($grupoOpciones)
+    {
+    	$this->grupoOpciones = $grupoOpciones;
+    
+    	return $this;
+    }
+    
+    /**
+     * Get grupoOpciones
+     *
+     * @return string
+     */
+    public function getGrupoOpciones()
+    {
+    	return $this;
+    }
+    
+    
     public function __toString()
     {
     	return (string) $this->getNombre();
     }
+    
+    
+    
 }

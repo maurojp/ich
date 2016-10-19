@@ -8,12 +8,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormEvents;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\CallbackTransformer;
-use Doctrine\ORM\PersistentCollection;
 use ich\TestBundle\Form\PreguntaOpcionRespuestaType;
-use ich\TestBundle\Entity\Pregunta_OpcionRespuesta;
+use Doctrine\ORM\EntityRepository;
 
 class PreguntaType extends AbstractType
 {
@@ -32,8 +29,23 @@ class PreguntaType extends AbstractType
             ))
         ->add('grupoOpciones', EntityType::class, array(
                 'class'       => 'ichTestBundle:GrupoOpciones',
-                'placeholder' => 'Seleccione'
+                'placeholder' => 'Seleccione',
+        		'label' => 'Grupo de Opciones',       
+        		'property'=>'grupoOpciones',
+        		'query_builder' => function (EntityRepository $er) {
+        		return $er->createQueryBuilder('u');
+        		},
+        		'required' => true,
             ))
+         ->add('opcionesRespuesta', CollectionType::class, array(
+            		'entry_type'     => PreguntaOpcionRespuestaType::class,
+            		'by_reference'   => false,
+            		'allow_add'      => true,
+            		'allow_delete'   => true,
+            		'label' => 'Opciones de Respuesta',
+            		'cascade_validation' => true,
+            		'attr'           => array('class'=> 'row opcionesRespuesta'))
+            		)
         ->add('save', 'submit', array());
         
 
@@ -44,7 +56,7 @@ class PreguntaType extends AbstractType
                 'class'       => 'ichTestBundle:Factor',
                 'placeholder' => 'Seleccione',
                 'choices'     => $factores,
-            		'required' => true,
+            	'required' => true,
             ));
         };
         
@@ -77,42 +89,9 @@ class PreguntaType extends AbstractType
             }
         );
         
+       
         
-        
-        
-        $formModifier2 = function (FormInterface $form, $GrupoOpciones) {
-        	$opcionesRespuesta = null === $GrupoOpciones ? array() : $GrupoOpciones->getOpcionesRespuesta();
-     	
-        	$form->add('opcionesRespuesta', CollectionType::class, array(
-            		'entry_type'     => PreguntaOpcionRespuestaType::class,
-            		'by_reference'   => false,
-            		'allow_add'      => true,
-        			'label' => 'Opciones de Respuesta',
-        			'cascade_validation' => true,
-        			'attr'           => array('class'=> 'row opcionesRespuesta'))
-        			);};
-        
-        $builder->addEventListener(
-        		FormEvents::PRE_SET_DATA,
-        		function ( $event) use ($formModifier2) {
-        
-        			$data = $event->getData();
-        			if (null === $data) {
-        				return;
-        			}
-        			$formModifier2($event->getForm(), $data->getGrupoOpciones());
-        		}
-        		);
-        
-        $builder->get('grupoOpciones')->addEventListener(
-        		FormEvents::POST_SUBMIT,
-        		function ( $event) use ($formModifier2) {
-        
-        			$grupoOpciones = $event->getForm()->getData();
-        
-        			$formModifier2($event->getForm()->getParent(), $grupoOpciones);
-        		}
-        		);
+
         
        /* $builder->addEventListener(FormEvents::POST_SUBMIT, function ( $event) {
             $event->stopPropagation();
@@ -127,6 +106,7 @@ class PreguntaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ich\TestBundle\Entity\Pregunta'
+            'data_class' => 'ich\TestBundle\Entity\Pregunta',
+        		'cascade_validation' => true
         ));
     }}
