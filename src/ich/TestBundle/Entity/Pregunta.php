@@ -24,13 +24,13 @@ class Pregunta
 	
 	/**
 	 * @Assert\NotBlank()
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",cascade={"persist", "remove"})
 	 */
 	protected $opcionesRespuesta;
 	
 	/**
 	 * @Assert\NotBlank()
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas", cascade={"persist", "remove"})
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $grupoOpciones;
