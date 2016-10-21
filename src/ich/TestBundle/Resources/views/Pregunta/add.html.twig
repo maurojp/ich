@@ -1,232 +1,236 @@
 {% extends 'layout.html.twig' %}
 
+
 {% block body %}
-    {{ parent() }}
-    
-    <div class = "main container">
-        <div class = "row well">
-            <div class = "col-md-12">
-                <div class = "page-header">
-                    <h2>Nueva Pregunta</h2>
-                </div>
-                
-                <h4 class="text-danger"> {{ form_errors(form) }} </h4>
-                
-                <fieldset>
-                
-                {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
-                
-                <div class="row">
-                
-                	<div class = 'col-md-4 form-group'>
-                        {{ form_label(form.competencia) }}
-                        {{ form_widget(form.competencia, { 'attr' : { 'class' : 'form-control' 
-                            } }) }}   
-                    </div>
-                    
-                    <div class = 'col-md-4 form-group'>
-                        {{ form_label(form.factor) }}
-                        {{ form_widget(form.factor, { 'attr' : { 'class' : 'form-control' 
+{{ parent() }}
+
+<div class="main container">
+	<div class="row well">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h2>Nueva Pregunta</h2>
+			</div>
+
+
+			<fieldset>
+
+				{{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
+
+				<div class="row">
+
+					<div class='col-md-4 form-group'>
+						{{ form_label(form.competencia) }}
+						{{ form_widget(form.competencia, { 'attr' : { 'class' : 'form-control' 
                             } }) }}
-                            
-                    </div>
-                    
-                    <div class = 'col-md-4 form-group'>
-                        {{ form_label(form.codigo) }}
-                        {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
+					</div>
+
+					<div class='col-md-4 form-group'>
+						{{ form_label(form.factor) }}
+						{{ form_widget(form.factor, { 'attr' : { 'class' : 'form-control' 
+                            } }) }}
+						<span class='text-danger'> {{form_errors(form.factor) }}
+						</span>
+					</div>
+
+					<div class='col-md-4 form-group'>
+						{{ form_label(form.codigo) }}
+						{{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
                             'placeholder' : 'Código de la pregunta',
                             } }) }}
-                        <span class='text-danger'> {{form_errors(form.codigo) }} </span>
-                    </div>
-                
-                    
-                </div>
-                
-           		<div class="row">
-           		
-                	<div class = 'col-md-12 form-group'>
-                        {{ form_label(form.pregunta) }}
-                        {{ form_widget(form.pregunta, { 'attr' : { 'class' : 'form-control' , 
+						<span class='text-danger'> {{form_errors(form.codigo) }}
+						</span>
+					</div>
+
+
+				</div>
+
+				<div class="row">
+
+					<div class='col-md-12 form-group'>
+						{{ form_label(form.pregunta) }}
+						{{ form_widget(form.pregunta, { 'attr' : { 'class' : 'form-control' , 
                             'placeholder' : 'Pregunta'
                             } }) }}
-                        <span class='text-danger'> {{form_errors(form.pregunta) }} </span>
-                    </div>
-            
-                    
-                </div>
-                
-                <div class="row">
-                    <div class = 'col-md-12 form-group'>
-                        {{ form_label(form.descripcion) }}
-                        {{ form_widget(form.descripcion, { 'attr' : { 'class' : 'form-control' , 
+						<span class='text-danger'> {{form_errors(form.pregunta) }}
+						</span>
+					</div>
+
+
+				</div>
+
+				<div class="row">
+					<div class='col-md-12 form-group'>
+						{{ form_label(form.descripcion) }}
+						{{ form_widget(form.descripcion, { 'attr' : { 'class' : 'form-control' , 
                             'placeholder' : 'Descripción de la pregunta'
                             } }) }}
-                        <span class='text-danger'> {{form_errors(form.descripcion) }} </span>
-                    </div>
-                    
-                </div>     
-                
-               
-                
-    <br>            				
-  <button type="button" class="btn btn-md btn-primary " data-toggle="modal" data-target="#myModal">Opciones de Respuesta</button>
- 	<br><br><div class="row error">
-                         </div>				
-                        
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-lg">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Opciones de Respuesta</h4>
-        </div>
-        <div class="modal-body">
-          <div class = 'col-md-10 form-group'>
-                        {{ form_label(form.grupoOpciones) }}
-                        {{ form_widget(form.grupoOpciones, { 'attr' : { 'class' : 'form-control' , 
+						<span class='text-danger'> {{form_errors(form.descripcion) }}
+						</span>
+					</div>
+
+				</div>
+
+
+
+				<br>
+				<button type="button" class="btn btn-md btn-primary "
+					data-toggle="modal" data-target="#myModal">Opciones de
+					Respuesta</button>
+				<br>
+				<br>
+				<div class="row error"></div>
+
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" role="dialog">
+					<div class="modal-lg">
+
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Opciones de Respuesta</h4>
+							</div>
+							<div class="modal-body">
+								<div class='col-md-10 form-group'>
+									{{ form_label(form.grupoOpciones) }}
+									{{ form_widget(form.grupoOpciones, { 'attr' : { 'class' : 'form-control' , 
                             'placeholder' : 'Seleccione'
                             } }) }}
-                        <span class='text-danger'> {{form_errors(form.grupoOpciones) }} </span>
-        </div>
-        
-        <div class="col-md-10 table table-striped table-hover">
-                    
+									<span class='text-danger'> {{form_errors(form.grupoOpciones) }}
+									</span>
+								</div>
 
-                <div class="list-group opcionesRespuesta">
-                   
-                        <div class="row renglon">
-                        
-                        </div>
-                    
-                </div>
-                </div>
-                <span class='text-danger'> {{form_errors(form.opcionesRespuesta) }} </span>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-success guardarOp" data-dismiss="modal">Guardar</button>
-        </div>
-      </div>
-      
-    </div> 
-  </div>
-  
-</div> 
-                   <br><br>
-					</fieldset>
-					
-                 <p>
-                    {{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
-                    <a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
-                </p>
-               
-                {{ form_widget(form._token) }}
-                {{ form_end(form,{ 'render_rest' : false}) }}
-               
-            </div>
-        </div>
-    </div>
+								<div class="col-md-10 table table-striped table-hover">
+
+
+									<div class="list-group opcionesRespuesta">
+
+										<div class="row renglon"></div>
+
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-success guardarOp"
+										data-dismiss="modal">Guardar</button>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<br>
+				<br>
+			</fieldset>
+
+			<p>
+				{{ form_widget(form.save, {'label' : 'Guardar', 'attr' : {'class' : 'btn btn-success' } }) }}
+				<a href="{{ path('ich_pregunta_index') }}" class="btn btn-warning">Cancelar</a>
+			</p>
+
+			{{ form_widget(form._token) }}
+			{{ form_end(form,{ 'render_rest' : false}) }}
+
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 
-
 {% block javascripts %}
-    {{ parent() }}
-
-<script>
-
+{{ parent() }}
+<script type="text/javascript">
 
 $(function() {
 	 var valid = {{ valid }};
 
 		if (valid == false)
-    	{
-      	
-    		  
-    		var data = {
-    		        grupoOpciones_id: $("#pregunta_grupoOpciones").val(),
-    		    };
-    			
-    		    $.ajax({
-    		        type: 'post',
-    		        url: '{{ path("ich_pregunta_cargarOpciones") }}',
-    		        data: data,
-    		       success: function(data) {
+   	{
+     	
+   		  
+   		var data = {
+   		        grupoOpciones_id: $("#pregunta_grupoOpciones").val(),
+   		    };
+   			
+   		    $.ajax({
+   		        type: 'post',
+   		        url: '{{ path("ich_pregunta_cargarOpciones") }}',
+   		        data: data,
+   		       success: function(data) {
 
-    		    	   $collectionHolder = $('div.opcionesRespuesta');
-    		    	    
-    		    	    // add a delete link to all of the existing tag form li elements
-    		    	    $collectionHolder.find('div.renglon').each(function() {
-    		    	        $(this).remove();
-    		    	    });
+   		    	   $collectionHolder = $('div.opcionesRespuesta');
+   		    	    
+   		    	    // add a delete link to all of the existing tag form li elements
+   		    	    $collectionHolder.find('div.renglon').each(function() {
+   		    	        $(this).remove();
+   		    	    });
 
-    					$('div.noexiste').remove();
+   					$('div.noexiste').remove();
 
-    					
-    		    	    if (0 === data.length)
-    		    	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
-    		    	    }
-    		    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
-    		    	    var index = $collectionHolder.data('index');
+   					
+   		    	    if (0 === data.length)
+   		    	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
+   		    	    }
+   		    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+   		    	    var index = $collectionHolder.data('index');
 
-    		    	    if (0 < data.length)
-    		    	    {
-    		    	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
-    		            newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
-    		            newFormLi.append($('<div class="col-md-2"><label>Ponderación</label></div>'));
+   		    	    if (0 < data.length)
+   		    	    {
+   		    	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
+   		            newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
+   		            newFormLi.append($('<div class="col-md-2"><label>* Ponderación</label></div>'));
 
-    		            $collectionHolder.append(newFormLi);
-    		    	    }
+   		            $collectionHolder.append(newFormLi);
+   		    	    }
 
-    		    	    var ponderaciones = {{ ponderaciones}};
-    		            
-    		     	   for (var i=0, total = data.length; i < total; i++) {
-    		     		  
-    		               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
-    		                      + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
-    		                      + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
-    		              newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
-    		              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
-    		              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ ponderaciones[i] +'" type="number">'));
+   		    	    var ponderaciones = {{ ponderaciones}};
+   		            
+   		     	   for (var i=0, total = data.length; i < total; i++) {
+   		     		  
+   		               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
+   		                      + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
+   		                      + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
+   		              newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
+   		              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+   		              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ ponderaciones[i] +'" type="number">'));
 
-    		              
-    		     	    // increase the index with one for the next item
-    		    	    $collectionHolder.data('index', index + 1);
-    		    	    
-    		    	    // Display the form in the page in an li, before the "Add a tag" link li
-    		    	    
-    		    	    $collectionHolder.append(newFormLi);
-    		           
-    		           
-    		             
-    		           }
+   		              
+   		     	    // increase the index with one for the next item
+   		    	    $collectionHolder.data('index', index + 1);
+   		    	    
+   		    	    // Display the form in the page in an li, before the "Add a tag" link li
+   		    	    
+   		    	    $collectionHolder.append(newFormLi);
+   		           
+   		           
+   		             
+   		           }
 
-    		       		}
-    		       })
-    		   }});
+   		       		}
+   		       })
+   		   }});
 
 
 
 $(function(){
-    $("#pregunta_grupoOpciones").change(function(){
+   $("#pregunta_grupoOpciones").change(function(){
 
-    var data = {
-        grupoOpciones_id: $(this).val(),
-    };
+   var data = {
+       grupoOpciones_id: $(this).val(),
+   };
 	
-    $.ajax({
-        type: 'post',
-        url: '{{ path("ich_pregunta_cargarOpciones") }}',
-        data: data,
-       success: function(data) {
+   $.ajax({
+       type: 'post',
+       url: '{{ path("ich_pregunta_cargarOpciones") }}',
+       data: data,
+      success: function(data) {
 
-    	   $collectionHolder = $('div.opcionesRespuesta');
-    	    
-    	    // add a delete link to all of the existing tag form li elements
-    	    $collectionHolder.find('div.renglon').each(function() {
-    	        $(this).remove();
-    	    });
+   	   $collectionHolder = $('div.opcionesRespuesta');
+   	    
+   	    // add a delete link to all of the existing tag form li elements
+   	    $collectionHolder.find('div.renglon').each(function() {
+   	        $(this).remove();
+   	    });
 
 			$('div.noexiste').remove();
 			$('div.ponderacionIncorrecta').remove();
@@ -235,45 +239,45 @@ $(function(){
 			{opt.type = 'submit'; opt.name = 'pregunta[save]'; opt.id = 'pregunta_save';}
 
 			
-    	    if (0 === data.length)
-    	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
-    	    }
-    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
-    	    var index = $collectionHolder.data('index');
+   	    if (0 === data.length)
+   	    { $collectionHolder.append($('<div class="text-info noexiste"></div>').append('<h4>No existen opciones de Respuesta.</h4>'));
+   	    }
+   	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+   	    var index = $collectionHolder.data('index');
 
-    	    if (0 < data.length)
-    	    {
-    	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
-            newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
-            newFormLi.append($('<div class="col-md-2"><label>Ponderación</label></div>'));
+   	    if (0 < data.length)
+   	    {
+   	    var newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"><label>Orden de Visualización</label></div>'));       
+           newFormLi.append($('<div class="col-md-4"><label>Descripción</label></div>'));
+           newFormLi.append($('<div class="col-md-2"><label>* Ponderación</label></div>'));
 
-            $collectionHolder.append(newFormLi);
-    	    }
-            
-     	   for (var i=0, total = data.length; i < total; i++) {
-
-               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
-                      + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
-                      + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
-              newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
-              newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
-              newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number">'));
-
-              
-     	    // increase the index with one for the next item
-    	    $collectionHolder.data('index', index + 1);
-    	    
-    	    // Display the form in the page in an li, before the "Add a tag" link li
-    	    
-    	    $collectionHolder.append(newFormLi);
+           $collectionHolder.append(newFormLi);
+   	    }
            
-           
+    	   for (var i=0, total = data.length; i < total; i++) {
+
+              newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'
+                     + i +'_ordenEvaluacion" class="form-control" name="pregunta[opcionesRespuesta]['
+                     + i +'][ordenEvaluacion]" value="'+ data[i].ordenEvaluacion +'" type="text" readonly>'));
+             newFormLi.append('<input id="pregunta_opcionesRespuesta_'+ i +'_opcionRespuesta class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][opcionRespuesta]" maxlength="150" value="'+ data[i].id +'" type="text" hidden>');
+             newFormLi.append($('<div class="col-md-4"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_descripcion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][descripcion]" maxlength="150" value="'+ data[i].descripcion +'" type="text" readonly>'));
+             newFormLi.append($('<div class="col-md-2"></div>').append('<input id="pregunta_opcionesRespuesta_'+ i +'_ponderacion" class="form-control" name="pregunta[opcionesRespuesta]['+ i +'][ponderacion]" required="required" value="'+ data[i].ponderacion +'" type="number">'));
+
              
-           }
+    	    // increase the index with one for the next item
+   	    $collectionHolder.data('index', index + 1);
+   	    
+   	    // Display the form in the page in an li, before the "Add a tag" link li
+   	    
+   	    $collectionHolder.append(newFormLi);
+          
+          
+            
+          }
 
-       		}
-       })
-   })});
+      		}
+      })
+  })});
 
 
 $('.guardarOp').click(function() {
@@ -297,7 +301,8 @@ $('.guardarOp').click(function() {
 		collectionHolder.append($('<div class="ponderacionIncorrecta"></div>').append('<span class="text-danger"><ul><li>La Ponderación es incorrecta.</li></ul></span>'));
 
 		var opt= document.getElementById('pregunta_save');
-		opt.type = 'button'; opt.name = '#'; opt.id = '#modificar'; 
+		if (null != opt)
+		{opt.type = 'button'; opt.name = '#'; opt.id = '#modificar'; }
 		}
 
 	if (10 == sum)
@@ -309,34 +314,33 @@ $('.guardarOp').click(function() {
 	}
 
 }});
-   
-        $(function(){
-        $("#pregunta_competencia").change(function(){
-        	  
-            	var data = {
-                     competencia_id: $(this).val()     
-                };
+  
+       $(function(){
+       $("#pregunta_competencia").change(function(){
+       	  
+           	var data = {
+                    competencia_id: $(this).val()     
+               };
 
-                 $.ajax({
-                     type: 'post',
-                     url: '{{ path("ich_pregunta_create") }}',
-                     data: data,
-                    success: function(data) {
-                        var $factor_selector = $('#pregunta_factor');
+                $.ajax({
+                    type: 'post',
+                    url: '{{ path("ich_pregunta_create") }}',
+                    data: data,
+                   success: function(data) {
+                       var $factor_selector = $('#pregunta_factor');
 
-                        $factor_selector.html('<option>Seleccione</option>');
+                       $factor_selector.html('<option>Seleccione</option>');
 
-                        for (var i=0, total = data.length; i < total; i++) {
-                            $factor_selector.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
-                        }
-                        
+                       for (var i=0, total = data.length; i < total; i++) {
+                           $factor_selector.append('<option value="' + data[i].id + '">' + data[i].nombre + '</option>');
+                       }
                        
-                    }
-                });
-            });
+                      
+                   }
+               });
+           });
 
-            });
-
-    </script>
+           });
+</script>
 {% endblock %}
 

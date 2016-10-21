@@ -16,20 +16,20 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Pregunta
 {
 	/**
-	 * @Assert\NotBlank()
+	 * @Assert\NotNull()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Factor", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="factor_id",referencedColumnName="id", nullable=false)
 	 */
 	protected $factor;
 	
 	/**
-	 * @Assert\NotBlank()
+	 * @Assert\NotNull()
 	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Pregunta_OpcionRespuesta", mappedBy="pregunta",cascade={"persist", "remove"})
 	 */
 	protected $opcionesRespuesta;
 	
 	/**
-	 * @Assert\NotBlank()
+	 * @Assert\NotNull()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */
@@ -158,7 +158,7 @@ class Pregunta
      * @param \ich\TestBundle\Entity\Factor $factor
      * @return Pregunta
      */
-    public function setFactor(\ich\TestBundle\Entity\Factor $factor)
+    public function setFactor(\ich\TestBundle\Entity\Factor $factor = null)
     {
         $this->factor = $factor;
 
