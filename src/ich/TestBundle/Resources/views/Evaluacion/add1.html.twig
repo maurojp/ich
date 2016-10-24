@@ -1,0 +1,313 @@
+
+{% extends 'layout.html.twig'%}
+
+{% block body %}
+
+{{ parent() }}
+
+
+    <div class="container">
+        <div class="col-md-16">
+                <div class="page-header margin-none">
+                    <h2 class="padding-none">Búsqueda de Candidatos</h2>
+                </div>
+   <div class="row">
+   <div class='col-md-4 form-group'>
+                        <input type="text" id="apellido" class="form-control" placeholder="Apellido"></div>
+     <div class='col-md-4 form-group'><input type="text" id="nombre" class="form-control" placeholder="Nombre"></div>
+       <div class='col-md-3 form-group'><input type="text" id="nroCandidato" class="form-control" placeholder="Nro. de Candidato"></div>
+            <div class='col-md-1 form-group'><button type="button" class="btn btn-info buscar">Buscar</button></div> 
+        </div>        
+                
+<br>
+   <h3 id="titulo1" hidden="true" align="center">Listado de Candidatos</h3>    
+  <table id="table-pagination" data-height="400" data-pagination="true" hidden="true">
+  <div class="fixed-table-toolbar">
+	<div class="columns columns-right btn-group pull-right">
+	<button class="btn btn-default refresh" type="button" name="refresh" style="display:none;" title="Refrescar">
+	<i class="glyphicon glyphicon-refresh icon-refresh"></i>
+	</button>
+	 <button type="button" class="btn btn-default pull-right agregar" style="display:none;">Agregar</button>
+	</div>
+	</div>
+    <thead>
+        <tr>
+            <th data-field="apellido" data-align="right" data-sortable="true" data-searchable="true">Apellido</th>
+            <th data-field="nombre" data-align="right" data-sortable="true" data-searchable="true">Nombre</th>
+            <th data-field="nroCandidato" data-sortable="true" data-align="right" data-width="20%" data-searchable="true">Nro. de Candidato</th>
+            <th data-field="state" data-checkbox="true"></th>
+        </tr>
+    </thead>
+</table>
+<br>
+
+<h3 id="titulo2" hidden="true" align="center">Listado de Candidatos a Evaluar</h3>               
+<table id="table-pagination2" data-height="300" data-pagination="true" hidden="true">
+    <thead>
+    	 <button type="button" class="btn btn-default pull-right quitar" style="display:none;">Quitar</button>
+        <tr>
+            <th data-field="apellido" data-align="right" data-sortable="true">Apellido</th>
+            <th data-field="nombre" data-align="right" data-sortable="true" >Nombre</th>
+            <th data-field="nroCandidato" data-sortable="true" data-align="right" data-width="20%">Nro. de Candidato</th>
+            <th data-field="state" data-checkbox="true"></th>
+        </tr>
+    </thead>
+</table>     
+
+		{{ form_start(form) }}
+		<fieldset>
+			<div class="list-group candidatos">
+
+				<div class="row renglon"></div>
+
+
+			</div>
+		</fieldset>
+		<br>
+
+		<p>
+				{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success siguiente', 'style' : 'display:none;' } }) }}
+				<a href="{{ path('ich_test_login') }}" class="btn btn-warning cancelar" style="display:none;">Cancelar</a>
+			</p>
+
+			{{ form_widget(form._token) }}
+			{{ form_end(form,{ 'render_rest' : false}) }}
+				
+			
+            </div>
+        
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+
+var candidatosTotal;
+
+
+    $(document).on('click', '.siguiente', function() {
+        $seleccionados = $('#table-pagination2').bootstrapTable('getSelections');
+        if ($seleccionados != []) {
+            var nrosCandidato = $.map($seleccionados, function(row) {
+                return row.nroCandidato;
+            });
+            $('#table-pagination').bootstrapTable('filterBy', {});
+            $('#table-pagination').bootstrapTable('load', candidatosTotal);
+            $('#table-pagination2').bootstrapTable('remove', {
+                field: 'nroCandidato',
+                values: nrosCandidato
+            });
+            $('#table-pagination').bootstrapTable('prepend', $seleccionados);
+            candidatosTotal = JSON.parse(JSON.stringify($('#table-pagination').bootstrapTable('getData')));
+        }
+    });
+        
+    $(document).ready(function() {
+        $.ajax({
+            url: '{{ path("ich_evaluacion_newStep1") }}',
+            success: function(data) {
+
+                $('#table-pagination').bootstrapTable({
+                    data: data
+                });
+                candidatosTotal = data;
+                $('#table-pagination').prop('hidden', false);
+                $('#titulo1').prop('hidden', false);
+                $('.agregar').removeAttr("style");
+                $('.refresh').removeAttr("style");
+                $('.siguiente').removeAttr("style");
+                $('.cancelar').removeAttr("style");
+                $('#table-pagination2').bootstrapTable({
+                    data: []
+                });
+                $('#table-pagination2').prop('hidden', false);
+                $('#titulo2').prop('hidden', false);
+                $('.quitar').removeAttr("style");
+            }
+        })
+    });
+
+
+    $(document).on('click', '.quitar', function() {
+        $seleccionados = $('#table-pagination2').bootstrapTable('getSelections');
+        if ($seleccionados != []) {
+            var nrosCandidato = $.map($seleccionados, function(row) {
+                return row.nroCandidato;
+            });
+            $('#table-pagination').bootstrapTable('filterBy', {});
+            $('#table-pagination').bootstrapTable('load', candidatosTotal);
+            $('#table-pagination2').bootstrapTable('remove', {
+                field: 'nroCandidato',
+                values: nrosCandidato
+            });
+            $('#table-pagination').bootstrapTable('prepend', $seleccionados);
+            candidatosTotal = JSON.parse(JSON.stringify($('#table-pagination').bootstrapTable('getData')));
+
+            $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
+                return row.nroCandidato;
+            });
+            
+            $collectionHolder = $('div.candidatos');
+	    	    
+	    	    // add a delete link to all of the existing tag form li elements
+	    	    $collectionHolder.find('div.renglon').each(function() {
+
+	    	        $(this).remove();
+	    	    });
+
+			
+	    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+	    	    var index = $collectionHolder.data('index');
+
+	     	   for (var i=0, total = $nrosCandidato.length; i < total; i++) {
+
+	     		  
+	               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append(
+	    	               '<input id="form_candidatos_'+i+'" class="form-control" name="form[candidatos]['+i
+	    	               +']" value="'+ $nrosCandidato[i] +'" type="hidden">'));
+
+	     	    // increase the index with one for the next item
+	    	    $collectionHolder.data('index', index + 1);
+	    	    
+	    	    // Display the form in the page in an li, before the "Add a tag" link li
+	    	    
+	    	    $collectionHolder.append(newFormLi);
+	           
+	           
+	             
+	           }
+        }
+    });
+
+    $(document).on('click', '.refresh', function() {
+        $('#table-pagination').bootstrapTable('filterBy', {});
+        $('#table-pagination').bootstrapTable('load', candidatosTotal);
+        $seleccionados = $('#table-pagination2').bootstrapTable('getData');
+        var nrosCandidato = $.map($seleccionados, function(row) {
+            return row.nroCandidato;
+        });
+        $('#table-pagination').bootstrapTable('remove', {
+            field: 'nroCandidato',
+            values: nrosCandidato
+        });
+    });
+
+    $(document).on('click', '.agregar', function() {
+        $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
+        if ($seleccionados != []) { /*alert(JSON.stringify($seleccionados)); 	   alert(JSON.stringify($('#table-pagination').bootstrapTable('getOptions')));*/
+            $nrosCandidato = $.map($seleccionados, function(row) {
+                return row.nroCandidato;
+            });
+            $('#table-pagination').bootstrapTable('filterBy', {});
+            $('#table-pagination').bootstrapTable('load', candidatosTotal);
+            $('#table-pagination').bootstrapTable('remove', {
+                field: 'nroCandidato',
+                values: $nrosCandidato
+            });
+            candidatosTotal = JSON.parse(JSON.stringify($('#table-pagination').bootstrapTable('getData')));
+            $('#table-pagination2').bootstrapTable('prepend', $seleccionados);
+
+            $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
+                return row.nroCandidato;
+            });
+            
+            $collectionHolder = $('div.candidatos');
+	    	    
+	    	    // add a delete link to all of the existing tag form li elements
+	    	    $collectionHolder.find('div.renglon').each(function() {
+
+	    	        $(this).remove();
+	    	    });
+
+			
+	    	    $collectionHolder.data('index', $collectionHolder.find(':input').length);
+	    	    var index = $collectionHolder.data('index');
+
+	     	   for (var i=0, total = $nrosCandidato.length; i < total; i++) {
+
+	     		  
+	               newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append(
+	    	               '<input id="form_candidatos_'+i+'" class="form-control" name="form[candidatos]['+i+']" value="'+ $nrosCandidato[i] 
+	    	               +'"  type="hidden">'));
+
+	     	    // increase the index with one for the next item
+	    	    $collectionHolder.data('index', index + 1);
+	    	    
+	    	    // Display the form in the page in an li, before the "Add a tag" link li
+	    	    
+	    	    $collectionHolder.append(newFormLi);
+	           
+	           
+	             
+	           }
+
+	       		}
+	       })
+
+;
+
+
+    $(document).on('click', '.buscar', function() {
+        $apellido = $('#apellido').val();
+        $nombre = $('#nombre').val();
+        $nroCandidato = $('#nroCandidato').val();
+        $nroCandidatoInt = 0;
+        $nroCandidatoInt = parseInt($('#nroCandidato').val(), 10) + parseInt($nroCandidatoInt, 10);
+        $('div.error').remove();
+        if ($apellido.length == 0 && $nombre.length == 0 && $nroCandidato.length == 0) {
+
+            $('div.row').append($('<div class="error"></div>').append(
+                '<span class="text-danger"><ul><li>Debe completar un campo de búsqueda.</li></ul></span>'));
+        } else {
+            if ($apellido.length > 0 && $nombre.length == 0 && $nroCandidato.length == 0) {
+                $('#table-pagination').bootstrapTable('filterBy', {
+                    apellido: $apellido
+                });
+            } else {
+                if ($apellido.length > 0 && $nombre.length > 0 && $nroCandidato.length == 0) {
+                    $('#table-pagination').bootstrapTable('filterBy', {
+                        apellido: $apellido,
+                        nombre: $nombre
+                    });
+                } else {
+                    if ($apellido.length > 0 && $nombre.length == 0 && $nroCandidato.length > 0) {
+                        $('#table-pagination').bootstrapTable('filterBy', {
+                            apellido: $apellido,
+                            nroCandidato: $nroCandidatoInt
+                        });
+                    } else {
+                        if ($apellido.length == 0 && $nombre.length > 0 && $nroCandidato.length > 0) {
+                            $('#table-pagination').bootstrapTable('filterBy', {
+                                nombre: $nombre,
+                                nroCandidato: $nroCandidatoInt
+                            });
+                        } else {
+                            if ($apellido.length == 0 && $nombre.length > 0 && $nroCandidato.length == 0) {
+                                $('#table-pagination').bootstrapTable('filterBy', {
+                                    nombre: $nombre
+                                });
+                            } else {
+                                if ($apellido.length == 0 && $nombre.length == 0 && $nroCandidato.length > 0) {
+                                    $('#table-pagination').bootstrapTable('filterBy', {
+                                        nroCandidato: $nroCandidatoInt
+                                    });
+                                } else {
+                                    if ($apellido.length > 0 && $nombre.length > 0 && $nroCandidato.length > 0) {
+                                        $('#table-pagination').bootstrapTable('filterBy', {
+                                            nombre: $nombre,
+                                            nombre: $nombre,
+                                            nroCandidato: $nroCandidatoInt
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

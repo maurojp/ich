@@ -6,6 +6,7 @@
         {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('public/css/bootstrap.min.css')}}" />
         <link rel="stylesheet" href="{{ asset('public/css/required.css')}}" />
+        <link rel="stylesheet" href="{{ asset('assets/vendor/dist/bootstrap-table.css')}}" />
         {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
@@ -19,6 +20,8 @@
         <script src=" {{ asset('public/js/jquery-1.11.3.js') }} "></script>
         <script src=" {{ asset('public/js/bootstrap.min.js') }} "></script>
         <script src=" {{ asset('public/js/bootbox.min.js') }} "></script>
+        <script src=" {{ asset('assets/vendor/dist/bootstrap-table.js') }} "></script>
+        <script src=" {{ asset('assets/vendor/dist/locale/bootstrap-table-es-ES.js') }} "></script>
         {% endblock %}
     </body>
 </html>

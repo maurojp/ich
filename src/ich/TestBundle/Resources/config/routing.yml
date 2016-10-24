@@ -32,17 +32,17 @@ ich_puesto_update:
 
 ich_pregunta_cargarCompetenciaEdit:
     path:       /pregunta/cargarCompetenciaEdit
-    defaults:   { _controller: ichTestBundle:Pregunta:cargarCompetenciaEdit}
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarCompetenciaEdit }
     methods: POST
     
 ich_pregunta_cargarOpcionesEdit:
     path:       /pregunta/cargarOpcionesEdit
-    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpcionesEdit}
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpcionesEdit }
     methods: POST
     
 ich_pregunta_cargarOpciones:
     path:       /pregunta/cargarOpciones
-    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpciones}
+    defaults:   { _controller: ichTestBundle:Pregunta:cargarOpciones }
     methods: POST
     
 ich_pregunta_index:
@@ -73,6 +73,17 @@ ich_pregunta_delete:
     methods: [POST,DELETE]
     
 
+
+# Evaluacion
+ich_evaluacion_newStep1:
+    path:       /evaluacion/new
+    defaults:   { _controller: ichTestBundle:Evaluacion:newStep1 }
+    
+ich_evaluacion_newStep2:
+    path:       /evaluacion/new2
+    defaults:   { _controller: ichTestBundle:Evaluacion:newStep2 }
+    methods: POST
+        
 # Autenticacion
 
 ich_test_homepage:

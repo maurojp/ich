@@ -110,6 +110,8 @@ class PreguntaController extends Controller
 		
 		return new JsonResponse ( $opcionesRespuesta );
 	}
+	
+	
 	public function createAction(Request $request) {
 		if ($request->isXMLHttpRequest ()) {
 			

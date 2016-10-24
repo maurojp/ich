@@ -4,12 +4,14 @@ namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Candidato
  *
  * @ORM\Table(name="candidato")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CandidatoRepository")
+ * @UniqueEntity("nroCandidato")
  */
 class Candidato
 {
@@ -30,7 +32,7 @@ class Candidato
     /**
      * @var int
      *
-     * @ORM\Column(name="nroCandidato", type="integer")
+     * @ORM\Column(name="nroCandidato", type="integer", unique=true)
      */
     private $nroCandidato;
 
