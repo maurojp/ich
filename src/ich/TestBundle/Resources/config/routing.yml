@@ -75,6 +75,7 @@ ich_pregunta_delete:
 
 
 # Evaluacion
+
 ich_evaluacion_newStep1:
     path:       /evaluacion/new
     defaults:   { _controller: ichTestBundle:Evaluacion:newStep1 }
@@ -82,8 +83,16 @@ ich_evaluacion_newStep1:
 ich_evaluacion_newStep2:
     path:       /evaluacion/new2
     defaults:   { _controller: ichTestBundle:Evaluacion:newStep2 }
-    methods: POST
-        
+    methods: [POST,GET]
+    
+ich_evaluacion_newStep3:
+    path:       /evaluacion/new3/{id}
+    defaults:   { _controller: ichTestBundle:Evaluacion:newStep3 }
+
+ich_evaluacion_newStep4:
+    path:       /evaluacion/new4/{id}
+    defaults:   { _controller: ichTestBundle:Evaluacion:newStep4 }
+           
 # Autenticacion
 
 ich_test_homepage:

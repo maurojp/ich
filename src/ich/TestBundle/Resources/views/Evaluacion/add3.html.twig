@@ -1,0 +1,116 @@
+{% extends 'layout.html.twig'%}
+
+{% block body %}
+
+{{ parent() }}
+
+<div class="container">
+	<div class="col-md-12">
+		<div class="page-header margin-none">
+			<h2 class="padding-none">
+				Caracter&#237;sticas del Puesto:
+				{{puesto.nombre }}
+			</h2>
+		</div>
+		<div class="table-responsive">
+
+
+			<br>
+			<h3 id="titulo1" hidden="true" align="center">Listado de Competencias</h3>
+			<br>
+			<table id="table-pagination" data-height="300" data-pagination="true" data-card-view="true"
+				hidden="true">
+				<thead>
+					<tr>
+						<th data-field="nombre" data-align="right" data-sortable="true">Nombre</th>
+						<th data-field="codigo" data-align="right" data-sortable="true">Código</th>
+						<th data-field="descripcion" data-align="right" data-sortable="true">Descripción</th>
+						<th data-field="ponderacion" data-align="right" data-sortable="true">Ponderación</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	<br>
+	<!-- set up the modal to start hidden and fade in and out -->
+	<div id="myModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- dialog body -->
+				<div class="modal-body">
+					<h4>Existen competencias que no pueden ser evaluadas:</h4>
+					<br>
+					{% if competencias|length %}
+					{% for competencia in competencias %}
+					<td><span class="text-danger"><ul>
+								<li>{{ competencia.nombre }}</li>
+							</ul></span></td>
+					{% endfor %}
+					{% endif %}
+				</div>
+				<!-- dialog buttons -->
+				<div class="modal-footer">
+					<a href="{{ path('ich_test_homepage') }}" class="btn btn-primary">Aceptar</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<p>
+		<a href="{{ path('ich_evaluacion_newStep4', { id: puesto.id}) }}"
+			class="btn btn-success siguiente" style="display: none;">Siguiente</a>
+		<a href="{{ path('ich_test_homepage') }}"
+			class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+	</p>
+
+</div>
+<br>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+
+if(!'{{ error }}') {
+
+		$(function() {
+
+			$
+					.ajax({
+						url : '{{ path("ich_evaluacion_newStep3", { id: puesto.id}) }}',
+						cache: false,
+						success : function(data) {
+
+							$('#table-pagination').bootstrapTable({
+								data : data
+							});
+							$('#table-pagination').prop('hidden', false);
+							$('#titulo1').prop('hidden', false);
+							$('.siguiente').removeAttr("style");
+							$('.cancelar').removeAttr("style");
+						}
+					})
+		});
+	} else {
+		$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+			$("#myModal a.btn").on("click", function(e) {
+				console.log("button pressed"); // just as an example...
+				$("#myModal").modal('hide'); // dismiss the dialog
+			});
+		});
+		$("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+			$("#myModal a.btn").off("click");
+		});
+
+		$("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+			$("#myModal").remove();
+		});
+
+		$("#myModal").modal({ // wire up the actual modal functionality and show the dialog
+			"backdrop" : "static",
+			"keyboard" : true,
+			"show" : true
+		// ensure the modal is shown immediately
+		});
+	}
+</script>
+{% endblock %}
