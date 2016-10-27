@@ -6,8 +6,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Validator\Constraints\Date;
+use ich\TestBundle\Entity\Cuestionario;
+use ich\TestBundle\Entity\Evaluacion;
+use ich\TestBundle\Entity\CopiaCompetencia;
+use ich\TestBundle\Entity\CopiaFactor;
+use ich\TestBundle\Entity\CopiaPregunta;
+use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 
 class EvaluacionController extends Controller {
 	public function newStep1Action(Request $request) {
@@ -35,6 +43,7 @@ class EvaluacionController extends Controller {
 		) );
 	}
 	public function newStep2Action(Request $request) {
+		
 		if ($request->getMethod () == 'POST') {
 			$defaultData = array ();
 			
@@ -55,19 +64,37 @@ class EvaluacionController extends Controller {
 					where cu.candidato = c and cu.estado = 0
 					" );
 				
-				$CandidatosSeleccionadosActivos = array ();
+				$candidatosSeleccionadosActivos = array ();
+				$candidatos = array ();
 				// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
 				$candidatosActivos = $query->getResult ();
+				
 				foreach ( $candidatosActivos as $candidato ) {
 					$i = 0;
 					
 					for($i, $total = count ( $data ['candidatos'] ); $i < $total; $i ++) {
 						if ($candidato ['nroCandidato'] == $data ['candidatos'] [$i])
-							$CandidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
+							$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
 					}
+					
+					
 				}
 				
-				if (count ( $CandidatosSeleccionadosActivos ) == 0) {
+				if (count ( $candidatosSeleccionadosActivos ) == 0) {
+					
+					$i = 0;
+					
+					for($i, $total = count ( $data ['candidatos'] ); $i < $total; $i ++) {
+						
+							$candidato = $co->getRepository ( 'ichTestBundle:Candidato' )->find ( $data ['candidatos'] [$i] );
+							$candidatos [] = $candidato;
+						
+					}
+						
+					
+					$this->get('session')->set('candidatos',$candidatos);
+					
+					
 					/*
 					 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
 					 * (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
@@ -85,8 +112,7 @@ class EvaluacionController extends Controller {
 					
 					$pagination = $paginator->paginate ( $puestos, $request->query->getInt ( 'page', 1 ), 6 );
 					
-					$this->get ( 'session' )->set ( 'candidatos', $data );
-					
+			
 					return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array (
 							'pagination' => $pagination 
 					) );
@@ -94,7 +120,7 @@ class EvaluacionController extends Controller {
 
 				else {
 					$datosCandidatosActivos = array ();
-					foreach ( $CandidatosSeleccionadosActivos as $nroCandidato ) {
+					foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
 						
 						$candidato = $co->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
 						
@@ -121,6 +147,7 @@ class EvaluacionController extends Controller {
 		
 		$co = $this->getDoctrine ()->getManager ();
 		
+		// CAMBIAR CUANDO ACTUALICE HABILITADA
 		/*
 		 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
 		 * (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
@@ -142,34 +169,34 @@ class EvaluacionController extends Controller {
 				'pagination' => $pagination 
 		) );
 	}
+	
+	
 	public function newStep3Action(Request $request, $id) {
 		
 		/*
 		 * $this->get('session')->remove('candidatos');
 		 * $candidatos = $this->get('session')->get('candidatos');
 		 */
+		
 		$em = $this->getDoctrine ()->getManager ();
-		
-		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $id );
-		
+
 		if ($request->isXMLHttpRequest ()) {
+			
+			$puesto = $this->get('session')->get('puesto');
 			
 			$query = $em->createQuery ( 'SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
     			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE pc.puesto = :p and pc.competencia = c and c.auditoria is NULL' )->setParameter ( 'p', $puesto );
+    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL' )->setParameter ( 'p', $puesto->getId() );
 			
 			$competencias = $query->getResult ();
 			return new JsonResponse ( $competencias );
 		}
+
 		
-		/*
-		 * $query = $em->createQuery ( 'SELECT c3.id
-		 * FROM ichTestBundle:Competencia c3 JOIN ichTestBundle:Factor f
-		 * WHERE c3 = f.competencia and f.auditoria is NULL
-		 * GROUP BY c3.id
-		 * HAVING count(f.id) >= 2');
-		 */
+		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $id );
 		
+		$this->get('session')->set('puesto',$puesto);
+
 		/* throw $this->createNotFoundException (strval(count($competencias[0]))); */
 		$query = $em->createQuery ( "SELECT distinct c.id, c.nombre
     			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
@@ -202,26 +229,91 @@ class EvaluacionController extends Controller {
 				'puesto' => $puesto 
 		) );
 	}
-	public function newStep4Action($id) {
+	
+	
+	public function newStep4Action(Request $request) {
 		
-		throw $this->createNotFoundException ("Parala acá");
-		/*
-		 * $this->get('session')->remove('candidatos');
-		 * $candidatos = $this->get('session')->get('candidatos');
-		 */
+		
+		if ($request->isXMLHttpRequest ()) {
+				
+			$evaluacion = $this->get('session')->get('evaluacion');
+			
+			$cuestionarios = $evaluacion->getCuestionarios();
+			
+			$array = array ();
+				
+			foreach ( $cuestionarios as $cuestionario ) {
+				
+				if($cuestionario->getCandidato()->getTipoDocumento() == 1)
+				$tipo = "DNI";
+				else if($cuestionario->getCandidato()->getTipoDocumento() == 2)
+					$tipo = "LE";
+					else if($cuestionario->getCandidato()->getTipoDocumento() == 3)
+						$tipo = "LC";
+						else if($cuestionario->getCandidato()->getTipoDocumento() == 4)
+							$tipo = "PP";
+										
+				$array [] = array (
+						'apellido' => $cuestionario->getCandidato()->getApellido(),
+						'nombre' => $cuestionario->getCandidato()->getNombre(),
+						'tipoDocumento' => $tipo,
+						'documento' => $cuestionario->getCandidato()->getNroDocumento(),
+						'clave'  => $cuestionario->getClave()
+				);
+			}
+			
+			return new JsonResponse ( $array );
+		}
+		
+		
+		/* $this->get('session')->remove('candidatos'); */
+		
+		$candidatos = $this->get('session')->get('candidatos');
+		 
 		$em = $this->getDoctrine ()->getManager ();
 		
-		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $id );
+		$puesto = $this->get('session')->get('puesto');
 		
-		$query = $em->createQuery ( 'SELECT c.nombre, pc.ponderacion
-    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE pc.puesto = :p and pc.competencia = c' )->setParameter ( 'p', $puesto );
+		/*string3 = $string1.' '.$string2;*/
+	  	/*date("y-m-d, Y G:i")*/
+		/*throw $this->createNotFoundException ();*/
 		
-		$competencias = $query->getResult ();
+		$evaluacion = new Evaluacion();
 		
-		return $this->render ( 'ichTestBundle:Evaluacion:add3.html.twig', array (
-				'competencias' => json_encode ( $competencias ),
-				'puesto' => $puesto 
-		) );
+		$evaluacion->setPuesto($puesto);
+		
+		$evaluacion->setNombre("Ev_".''."P_".''.$puesto->getNombre().''."_".''.bin2hex(random_bytes(2)));
+		
+		foreach ( $candidatos as $candidato ) {
+			
+			$cuestionario = new Cuestionario();
+			
+			$random = random_bytes(4);
+			
+			$clave = bin2hex($random);
+	
+			$cuestionario->setClave($clave);
+			$cuestionario->setEstado(0);
+			$cuestionario->setCantAccesos(0);
+			$cuestionario->setCantMaxAccesos(2);
+			$cuestionario->setTiempoMax(48.00);
+			$cuestionario->setTiempoMaxActivo(0.30);
+			$cuestionario->setPuntajeTotal(0);
+			$cuestionario->setCandidato($candidato);
+			$cuestionario->setEvaluacion($evaluacion);
+			
+			$evaluacion->addCuestionario($cuestionario);
+			
+		}
+		
+		$this->get('session')->set('evaluacion',$evaluacion);
+		
+		return $this->render ( 'ichTestBundle:Evaluacion:add4.html.twig', array () );
+	}
+	
+	
+	public function newStep5Action() {
+		
+		return new response("jelou") ;
 	}
 }

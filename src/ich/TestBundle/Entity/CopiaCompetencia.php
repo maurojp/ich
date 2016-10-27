@@ -22,6 +22,12 @@ class CopiaCompetencia
     protected $copiaFactores;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Cuestionario", inversedBy="copiaCompetencias")
+     * @ORM\JoinColumn(name="cuestionario_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
+     */
+    protected $cuestionario;
+    
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")

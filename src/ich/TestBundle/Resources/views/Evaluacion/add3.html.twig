@@ -12,7 +12,9 @@
 				{{puesto.nombre }}
 			</h2>
 		</div>
-		<div class="table-responsive">
+		<div class="row2">
+			<div class="col-md-1"></div>
+		<div class="col-md-9">
 
 
 			<br>
@@ -29,10 +31,12 @@
 					</tr>
 				</thead>
 			</table>
-		</div>
-	</div>
-	<br>
-	<!-- set up the modal to start hidden and fade in and out -->
+		<br>
+		<br>
+		<br>
+		<br>
+		
+		<!-- set up the modal to start hidden and fade in and out -->
 	<div id="myModal" class="modal fade">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -56,14 +60,22 @@
 		</div>
 	</div>
 
-	<p>
-		<a href="{{ path('ich_evaluacion_newStep4', { id: puesto.id}) }}"
+<p>
+		<a href="{{ path('ich_evaluacion_newStep4') }}"
 			class="btn btn-success siguiente" style="display: none;">Siguiente</a>
 		<a href="{{ path('ich_test_homepage') }}"
 			class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
 	</p>
+	
+		</div>
+		</div>
+	</div>
+	
+	
 
 </div>
+<br>
+<br>
 <br>
 {% endblock %}
 {% block javascripts %}

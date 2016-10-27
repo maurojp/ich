@@ -271,4 +271,9 @@ class Puesto
     {
         return $this->evaluaciones;
     }
+    
+    public function __toString()
+    {
+    	return (string) $this->getNombre();
+    }
 }

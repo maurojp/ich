@@ -90,8 +90,12 @@ ich_evaluacion_newStep3:
     defaults:   { _controller: ichTestBundle:Evaluacion:newStep3 }
 
 ich_evaluacion_newStep4:
-    path:       /evaluacion/new4/{id}
+    path:       /evaluacion/new4
     defaults:   { _controller: ichTestBundle:Evaluacion:newStep4 }
+    
+ich_evaluacion_newStep5:
+    path:       /evaluacion/new5
+    defaults:   { _controller: ichTestBundle:Evaluacion:newStep5 }
            
 # Autenticacion
 

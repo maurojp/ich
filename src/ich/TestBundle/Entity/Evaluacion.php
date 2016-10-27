@@ -20,7 +20,7 @@ class Evaluacion
 	protected $puesto;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion")
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion",cascade={"persist"})
 	 */
 	protected $cuestionarios;
 	
@@ -82,14 +82,11 @@ class Evaluacion
     }
 
     /**
-     * Set fechaCreacion
-     *
-     * @param \DateTime $fechaCreacion
-     * @return Evaluacion
+     * @ORM\PrePersist
      */
-    public function setFechaCreacion($fechaCreacion)
+    public function setCreatedAtValue()
     {
-        $this->fechaCreacion = $fechaCreacion;
+        $this->fechaCreacion = new \DateTime();
 
         return $this;
     }

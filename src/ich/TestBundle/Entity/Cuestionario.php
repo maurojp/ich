@@ -24,6 +24,10 @@ class Cuestionario
      */
     protected $evaluacion;
     
+    /**
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", mappedBy="cuestionario")
+     */
+    protected $copiaCompetencias;
     
     /**
      * @var int
@@ -44,14 +48,14 @@ class Cuestionario
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="comienzoEn", type="datetime")
+     * @ORM\Column(name="comienzoEn", type="datetime", nullable=true)
      */
     private $comienzoEn;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="estadoEn", type="datetime")
+     * @ORM\Column(name="estadoEn", type="datetime", nullable=true)
      */
     private $estadoEn;
 

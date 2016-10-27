@@ -7,20 +7,22 @@
 
 
 <div class="container">
-	<div class="col-md-16">
+	<div class="col-lg-12">
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Búsqueda de Candidatos</h2>
 		</div>
 		<div class="row">
-			<div class='col-md-4 form-group'>
+			<div class="col-md-1"></div>
+
+			<div class='col-md-3 form-group'>
 				<input type="text" id="apellido" class="form-control"
 					placeholder="Apellido">
 			</div>
-			<div class='col-md-4 form-group'>
+			<div class='col-md-3 form-group'>
 				<input type="text" id="nombre" class="form-control"
 					placeholder="Nombre">
 			</div>
-			<div class='col-md-3 form-group'>
+			<div class='col-md-2 form-group'>
 				<input type="text" id="nroCandidato" class="form-control"
 					placeholder="Nro. de Candidato">
 			</div>
@@ -30,106 +32,122 @@
 		</div>
 
 		<br>
-		<h3 id="titulo1" hidden="true" align="center">Listado de
-			Candidatos</h3>
-		<table id="table-pagination" data-height="300" data-pagination="true"
-			hidden="true">
-			<div class="fixed-table-toolbar">
-				<div class="columns columns-right btn-group pull-right">
-					<button class="btn btn-default refresh" type="button"
-						name="refresh" style="display: none;" title="Refrescar">
-						<i class="glyphicon glyphicon-refresh icon-refresh"></i>
-					</button>
-					<button type="button" class="btn btn-default pull-right agregar"
-						style="display: none;">Agregar</button>
-				</div>
-			</div>
-			<thead>
-				<tr>
-					<th data-field="apellido" data-align="right" data-sortable="true"
-						data-searchable="true">Apellido</th>
-					<th data-field="nombre" data-align="right" data-sortable="true"
-						data-searchable="true">Nombre</th>
-					<th data-field="nroCandidato" data-sortable="true"
-						data-align="right" data-width="20%" data-searchable="true">Nro.
-						de Candidato</th>
-					<th data-field="state" data-checkbox="true"></th>
-				</tr>
-			</thead>
-		</table>
-		<br>
+		<div class="row2">
+			<div class="col-md-1"></div>
+			<div class="col-md-9">
 
-		<h3 id="titulo2" hidden="true" align="center">Listado de
-			Candidatos a Evaluar</h3>
-		<table id="table-pagination2" data-height="200" data-pagination="true"
-			hidden="true">
-			<thead>
-				<button type="button" class="btn btn-default pull-right quitar"
-					style="display: none;">Quitar</button>
-				<tr>
-					<th data-field="apellido" data-align="right" data-sortable="true">Apellido</th>
-					<th data-field="nombre" data-align="right" data-sortable="true">Nombre</th>
-					<th data-field="nroCandidato" data-sortable="true"
-						data-align="right" data-width="20%">Nro. de Candidato</th>
-					<th data-field="state" data-checkbox="true"></th>
-				</tr>
-			</thead>
-		</table>
-
-		<br>
-
-		{{ form_start(form) }}
-		<fieldset>
-			<div class="list-group candidatos">
-
-				<div class="row renglon"></div>
-
-
-			</div>
-
-		</fieldset>
-
-		<!-- set up the modal to start hidden and fade in and out -->
-		<div id="myModal" class="modal fade">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<!-- dialog body -->
-					<div class="modal-body">
-						<h4>Existen candidatos que tienen cuestionarios activos y no
-							pueden ser evaluados:</h4>
-						<br>
-						{% if candidatos|length %}
-						{% for candidato in candidatos %}
-						<td><span class="text-danger"><ul>
-									<li>{{ candidato.apellido }}, {{ candidato.nombre }}</li>
-								</ul></span></td>
-						{% endfor %}
-						{% endif %}
+				<h3 id="titulo1" hidden="true" align="center">Listado de
+					Candidatos</h3>
+				<table id="table-pagination" data-height="300"
+					data-pagination="true" hidden="true">
+					<div class="fixed-table-toolbar">
+						<div class="columns columns-right btn-group pull-right">
+							<button class="btn btn-default refresh" type="button"
+								name="refresh" style="display: none;" title="Refrescar">
+								<i class="glyphicon glyphicon-refresh icon-refresh"></i>
+							</button>
+							<button type="button" class="btn btn-default pull-right agregar"
+								style="display: none;">Agregar</button>
+						</div>
 					</div>
-					<!-- dialog buttons -->
-					<div class="modal-footer">
-						<a href="{{ path('ich_evaluacion_newStep1')}}"
-							class="btn btn-primary">Aceptar</a>
+					<thead>
+						<tr>
+							<th data-field="apellido" data-align="right" data-sortable="true"
+								data-searchable="true">Apellido</th>
+							<th data-field="nombre" data-align="right" data-sortable="true"
+								data-searchable="true">Nombre</th>
+							<th data-field="nroCandidato" data-sortable="true"
+								data-align="right" data-width="20%" data-searchable="true">Nro.
+								de Candidato</th>
+							<th data-field="state" data-checkbox="true"></th>
+						</tr>
+					</thead>
+				</table>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+
+				<h3 id="titulo2" hidden="true" align="center">Listado de
+					Candidatos a Evaluar</h3>
+				<table id="table-pagination2" data-height="300"
+					data-pagination="true" hidden="true">
+					<thead>
+						<button type="button" class="btn btn-default pull-right quitar"
+							style="display: none;">Quitar</button>
+						<tr>
+							<th data-field="apellido" data-align="right" data-sortable="true">Apellido</th>
+							<th data-field="nombre" data-align="right" data-sortable="true">Nombre</th>
+							<th data-field="nroCandidato" data-sortable="true"
+								data-align="right" data-width="20%">Nro. de Candidato</th>
+							<th data-field="state" data-checkbox="true"></th>
+						</tr>
+					</thead>
+				</table>
+
+
+				<br>
+
+				{{ form_start(form) }}
+				<fieldset>
+					<div class="list-group candidatos">
+
+						<div class="row renglon"></div>
+
+
+					</div>
+
+				</fieldset>
+
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="myModal" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4 align="center">Existen candidatos que tienen cuestionarios </h4>
+								  <h4 align="center"> activos y no pueden ser evaluados:</h4>
+								<br>
+								{% if candidatos|length %}
+								{% for candidato in candidatos %}
+								<td><span class="text-danger"><ul>
+											<li>{{ candidato.apellido }}, {{ candidato.nombre }}</li>
+										</ul></span></td>
+								{% endfor %}
+								{% endif %}
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_evaluacion_newStep1')}}"
+									class="btn btn-primary">Aceptar</a>
+							</div>
+						</div>
 					</div>
 				</div>
+
+				<div class="row error"></div>
+
+
+
+				<br> <br> <br>
+				<p>
+					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente', 'style' : 'display:none;' } }) }}
+					<a href="{{ path('ich_test_homepage') }}"
+						class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+				</p>
+				
+				
+				{{ form_widget(form._token) }}
+				{{ form_end(form,{ 'render_rest' : false}) }}
 			</div>
 		</div>
-
-		<div class="row error"></div>
-		<br>
-		<p>
-			{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success siguiente', 'style' : 'display:none;' } }) }}
-			<a href="{{ path('ich_test_homepage') }}"
-				class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
-		</p>
-
-		{{ form_widget(form._token) }}
-		{{ form_end(form,{ 'render_rest' : false}) }}
-
-
 	</div>
-
 </div>
+
+<br>
+<br>
+<br>
 {% endblock %}
 
 
