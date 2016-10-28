@@ -44,6 +44,30 @@ class EvaluacionController extends Controller {
 	}
 	public function newStep2Action(Request $request) {
 		
+		$co = $this->getDoctrine ()->getManager ();
+		
+		if ($request->isXMLHttpRequest ()) {
+
+					
+			/*
+			 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
+			* (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
+			* pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
+			* (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+			*/
+					
+			$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa 
+			FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
+			WHERE e.id = IDENTITY(p.empresa) and p.id IN 
+			(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN 
+			(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+			$query = $co->createQuery ( $dql );
+					
+			$puestos= $query->getResult();
+
+			return new JsonResponse ( $puestos);
+		}
+
 		if ($request->getMethod () == 'POST') {
 			$defaultData = array ();
 			
@@ -93,29 +117,10 @@ class EvaluacionController extends Controller {
 						
 					
 					$this->get('session')->set('candidatos',$candidatos);
+
+
+					return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array () );
 					
-					
-					/*
-					 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
-					 * (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-					 * pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
-					 * (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-					 */
-					
-					$dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN 
-					(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN 
-					(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-					$puestos = $co->createQuery ( $dql );
-					
-					// Paginacion
-					$paginator = $this->get ( 'knp_paginator' );
-					
-					$pagination = $paginator->paginate ( $puestos, $request->query->getInt ( 'page', 1 ), 6 );
-					
-			
-					return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array (
-							'pagination' => $pagination 
-					) );
 				} 
 
 				else {
@@ -145,29 +150,8 @@ class EvaluacionController extends Controller {
 			) );
 		}
 		
-		$co = $this->getDoctrine ()->getManager ();
 		
-		// CAMBIAR CUANDO ACTUALICE HABILITADA
-		/*
-		 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
-		 * (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-		 * pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
-		 * (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-		 */
 		
-		$dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN 
-					(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN 
-					(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-		$puestos = $co->createQuery ( $dql );
-		
-		// Paginacion
-		$paginator = $this->get ( 'knp_paginator' );
-		
-		$pagination = $paginator->paginate ( $puestos, $request->query->getInt ( 'page', 1 ), 6 );
-		
-		return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array (
-				'pagination' => $pagination 
-		) );
 	}
 	
 	
