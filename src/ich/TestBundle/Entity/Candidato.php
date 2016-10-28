@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Candidato
 {
     /**
-     * @ORM\OneToMany(targetEntity="Cuestionario", mappedBy="candidato")
+     * @ORM\OneToMany(targetEntity="Cuestionario", mappedBy="candidato", cascade={"persist"})
      */
     protected $cuestionarios;
     

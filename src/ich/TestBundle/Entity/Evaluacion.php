@@ -59,6 +59,19 @@ class Evaluacion
     }
 
     /**
+     * Set id
+     *
+     * @param int $id
+     * @return Evaluacion
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Set nombre
      *
      * @param string $nombre
@@ -82,11 +95,14 @@ class Evaluacion
     }
 
     /**
-     * @ORM\PrePersist
+     * Set fechaCreacion
+     *
+     * @param \DateTime $fechaCreacion
+     * @return Evaluacion
      */
-    public function setCreatedAtValue()
+    public function setFechaCreacion($fechaCreacion)
     {
-        $this->fechaCreacion = new \DateTime();
+        $this->fechaCreacion = $fechaCreacion; 
 
         return $this;
     }

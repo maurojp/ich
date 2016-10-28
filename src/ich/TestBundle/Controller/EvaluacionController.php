@@ -236,9 +236,7 @@ class EvaluacionController extends Controller {
 		
 		if ($request->isXMLHttpRequest ()) {
 				
-			$evaluacion = $this->get('session')->get('evaluacion');
-			
-			$cuestionarios = $evaluacion->getCuestionarios();
+			$cuestionarios = $this->get('session')->get('cuestionarios');
 			
 			$array = array ();
 				
@@ -281,8 +279,12 @@ class EvaluacionController extends Controller {
 		$evaluacion = new Evaluacion();
 		
 		$evaluacion->setPuesto($puesto);
-		
+
+		$evaluacion->setFechaCreacion(new \DateTime());
+
 		$evaluacion->setNombre("Ev_".''."P_".''.$puesto->getNombre().''."_".''.bin2hex(random_bytes(2)));
+
+		$cuestionarios = array();
 		
 		foreach ( $candidatos as $candidato ) {
 			
@@ -300,20 +302,66 @@ class EvaluacionController extends Controller {
 			$cuestionario->setTiempoMaxActivo(0.30);
 			$cuestionario->setPuntajeTotal(0);
 			$cuestionario->setCandidato($candidato);
-			$cuestionario->setEvaluacion($evaluacion);
 			
-			$evaluacion->addCuestionario($cuestionario);
+			$cuestionarios[] =$cuestionario;
 			
 		}
-		
+		$this->get('session')->set('cuestionarios',$cuestionarios);
 		$this->get('session')->set('evaluacion',$evaluacion);
 		
 		return $this->render ( 'ichTestBundle:Evaluacion:add4.html.twig', array () );
 	}
 	
 	
-	public function newStep5Action() {
+	public function newStep5Action(Request $request) {
 		
-		return new response("jelou") ;
+				
+				$em = $this->getDoctrine ()->getManager ();
+				
+				$evaluacion = $this->get('session')->get('evaluacion');
+				
+				$em->merge ( $evaluacion );
+					
+				$em->flush ();
+
+
+				$cuestionarios = $this->get('session')->get('cuestionarios');
+
+				$puesto = $this->get('session')->get('puesto');
+
+				$query = $em->createQuery ( '
+				SELECT e.id
+    			FROM ichTestBundle:Evaluacion e
+    			WHERE IDENTITY(e.puesto) = :p and e.id > all 
+    			(SELECT e1.id FROM ichTestBundle:Evaluacion e1 
+    			  WHERE e1.id <> e.id)')->setParameter ( 'p', $puesto->getId() );
+			
+			    $evaluaciones = $query->getResult ();
+
+			    $evaluacion->setId($evaluaciones[0] ['id']);
+
+
+				foreach ( $cuestionarios as $cuestionario ) {
+
+				$cuestionario->setEvaluacion($evaluacion);
+
+                $em->merge ( $cuestionario );
+					
+				$em->flush ();
+
+				}
+				
+				$this->get('session')->remove('cuestionarios');
+
+				$this->get('session')->remove('evaluacion');
+
+				$this->get('session')->remove('candidatos');
+				
+				$this->get('session')->remove('puesto');
+				
+				return new JsonResponse ( true );
+			
+			
+		
 	}
 }

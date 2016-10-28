@@ -282,20 +282,32 @@ $(function(){
 
 $('.guardarOp').click(function() {
 	
-	var inputs, index, sum = 0, collectionHolder;
+	var inputs, index, sum = 0, collectionHolder, errorPonderacion;
 
 	inputs = document.querySelectorAll("input[type=number]");
 
 	if (0 < inputs.length)
 
 	{
+    errorPonderacion = false;
+
 		for (index = 0; index < inputs.length; ++index) {
-		sum = parseInt(inputs[index].value, 10) + parseInt(sum, 10);
+		if(parseInt(inputs[index].value, 10) < 0) 
+      errorPonderacion = true;
+    else if(parseInt(inputs[index].value, 10) > 10)
+      errorPonderacion = true;
+
+    sum = parseInt(inputs[index].value, 10) + parseInt(sum, 10);
+
 	}
 
 	collectionHolder = $('div.error');
 	$('div.ponderacionIncorrecta').remove();
-	 
+	
+
+  if(!errorPonderacion)
+  {
+    
 	if (10 != sum)
 	{
 		collectionHolder.append($('<div class="ponderacionIncorrecta"></div>').append('<span class="text-danger"><ul><li>La Ponderación es incorrecta.</li></ul></span>'));
@@ -313,6 +325,17 @@ $('.guardarOp').click(function() {
 		{opt.type = 'submit'; opt.name = 'pregunta[save]'; opt.id = 'pregunta_save';} 
 	}
 
+ }
+ else 
+ {
+
+  collectionHolder.append($('<div class="ponderacionIncorrecta"></div>').append('<span class="text-danger"><ul><li>La Ponderación es incorrecta.</li></ul></span>'));
+
+    var opt= document.getElementById('pregunta_save');
+    if (null != opt)
+    {opt.type = 'button'; opt.name = '#'; opt.id = '#modificar'; }
+  }
+ 
 }});
   
        $(function(){

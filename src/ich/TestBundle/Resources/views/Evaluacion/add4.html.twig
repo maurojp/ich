@@ -20,7 +20,7 @@
 		<h3 id="titulo1" hidden="true" align="center">Listado de
 			Candidatos</h3>
 			<br>
-		<table id="table-pagination" data-height="300" data-pagination="true"
+		<table id="table-pagination" data-height="400" data-pagination="true"
 			hidden="true">
 			<thead>
 				<tr>
@@ -47,8 +47,8 @@
 					</div>
 					<!-- dialog buttons -->
 					<div class="modal-footer">
-					<a href="{{ path('ich_evaluacion_newStep5') }}" class="btn btn-primary si">Si</a>
-						<a href="{{ path('ich_evaluacion_newStep5') }}"
+					<a href="{{ path('ich_test_homepage') }}" class="btn btn-primary si">Si</a>
+						<a href="{{ path('ich_test_homepage') }}"
 							class="btn btn-primary">No</a>
 					</div>
 				</div>
@@ -118,12 +118,18 @@
     	});
 
     $(document).on('click', '.finalizar', function() {
-        $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+    	$
+		.ajax({
+			url : '{{ path("ich_evaluacion_newStep5") }}',
+			cache: false,
+			success : function() {	
+				
+         $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
     	  "backdrop"  : "static",
     	  "keyboard"  : true,
     	  "show"      : true                    // ensure the modal is shown immediately
     	});
-    })
+    }})})
     	
     
 </script>

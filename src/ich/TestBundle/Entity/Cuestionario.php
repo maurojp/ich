@@ -12,20 +12,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Cuestionario
 {
-    /**
+    /** 
      * @ORM\ManyToOne(targetEntity="Candidato", inversedBy="cuestionarios")
      * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
      */
     protected $candidato;
     
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios", cascade={"merge"})
      * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false)
      */
     protected $evaluacion;
     
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", mappedBy="cuestionario")
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", mappedBy="cuestionario", cascade={"persist"})
      */
     protected $copiaCompetencias;
     
