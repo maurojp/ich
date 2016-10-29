@@ -19,7 +19,7 @@ class Cuestionario
     protected $candidato;
     
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
      * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false)
      */
     protected $evaluacion;

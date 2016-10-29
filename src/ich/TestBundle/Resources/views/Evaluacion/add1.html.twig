@@ -7,13 +7,13 @@
 
 
 <div class="container">
-	<div class="col-lg-12">
+	<div class="col-md-12">
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Búsqueda de Candidatos</h2>
 		</div>
 		<div class="row">
-			<div class="col-md-1"></div>
-
+        <div class='col-md-1'>
+        </div>
 			<div class='col-md-3 form-group'>
 				<input type="text" id="apellido" class="form-control"
 					placeholder="Apellido">
@@ -22,7 +22,7 @@
 				<input type="text" id="nombre" class="form-control"
 					placeholder="Nombre">
 			</div>
-			<div class='col-md-2 form-group'>
+			<div class='col-md-3 form-group'>
 				<input type="text" id="nroCandidato" class="form-control"
 					placeholder="Nro. de Candidato">
 			</div>
@@ -30,64 +30,67 @@
 				<button type="button" class="btn btn-info buscar">Buscar</button>
 			</div>
 		</div>
-
+        <br>    
 		<br>
 		<div class="row2">
-			<div class="col-md-1"></div>
-			<div class="col-md-9">
-
-				<h3 id="titulo1" hidden="true" align="center">Listado de
-					Candidatos</h3>
-				<table id="table-pagination" data-height="300"
-					data-pagination="true" hidden="true">
-					<div class="fixed-table-toolbar">
-						<div class="columns columns-right btn-group pull-right">
-							<button class="btn btn-default refresh" type="button"
-								name="refresh" style="display: none;" title="Refrescar">
-								<i class="glyphicon glyphicon-refresh icon-refresh"></i>
-							</button>
-							<button type="button" class="btn btn-default pull-right agregar"
-								style="display: none;">Agregar</button>
-						</div>
-					</div>
-					<thead>
-						<tr>
-							<th data-field="apellido" data-align="right" data-sortable="true"
-								data-searchable="true">Apellido</th>
-							<th data-field="nombre" data-align="right" data-sortable="true"
-								data-searchable="true">Nombre</th>
-							<th data-field="nroCandidato" data-sortable="true"
-								data-align="right" data-width="20%" data-searchable="true">Nro.
-								de Candidato</th>
-							<th data-field="state" data-checkbox="true"></th>
-						</tr>
-					</thead>
-				</table>
-				<br>
-				<br>
-				<br>
-				<br>
-				<br>
-
-				<h3 id="titulo2" hidden="true" align="center">Listado de
-					Candidatos a Evaluar</h3>
-				<table id="table-pagination2" data-height="300"
-					data-pagination="true" hidden="true">
-					<thead>
-						<button type="button" class="btn btn-default pull-right quitar"
-							style="display: none;">Quitar</button>
-						<tr>
-							<th data-field="apellido" data-align="right" data-sortable="true">Apellido</th>
-							<th data-field="nombre" data-align="right" data-sortable="true">Nombre</th>
-							<th data-field="nroCandidato" data-sortable="true"
-								data-align="right" data-width="20%">Nro. de Candidato</th>
-							<th data-field="state" data-checkbox="true"></th>
-						</tr>
-					</thead>
-				</table>
-
-
-				<br>
+			<div class="col-md-6">
+            <h3 id="titulo1" hidden="true" align="center">Listado de
+                    Candidatos</h3>
+                <table id="table-pagination" data-height="399" data-striped="true" class="table table-condensed"
+                    data-pagination="true" hidden="true">
+                    <div class="fixed-table-toolbar">
+                        <div class="columns columns-right btn-group pull-right">
+                            <button class="btn btn-default refresh" type="button"
+                                name="refresh" style="display: none;" title="Refrescar">
+                                <i class="glyphicon glyphicon-refresh icon-refresh"></i>
+                            </button>
+                            <button type="button" class="btn btn-default pull-right agregar"
+                                style="display: none;">Agregar</button>
+                        </div>
+                    </div>
+                    <thead>
+                        <tr>
+                            <th data-field="apellido" data-align="left" data-sortable="true"
+                                data-searchable="true">Apellido</th>
+                            <th data-field="nombre" data-align="left" data-sortable="true"
+                                data-searchable="true">Nombre</th>
+                            <th data-field="nroCandidato" data-sortable="true"
+                                data-align="left" data-width="20%" data-searchable="true">Nro.
+                                de Candidato</th>
+                            <th data-field="state" data-checkbox="true"></th>
+                        </tr>
+                    </thead>
+                </table> 
+                <br>
+                <br>
+                <br>        
+            </div>
+			<div class="col-md-6">
+                <h3 id="titulo2" hidden="true"  align="center">Listado de
+                    Candidatos a Evaluar</h3>
+                <table id="table-pagination2" data-height="399" data-striped="true" class="table table-condensed"
+                    data-pagination="true" hidden="true">
+                 <div class="fixed-table-toolbar">
+                        <div class="columns columns-right btn-group pull-right">
+                        <button type="button" class="btn btn-default pull-right quitar"
+                            style="display: none;">Quitar</button>
+                        </div>
+                        </div>
+                             <thead>
+                        <tr>
+                            <th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
+                            <th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
+                            <th data-field="nroCandidato" data-sortable="true"
+                                data-align="left" data-width="20%">Nro. de Candidato</th>
+                            <th data-field="state" data-checkbox="true"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <br>
+                <br>
+                <br> 
+				</div>
+			
 
 				{{ form_start(form) }}
 				<fieldset>
@@ -100,8 +103,10 @@
 
 				</fieldset>
 
+                </div>
+
 				<!-- set up the modal to start hidden and fade in and out -->
-				<div id="myModal" class="modal fade">
+				<div id="modalCandidatosActivos" class="modal fade">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<!-- dialog body -->
@@ -126,11 +131,26 @@
 					</div>
 				</div>
 
-				<div class="row error"></div>
-
-
-
-				<br> <br> <br>
+                <!-- set up the modal to start hidden and fade in and out -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- dialog body -->
+                <div class="modal-body">
+                    <h4 align="center">Debe seleccionar al menos un Candidato para continuar.</h4>
+                </div>
+                <!-- dialog buttons -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+                </div>
+            </div>
+            </div>
+        </div>
+          
+                 
+                 </div>
+<div class="col-md-12">
+               
 				<p>
 					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente', 'style' : 'display:none;' } }) }}
 					<a href="{{ path('ich_test_homepage') }}"
@@ -140,11 +160,9 @@
 				
 				{{ form_widget(form._token) }}
 				{{ form_end(form,{ 'render_rest' : false}) }}
-			</div>
+			
 		</div>
 	</div>
-</div>
-
 <br>
 <br>
 <br>
@@ -158,6 +176,8 @@
 if(!'{{ candidatosActivos }}')
 {
 var candidatosTotal;
+
+
 
 
    
@@ -256,11 +276,43 @@ var candidatosTotal;
         $seleccionados = $('#table-pagination2').bootstrapTable('getData');
 
         if ($seleccionados.length == 0) {
-        	$('div.sinSeleccion').remove();
-        	$('div.error').append($('<div class="row sinSeleccion"></div>').append(
-                	'<span class="text-danger"><ul><li>Debe seleccionar al menos un Candidato.</li></ul></span>'));
+
+            $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+          "backdrop"  : "static",
+          "keyboard"  : true,
+          "show"      : true                    // ensure the modal is shown immediately
+        });
+        	
         }
     });
+
+
+ $(document).on('click', '.aceptar', function() {
+                
+    $(function() {
+            $("#myModal").modal('hide'); // dismiss the dialog
+        });
+    })
+
+
+       
+ $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+            $("#myModal a.btn").on("click", function(e) {
+                console.log("button pressed"); // just as an example...
+                $("#myModal").modal('hide'); // dismiss the dialog
+            });
+        });
+
+        $("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+            $("#myModal a.btn").off("click");
+        });
+
+        $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+            $("#myModal").remove();
+
+        });
+
+
 
     
     $(document).on('click', '.refresh', function() {
@@ -295,7 +347,6 @@ var candidatosTotal;
 
             if(($('#table-pagination2').bootstrapTable('getData')).length == 0)
             {
-            $('div.sinSeleccion').remove();
             $opt= document.getElementById('#modificar');
     		if (null != $opt)
     		{$opt.type = 'submit'; $opt.name = 'form[send]'; $opt.id = 'form_send';} 
@@ -404,21 +455,21 @@ var candidatosTotal;
     });
     }
     else{
-    	$("#myModal").on("show", function() {    // wire up the OK button to dismiss the modal when shown
-    	    $("#myModal a.btn").on("click", function(e) {
+    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+    	    $("#modalCandidatosActivos a.btn").on("click", function(e) {
     	        console.log("button pressed");   // just as an example...
-    	        $("#myModal").modal('hide');     // dismiss the dialog
+    	        $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
     	    });
     	});
-    	$("#myModal").on("hide", function() {    // remove the event listeners when the dialog is dismissed
-    	    $("#myModal a.btn").off("click");
+    	$("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+    	    $("#modalCandidatosActivos a.btn").off("click");
     	});
 
-    	$("#myModal").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
-    	    $("#myModal").remove();
+    	$("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+    	    $("#modalCandidatosActivos").remove();
     	});
 
-    	$("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+    	$("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
     	  "backdrop"  : "static",
     	  "keyboard"  : true,
     	  "show"      : true                     // ensure the modal is shown immediately

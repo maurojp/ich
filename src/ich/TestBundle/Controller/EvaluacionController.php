@@ -322,7 +322,7 @@ class EvaluacionController extends Controller {
 			
 			    $evaluaciones = $query->getResult ();
 
-			    $evaluacion->setId($evaluaciones[0] ['id']);
+			    $evaluacion = $em->getRepository ( 'ichTestBundle:Evaluacion' )->find ( $evaluaciones[0] ['id'] );
 
 
 				foreach ( $cuestionarios as $cuestionario ) {
@@ -331,9 +331,11 @@ class EvaluacionController extends Controller {
 
                 $em->merge ( $cuestionario );
 					
-				$em->flush ();
+				
 
 				}
+				
+				$em->flush ();
 				
 				$this->get('session')->remove('cuestionarios');
 
