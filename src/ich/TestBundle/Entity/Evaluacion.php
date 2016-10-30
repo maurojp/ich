@@ -58,18 +58,6 @@ class Evaluacion
         return $this->id;
     }
 
-    /**
-     * Set id
-     *
-     * @param int $id
-     * @return Evaluacion
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Set nombre
