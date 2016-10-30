@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="candidato")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CandidatoRepository")
- * @UniqueEntity(fields={"nroCandidato", "nroDocumento"})
+ * @UniqueEntity("nroCandidato")
  */
 class Candidato
 {
@@ -60,7 +60,7 @@ class Candidato
     /**
      * @var int
      *
-     * @ORM\Column(name="nroDocumento", type="integer", unique=true)
+     * @ORM\Column(name="nroDocumento", type="integer")
      */
     private $nroDocumento;
 
