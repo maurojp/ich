@@ -17,7 +17,7 @@
 			<h3 id="titulo1" align="center">Selección de Puesto</h3>
 			<br>
 				<table id="table-pagination" data-height="399" data-striped="true"
-					data-pagination="true" hidden="true" data-single-select="true">
+					data-pagination="true" data-single-select="true">
 					<thead>
 						<tr>
 							<th data-field="idPuesto" data-visible="false">Id</th>
@@ -48,8 +48,8 @@
 		</div>	
 <br> <br> <br>
 				<p>
-					 <a id="sig" href="{{ path('ich_evaluacion_newStep3', { id: 0 }) }}" onclick="" class="btn btn-success siguiente" style="display: none;" >Siguiente</a>
-					<a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+					 <a id="sig" href="{{ path('ich_evaluacion_newStep3', { id: 0 }) }}" onclick="" class="btn btn-success siguiente" >Siguiente</a>
+					<a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar">Cancelar</a>
 				</p>
 
 	</div>
@@ -70,21 +70,29 @@
 var hrefOriginal, primeraVez= true;
 
      $(document).ready(function() {
+    	
+     	$('#table-pagination').bootstrapTable({ data: [],
+        formatLoadingMessage: function () {
+            return 'Cargando datos. Por favor, espere...';
+        }
+                });
+
+     	$('#table-pagination').bootstrapTable('showLoading');
+     	
+
+
         $.ajax({
             url: '{{ path("ich_evaluacion_newStep2") }}',
             cache: false,
             success: function(data) {
 
-                $('#table-pagination').bootstrapTable({
-                    data: data
-                });
-                $('#table-pagination').prop('hidden', false);
-                $('#titulo1').prop('hidden', false);
+                $('#table-pagination').bootstrapTable('load', data);
+
+                $('#table-pagination').bootstrapTable('hideLoading');
+
                 $opt= document.getElementById('sig');
         		if (null != $opt)
         		{$opt.id = '#modificar'; hrefOriginal = $opt.href; $opt.href = '#'; $opt.setAttribute('onclick', 'mostrarAdvertencia();');}
-                $('.siguiente').removeAttr("style");
-                $('.cancelar').removeAttr("style");
             }
         })
     });

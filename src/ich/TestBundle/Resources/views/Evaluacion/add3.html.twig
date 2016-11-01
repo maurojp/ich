@@ -18,10 +18,10 @@
 
 
 			<br>
-			<h3 id="titulo1" hidden="true" align="center">Listado de Competencias</h3>
+			<h3 id="titulo1" align="center">Listado de Competencias</h3>
 			<br>
-			<table id="table-pagination" data-height="300" data-pagination="true" data-card-view="true"
-				hidden="true">
+			<table id="table-pagination" data-height="399" data-pagination="true" data-card-view="true"
+				>
 				<thead>
 					<tr>
 						<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
@@ -60,9 +60,9 @@
 		<br> 
 <p>
 		<a href="{{ path('ich_evaluacion_newStep4') }}"
-			class="btn btn-success siguiente" style="display: none;">Siguiente</a>
+			class="btn btn-success siguiente">Siguiente</a>
 		<a href="{{ path('ich_test_homepage') }}"
-			class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+			class="btn btn-warning cancelar">Cancelar</a>
 	</p>
 	
 		</div>
@@ -80,23 +80,27 @@
 {{ parent() }}
 <script type="text/javascript">
 
+$('#table-pagination').bootstrapTable({ data: [],
+    formatLoadingMessage: function () {
+        return 'Cargando datos. Por favor, espere...';
+    }
+            });
+            
 if(!'{{ error }}') {
 
 		$(function() {
+			
+        $('#table-pagination').bootstrapTable('showLoading');
+			
 
-			$
-					.ajax({
+			$.ajax({
 						url : '{{ path("ich_evaluacion_newStep3", { id: puesto.id}) }}',
 						cache: false,
 						success : function(data) {
 
-							$('#table-pagination').bootstrapTable({
-								data : data
-							});
-							$('#table-pagination').prop('hidden', false);
-							$('#titulo1').prop('hidden', false);
-							$('.siguiente').removeAttr("style");
-							$('.cancelar').removeAttr("style");
+							$('#table-pagination').bootstrapTable('load', data);
+
+                			$('#table-pagination').bootstrapTable('hideLoading');
 						}
 					})
 		});

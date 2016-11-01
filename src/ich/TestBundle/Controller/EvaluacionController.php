@@ -173,6 +173,9 @@ class EvaluacionController extends Controller {
     			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL' )->setParameter ( 'p', $puesto->getId() );
 			
 			$competencias = $query->getResult ();
+
+			$this->get('session')->set('competencias', $competencias);
+
 			return new JsonResponse ( $competencias );
 		}
 
@@ -308,7 +311,6 @@ class EvaluacionController extends Controller {
 					
 				$em->flush ();
 
-
 				$cuestionarios = $this->get('session')->get('cuestionarios');
 
 				$puesto = $this->get('session')->get('puesto');
@@ -330,13 +332,209 @@ class EvaluacionController extends Controller {
 				$cuestionario->setEvaluacion($evaluacion);
 
                 $em->merge ( $cuestionario );
-					
-				
 
 				}
 				
 				$em->flush ();
 				
+				
+				$competencias = $this->get('session')->get('competencias');
+				
+				$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy(array('evaluacion' => $evaluacion));
+				
+				foreach ( $cuestionarios as $cuestionario ) {
+										
+					foreach ( $competencias as $competencia ) {	
+					
+					$copiaCompetencia = new CopiaCompetencia();
+
+					$copiaCompetencia->setCodigo($competencia['codigo']);
+
+					$copiaCompetencia->setDescripcion($competencia['descripcion']);
+
+					$copiaCompetencia->setNombre($competencia['nombre']);
+
+					$copiaCompetencia->setPonderacion($competencia['ponderacion']);
+
+					$copiaCompetencia->setCuestionario($cuestionario);
+					
+					$cuestionario->addCopiaCompetencia($copiaCompetencia);
+
+					}
+					
+					$em->merge ( $cuestionario );
+					
+				}
+				
+				$em->flush ();
+				
+
+				
+				
+				$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy(array('evaluacion' => $evaluacion));
+				
+				foreach ( $cuestionarios as $cuestionario ) {
+				
+					foreach ( $cuestionario->getCopiaCompetencias() as $copiaCompetencia ) {
+							
+						$competencia = $em->getRepository ( 'ichTestBundle:Competencia' )
+						->findOneBy(array('codigo' => $copiaCompetencia->getCodigo()));
+						
+						$factores = $competencia->getFactores();
+
+						foreach ( $factores as $factor ) {
+						
+							//IF FACTOR MIN 2 PREGUNTAS
+							
+						$copiaFactor = new CopiaFactor();
+				
+						$copiaFactor->setCodigo($factor->getCodigo());
+				
+						$copiaFactor->setDescripcion($factor->getDescripcion());
+				
+						$copiaFactor->setNombre($factor->getNombre());
+				
+						$copiaFactor->setCopiaCompetencia($copiaCompetencia);
+							
+						$copiaCompetencia->addCopiaFactore($copiaFactor);
+				
+						}
+						
+						$em->merge ( $copiaCompetencia );
+					}
+						
+				}
+				
+				$em->flush ();
+				
+				
+
+				$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy(array('evaluacion' => $evaluacion));
+				
+				foreach ( $cuestionarios as $cuestionario ) {
+				
+					foreach ( $cuestionario->getCopiaCompetencias() as $copiaCompetencia ) {
+							
+						$competencia = $em->getRepository ( 'ichTestBundle:Competencia' )
+						->findOneBy(array('codigo' => $copiaCompetencia->getCodigo()));
+				
+						$copiaFactores = $copiaCompetencia->getCopiaFactores();
+						$factores = $competencia->getFactores();
+						$factorActual;
+						
+						foreach ( $copiaFactores as $copiaFactor ) {
+							
+							foreach ( $factores as $factor )
+							{
+								if ($factor->getCodigo() == $copiaFactor->getCodigo())
+								{
+									$factorActual = $factor;
+									break;
+								}
+							}
+							 
+							$preguntas = $factorActual->getPreguntas();
+							
+							foreach ( $preguntas as $pregunta ) {
+								
+								$copiaPregunta = new CopiaPregunta();
+				
+								$copiaPregunta->setCodigo($pregunta->getCodigo());
+								
+								$copiaPregunta->setPregunta($pregunta->getPregunta());
+				
+								$copiaPregunta->setDescripcion($pregunta->getDescripcion());
+				
+								$copiaPregunta->setCopiaFactor($copiaFactor);
+								
+								$copiaFactor->addCopiaPregunta($copiaPregunta);
+							}
+							
+							$em->merge ( $copiaFactor );
+						}
+					}
+				}
+				
+				$em->flush ();
+				
+				
+				
+				$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy(array('evaluacion' => $evaluacion));
+				
+				foreach ( $cuestionarios as $cuestionario ) {
+				
+					foreach ( $cuestionario->getCopiaCompetencias() as $copiaCompetencia ) {
+							
+						$competencia = $em->getRepository ( 'ichTestBundle:Competencia' )
+						->findOneBy(array('codigo' => $copiaCompetencia->getCodigo()));
+				
+						$copiaFactores = $copiaCompetencia->getCopiaFactores();
+						$factores = $competencia->getFactores();
+						$factorActual;
+						
+						foreach ( $copiaFactores as $copiaFactor ) {
+				
+							foreach ( $factores as $factor )
+							{
+								if ($factor->getCodigo() == $copiaFactor->getCodigo())
+								{
+									$factorActual = $factor;
+									break;
+								}
+							}
+							
+							$copiaPreguntas = $copiaFactor->getCopiaPreguntas();
+							$preguntas = $factorActual->getPreguntas();
+							$preguntaActual;
+							
+							foreach ( $copiaPreguntas as $copiaPregunta ) {
+								
+								foreach ( $preguntas as $pregunta )
+								{
+									if ($pregunta->getCodigo() == $copiaPregunta->getCodigo())
+									{
+										$preguntaActual = $pregunta;
+										break;
+									}
+								}
+								
+								$preguntaOpcionesRespuesta = $preguntaActual->getOpcionesRespuesta();
+								
+								
+								foreach ( $preguntaOpcionesRespuesta as $preguntaOpcionRespuesta ) {
+									
+								$opcionRespuesta = $preguntaOpcionRespuesta->getOpcionRespuesta();
+								
+								$copiaOpcionRespuesta = new CopiaOpcionRespuesta();
+				
+								$copiaOpcionRespuesta->setDescripcion($opcionRespuesta->getDescripcion());
+								
+								$copiaOpcionRespuesta->setOrdenEvaluacion($opcionRespuesta->getOrdenEvaluacion());
+				
+								$copiaOpcionRespuesta->setPonderacion($preguntaOpcionRespuesta->getPonderacion());
+								
+								$copiaOpcionRespuesta->setCopiaPregunta($copiaPregunta);
+				
+								$copiaPregunta->addCopiaOpcionesRespuestum($copiaOpcionRespuesta);
+									
+								}
+								
+								$em->merge ( $copiaPregunta );
+							}
+						}
+					}
+				}
+				
+				$em->flush ();
+				
+				
+				$date = date_format(new \datetime(), 'Y-m-d-H-i');
+
+				$nombre_xls = $date.''."-".''.$puesto->getNombre();
+		
+		
+				$this->get('session')->remove('competencias');
+
 				$this->get('session')->remove('cuestionarios');
 
 				$this->get('session')->remove('evaluacion');
@@ -345,7 +543,7 @@ class EvaluacionController extends Controller {
 				
 				$this->get('session')->remove('puesto');
 				
-				return new JsonResponse ( true );
+				return new JsonResponse ( $nombre_xls );
 			
 			
 		

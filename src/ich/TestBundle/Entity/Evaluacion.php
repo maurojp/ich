@@ -20,7 +20,7 @@ class Evaluacion
 	protected $puesto;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion",cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\Cuestionario", mappedBy="evaluacion",cascade={"persist", "remove"})
 	 */
 	protected $cuestionarios;
 	

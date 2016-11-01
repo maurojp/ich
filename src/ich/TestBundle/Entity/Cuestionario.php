@@ -20,12 +20,12 @@ class Cuestionario
     
     /**
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
-     * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $evaluacion;
     
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", mappedBy="cuestionario", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", mappedBy="cuestionario", cascade={"persist", "remove"})
      */
     protected $copiaCompetencias;
     
@@ -363,5 +363,39 @@ class Cuestionario
     public function getEvaluacion()
     {
         return $this->evaluacion;
+    }
+    
+    
+    /**
+     * Add copiaCompetencias
+     *
+     * @param \ich\TestBundle\Entity\CopiaCompetencia $copiaCompetencias
+     * @return CopiaCompetencia
+     */
+    public function addCopiaCompetencia(\ich\TestBundle\Entity\CopiaCompetencia $copiaCompetencias)
+    {
+    	$this->copiaCompetencias[] = $copiaCompetencias;
+    
+    	return $this;
+    }
+    
+    /**
+     * Remove copiaCompetencias
+     *
+     * @param \ich\TestBundle\Entity\CopiaCompetencia $copiaCompetencias
+     */
+    public function removeCopiaCompetencia(\ich\TestBundle\Entity\CopiaCompetencia $copiaCompetencias)
+    {
+    	$this->copiaCompetencias->removeElement($copiaCompetencias);
+    }
+    
+    /**
+     * Get copiaCompetencias
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCopiaCompetencias()
+    {
+    	return $this->copiaCompetencias;
     }
 }

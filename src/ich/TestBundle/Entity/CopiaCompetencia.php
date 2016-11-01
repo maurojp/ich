@@ -4,20 +4,18 @@ namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * CopiaCompetencia
  *
  * @ORM\Table(name="copia_competencia")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CompetenciaRepository")
- * @UniqueEntity("codigo")
  */
 class CopiaCompetencia
 {
 		
     /**
-     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaFactor", mappedBy="copiaCompetencia")
+     * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaFactor", mappedBy="copiaCompetencia", cascade={"persist", "remove"})
      */
     protected $copiaFactores;
 
@@ -39,7 +37,7 @@ class CopiaCompetencia
     /**
      * @var string
      * @Assert\NotBlank()
-     * @ORM\Column(name="codigo", type="string", length=10, unique=true)
+     * @ORM\Column(name="codigo", type="string", length=10)
      */
     private $codigo;
 
@@ -111,6 +109,31 @@ class CopiaCompetencia
     {
         return $this->codigo;
     }
+
+
+   /**
+     * Set cuestionario
+     *
+     * @param \ich\TestBundle\Entity\Cuestionario $cuestionario
+     * @return CopiaCompetencia
+     */
+    public function setCuestionario(\ich\TestBundle\Entity\Cuestionario $cuestionario)
+    {
+        $this->cuestionario = $cuestionario;
+
+        return $this;
+    }
+
+    /**
+     * Get cuestionario
+     *
+     * @return \ich\TestBundle\Entity\Cuestionario 
+     */
+    public function getCuestionario()
+    {
+        return $this->cuestionario;
+    }
+
 
     /**
      * Set nombre

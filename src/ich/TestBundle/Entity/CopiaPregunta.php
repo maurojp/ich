@@ -4,25 +4,23 @@ namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * CopiaPregunta
  *
  * @ORM\Table(name="copia_pregunta")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CopiaPreguntaRepository")
- * @UniqueEntity("codigo")
  */
 class CopiaPregunta
 {
 	/**
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\CopiaFactor", inversedBy="copiaPreguntas")
-	 * @ORM\JoinColumn(name="copiaFactor_id",referencedColumnName="id", nullable=false)
+	 * @ORM\JoinColumn(name="copiaFactor_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $copiaFactor;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaOpcionRespuesta", mappedBy="copiaPregunta")
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaOpcionRespuesta", mappedBy="copiaPregunta", cascade={"persist", "remove"})
 	 */
 	protected $copiaOpcionesRespuesta;
 		
@@ -38,16 +36,9 @@ class CopiaPregunta
     /**
      * @var string
      * @Assert\NotBlank()
-     * @ORM\Column(name="codigo", type="string", length=10, unique=true)
+     * @ORM\Column(name="codigo", type="string", length=10)
      */
     private $codigo;
-
-    /**
-     * @var string
-     * @Assert\NotBlank()
-     * @ORM\Column(name="nombre", type="string", length=30)
-     */
-    private $nombre;
 
     /**
      * @var string
@@ -106,29 +97,7 @@ class CopiaPregunta
     {
         return $this->codigo;
     }
-
-    /**
-     * Set nombre
-     *
-     * @param string $nombre
-     * @return CopiaPregunta
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    /**
-     * Get nombre
-     *
-     * @return string 
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
+    
 
     /**
      * Set descripcion

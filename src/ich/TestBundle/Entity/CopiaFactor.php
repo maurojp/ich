@@ -4,27 +4,25 @@ namespace ich\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * CopiaFactor
  *
  * @ORM\Table(name="copia_factor")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\CopiaFactorRepository")
- * @UniqueEntity("codigo")
  */
 class CopiaFactor
 {
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", inversedBy="copiaFactores")
-	 * @ORM\JoinColumn(name="copiaCompetencia_id",referencedColumnName="id", nullable=false)
+	 * @ORM\JoinColumn(name="copiaCompetencia_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $copiaCompetencia;
 	
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaPregunta", mappedBy="copiaFactor")
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaPregunta", mappedBy="copiaFactor", cascade={"persist", "remove"})
 	 */
 	protected $copiaPreguntas;
 	
@@ -41,7 +39,7 @@ class CopiaFactor
     /**
      * @var string
      * @Assert\NotBlank()
-     * @ORM\Column(name="codigo", type="string", length=10, unique=true)
+     * @ORM\Column(name="codigo", type="string", length=10)
      */
     private $codigo;
 
@@ -54,8 +52,7 @@ class CopiaFactor
 
     /**
      * @var int
-     * @Assert\NotBlank()
-     * @ORM\Column(name="nroOrden", type="integer")
+     * @ORM\Column(name="nroOrden", type="integer", nullable=true)
      */
     private $nroOrden;
 

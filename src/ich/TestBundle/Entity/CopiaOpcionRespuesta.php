@@ -15,7 +15,7 @@ class CopiaOpcionRespuesta
 {
 	/**
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\CopiaPregunta", inversedBy="copiaOpcionesRespuesta")
-	 * @ORM\JoinColumn(name="copiaPregunta_id",referencedColumnName="id", nullable=false)
+	 * @ORM\JoinColumn(name="copiaPregunta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $copiaPregunta;
 	
@@ -39,7 +39,7 @@ class CopiaOpcionRespuesta
     /**
      * @var bool
      *
-     * @ORM\Column(name="seleccionada", type="boolean")
+     * @ORM\Column(name="seleccionada", type="boolean", nullable=true)
      */
     private $seleccionada;
     

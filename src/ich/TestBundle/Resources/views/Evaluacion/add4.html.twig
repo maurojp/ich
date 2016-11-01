@@ -17,11 +17,10 @@
 		<div class="col-md-9">
 	
 		
-		<h3 id="titulo1" hidden="true" align="center">Listado de
+		<h3 id="titulo1" align="center">Listado de
 			Candidatos</h3>
 			<br>
-		<table id="table-pagination" data-height="400" data-pagination="true"
-			hidden="true">
+		<table id="table-pagination" data-height="400" data-pagination="true">
 			<thead>
 				<tr>
 					<th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
@@ -57,9 +56,9 @@
 		<br>
 		<br>
 		<p>
-		<button type="button" class="btn btn-success finalizar" style="display: none;">Finalizar</button>
+		<button type="button" class="btn btn-success finalizar">Finalizar</button>
 		<a href="{{ path('ich_test_homepage') }}"
-			class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+			class="btn btn-warning cancelar">Cancelar</a>
 	</p>
 	</div>
 	</div>
@@ -78,27 +77,34 @@
 <script src=" {{ asset('assets/vendor/tableExport/tableExport.min.js') }} "></script>
 <script type="text/javascript">
 
+var file_name;
 
     $(document).ready(function() {
+
+    	$('#table-pagination').bootstrapTable({ data: [],
+        formatLoadingMessage: function () {
+            return 'Cargando datos. Por favor, espere...';
+        }
+                });
+
+		$('#table-pagination').bootstrapTable('showLoading');
+
         $.ajax({
             url: '{{ path("ich_evaluacion_newStep4") }}',
             cache: false,
             success: function(data) {
+							
+				$('#table-pagination').bootstrapTable('load', data);
 
-                $('#table-pagination').bootstrapTable({
-                    data: data
-                });
+                $('#table-pagination').bootstrapTable('hideLoading');
                 
-                $('#table-pagination').prop('hidden', false);
-                $('#titulo1').prop('hidden', false);
-                $('.finalizar').removeAttr("style");
-                $('.cancelar').removeAttr("style");
+                
             }
         })
     });
 
     $('.si').click( function() {   
-    $('#table-pagination').tableExport({type:'excel'});
+    $('#table-pagination').tableExport({type:'excel', fileName: file_name});
     })
     
     $("#myModal").on("show", function() {    // wire up the OK button to dismiss the modal when shown
@@ -121,8 +127,10 @@
 		.ajax({
 			url : '{{ path("ich_evaluacion_newStep5") }}',
 			cache: false,
-			success : function() {	
-				
+			success : function(nombre_xls) {	
+			
+			file_name = nombre_xls;
+
          $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
     	  "backdrop"  : "static",
     	  "keyboard"  : true,

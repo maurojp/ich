@@ -34,18 +34,18 @@
 		<br>
 		<div class="row2">
 			<div class="col-md-6">
-            <h3 id="titulo1" hidden="true" align="center">Listado de
+            <h3 id="titulo1" align="center">Listado de
                     Candidatos</h3>
                 <table id="table-pagination" data-height="399" data-striped="true" class="table table-condensed"
-                    data-pagination="true" hidden="true">
+                    data-pagination="true">
                     <div class="fixed-table-toolbar">
                         <div class="columns columns-right btn-group pull-right">
                             <button class="btn btn-default refresh" type="button"
-                                name="refresh" style="display: none;" title="Refrescar">
+                                name="refresh" title="Refrescar">
                                 <i class="glyphicon glyphicon-refresh icon-refresh"></i>
                             </button>
                             <button type="button" class="btn btn-default pull-right agregar"
-                                style="display: none;">Agregar</button>
+                                ">Agregar</button>
                         </div>
                     </div>
                     <thead>
@@ -55,8 +55,7 @@
                             <th data-field="nombre" data-align="left" data-sortable="true"
                                 data-searchable="true">Nombre</th>
                             <th data-field="nroCandidato" data-sortable="true"
-                                data-align="left" data-width="20%" data-searchable="true">Nro.
-                                de Candidato</th>
+                                data-align="left" data-width="20%" data-searchable="true">Nro. Candidato</th>
                             <th data-field="state" data-checkbox="true"></th>
                         </tr>
                     </thead>
@@ -66,14 +65,14 @@
                 <br>        
             </div>
 			<div class="col-md-6">
-                <h3 id="titulo2" hidden="true"  align="center">Listado de
+                <h3 id="titulo2" align="center">Listado de
                     Candidatos a Evaluar</h3>
                 <table id="table-pagination2" data-height="399" data-striped="true" class="table table-condensed"
-                    data-pagination="true" hidden="true">
+                    data-pagination="true">
                  <div class="fixed-table-toolbar">
                         <div class="columns columns-right btn-group pull-right">
                         <button type="button" class="btn btn-default pull-right quitar"
-                            style="display: none;">Quitar</button>
+                            ">Quitar</button>
                         </div>
                         </div>
                              <thead>
@@ -81,7 +80,7 @@
                             <th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
                             <th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
                             <th data-field="nroCandidato" data-sortable="true"
-                                data-align="left" data-width="20%">Nro. de Candidato</th>
+                                data-align="left" data-width="20%">Nro. Candidato</th>
                             <th data-field="state" data-checkbox="true"></th>
                         </tr>
                     </thead>
@@ -152,9 +151,9 @@
 <div class="col-md-12">
                
 				<p>
-					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente', 'style' : 'display:none;' } }) }}
+					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
 					<a href="{{ path('ich_test_homepage') }}"
-						class="btn btn-warning cancelar" style="display: none;">Cancelar</a>
+						class="btn btn-warning cancelar">Cancelar</a>
 				</p>
 				
 				
@@ -183,30 +182,33 @@ var candidatosTotal;
    
         
     $(document).ready(function() {
+        
+
+          $('#table-pagination').bootstrapTable({
+                    data: [],
+        formatLoadingMessage: function () {
+            return 'Cargando datos. Por favor, espere...';
+        }
+                });
+
+        $('#table-pagination2').bootstrapTable({data: []});
+
+        $('#table-pagination').bootstrapTable('showLoading');
+
         $.ajax({
             url: '{{ path("ich_evaluacion_newStep1") }}',
             cache: false,
             success: function(data) {
 
-                $('#table-pagination').bootstrapTable({
-                    data: data
-                });
+                $('#table-pagination').bootstrapTable('load', data);
+
+                $('#table-pagination').bootstrapTable('hideLoading');
+
                 candidatosTotal = data;
-                $('#table-pagination').prop('hidden', false);
-                $('#titulo1').prop('hidden', false);
-                $('.agregar').removeAttr("style");
-                $('.refresh').removeAttr("style");
-                $('#table-pagination2').bootstrapTable({
-                    data: []
-                });
-                $('#table-pagination2').prop('hidden', false);
-                $('#titulo2').prop('hidden', false);
-                $('.quitar').removeAttr("style");
-                $('.siguiente').removeAttr("style");
+
                 $opt= document.getElementById('form_send');
         		if (null != $opt)
         		{$opt.type = 'button'; $opt.name = '#'; $opt.id = '#modificar'; }
-                $('.cancelar').removeAttr("style");
             }
         })
     });
