@@ -30,6 +30,8 @@
 				<button type="button" class="btn btn-info buscar">Buscar</button>
 			</div>
 		</div>
+		<div class="row1">
+		</div>
         <br>    
 		<br>
 		<div class="row2">
@@ -333,7 +335,7 @@ var candidatosTotal;
         }
     });
 
-    $(document).on('click', '.agregar', function() {
+    $(document).on('click', '.agregar', function filtrarDatos() {
         $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
         if ($seleccionados.length != 0) { 
             $nrosCandidato = $.map($seleccionados, function(row) {
@@ -404,7 +406,7 @@ var candidatosTotal;
         $('div.error').remove();
         if ($apellido.length == 0 && $nombre.length == 0 && $nroCandidato.length == 0) {
 
-            $('div.row').append($('<div class="error"></div>').append(
+            $('div.row1').append($('<div class="error"></div>').append(
                 '<span class="text-danger"><ul><li>Debe completar un campo de búsqueda.</li></ul></span>'));
         } else {
             if ($apellido.length > 0 && $nombre.length == 0 && $nroCandidato.length == 0) {

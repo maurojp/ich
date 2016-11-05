@@ -251,8 +251,6 @@ class EvaluacionController extends Controller {
 		}
 		
 		
-		/* $this->get('session')->remove('candidatos'); */
-		
 		$candidatos = $this->get('session')->get('candidatos');
 		 
 		$em = $this->getDoctrine ()->getManager ();
@@ -305,13 +303,39 @@ class EvaluacionController extends Controller {
 				
 				$em = $this->getDoctrine ()->getManager ();
 				
+				$cuestionarios = $this->get('session')->get('cuestionarios');
+				
+				$query = $em->createQuery ( "SELECT c.nroCandidato
+					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
+					where cu.candidato = c and cu.estado = 0
+					" );
+				
+				$candidatosSeleccionadosActivos = array ();
+				$candidatos = array ();
+				// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
+				$candidatosActivos = $query->getResult ();
+				
+				foreach ( $cuestionarios as $cuestionario ) {
+					
+					foreach ( $candidatosActivos as $candidato ) {
+						if ($candidato ['nroCandidato'] == $cuestionario->getCandidato()->getNroCandidato())
+							$candidatosSeleccionadosActivos [] = array (
+								'apellido' => $cuestionario->getCandidato()->getApellido (),
+								'nombre' => $cuestionario->getCandidato()->getNombre () 
+						);
+						
+					}
+					
+				}
+				
+				if (count($candidatosSeleccionadosActivos) > 0)
+				return new JsonResponse ( $candidatosSeleccionadosActivos );
+				
 				$evaluacion = $this->get('session')->get('evaluacion');
 				
 				$em->merge ( $evaluacion );
 					
 				$em->flush ();
-
-				$cuestionarios = $this->get('session')->get('cuestionarios');
 
 				$puesto = $this->get('session')->get('puesto');
 
@@ -362,7 +386,7 @@ class EvaluacionController extends Controller {
 
 					}
 					
-					$em->merge ( $cuestionario );
+					$em->persist ( $cuestionario );
 					
 				}
 				
@@ -384,8 +408,8 @@ class EvaluacionController extends Controller {
 
 						foreach ( $factores as $factor ) {
 						
-							//IF FACTOR MIN 2 PREGUNTAS
-							
+							if (count ( $factor->getPreguntas() ) >= 2){	
+								
 						$copiaFactor = new CopiaFactor();
 				
 						$copiaFactor->setCodigo($factor->getCodigo());
@@ -398,9 +422,10 @@ class EvaluacionController extends Controller {
 							
 						$copiaCompetencia->addCopiaFactore($copiaFactor);
 				
+							}
 						}
 						
-						$em->merge ( $copiaCompetencia );
+						$em->persist ( $copiaCompetencia );
 					}
 						
 				}
@@ -435,22 +460,28 @@ class EvaluacionController extends Controller {
 							 
 							$preguntas = $factorActual->getPreguntas();
 							
-							foreach ( $preguntas as $pregunta ) {
-								
+							$posiciones = range(0,count ( $preguntas )-1);
+							
+							shuffle($posiciones);
+							
+							$posicionesRandom = array_slice($posiciones, 0, 2);
+					
+						for($i=0; $i < 2; $i++) {
+
 								$copiaPregunta = new CopiaPregunta();
 				
-								$copiaPregunta->setCodigo($pregunta->getCodigo());
+								$copiaPregunta->setCodigo($preguntas[$posicionesRandom[$i]]->getCodigo());
 								
-								$copiaPregunta->setPregunta($pregunta->getPregunta());
+								$copiaPregunta->setPregunta($preguntas[$posicionesRandom[$i]]->getPregunta());
 				
-								$copiaPregunta->setDescripcion($pregunta->getDescripcion());
+								$copiaPregunta->setDescripcion($preguntas[$posicionesRandom[$i]]->getDescripcion());
 				
 								$copiaPregunta->setCopiaFactor($copiaFactor);
 								
 								$copiaFactor->addCopiaPregunta($copiaPregunta);
 							}
 							
-							$em->merge ( $copiaFactor );
+							$em->persist ( $copiaFactor );
 						}
 					}
 				}
@@ -519,7 +550,7 @@ class EvaluacionController extends Controller {
 									
 								}
 								
-								$em->merge ( $copiaPregunta );
+								$em->persist ( $copiaPregunta );
 							}
 						}
 					}

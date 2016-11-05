@@ -33,7 +33,26 @@
 		</table>
 		<br>
 		
-		
+		<!-- set up the modal to start hidden and fade in and out -->
+				<div id="modalCandidatosActivos" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4 align="center">Existen candidatos que tienen cuestionarios </h4>
+								  <h4 align="center"> activos y no pueden ser evaluados:</h4>
+								<br>
+								<div class="row candidatosActivos"></div>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_evaluacion_newStep1')}}"
+									class="btn btn-primary">Aceptar</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				
 		<!-- set up the modal to start hidden and fade in and out -->
 		<div id="myModal" class="modal fade">
 			<div class="modal-dialog">
@@ -127,15 +146,45 @@ var file_name;
 		.ajax({
 			url : '{{ path("ich_evaluacion_newStep5") }}',
 			cache: false,
-			success : function(nombre_xls) {	
-			
-			file_name = nombre_xls;
+			success : function(data) {	
 
-         $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
-    	  "backdrop"  : "static",
-    	  "keyboard"  : true,
-    	  "show"      : true                    // ensure the modal is shown immediately
-    	});
+				if(typeof data == 'string')
+				{	
+					file_name = data;
+
+		        	$("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+		    	  	"backdrop"  : "static",
+		    	  	"keyboard"  : true,
+		    	  	"show"      : true                    // ensure the modal is shown immediately
+		    		});
+				}	
+				else{
+					for($i=0, $total = data.length; $i < $total; $i++) {
+					$('.candidatosActivos').append(
+	                '<span class="text-danger"><ul><li>'+data[$i].apellido+', '+data[$i].nombre+'</li></ul></span>');
+					}
+					
+			    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+			    	    $("#modalCandidatosActivos a.btn").on("click", function(e) {
+			    	        console.log("button pressed");   // just as an example...
+			    	        $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
+			    	    });
+			    	});
+			    	$("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+			    	    $("#modalCandidatosActivos a.btn").off("click");
+			    	});
+
+			    	$("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+			    	    $("#modalCandidatosActivos").remove();
+			    	});
+
+			    	$("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
+			    	  "backdrop"  : "static",
+			    	  "keyboard"  : true,
+			    	  "show"      : true                     // ensure the modal is shown immediately
+			    	});
+			    	}
+			
     }})})
     	
     
