@@ -220,6 +220,7 @@ $(function(){
    };
 	
    $.ajax({
+   	   type: 'post',
        url: '{{ path("ich_pregunta_cargarOpciones") }}',
        data: data,
       success: function(data) {
