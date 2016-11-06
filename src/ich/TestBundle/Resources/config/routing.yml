@@ -96,6 +96,10 @@ ich_evaluacion_newStep4:
 ich_evaluacion_newStep5:
     path:       /evaluacion/new5
     defaults:   { _controller: ichTestBundle:Evaluacion:newStep5 }
+    
+ich_evaluacion_buscarCandidatosActivos:
+    path:       /evaluacion/buscarCandidatosActivos
+    defaults:   { _controller: ichTestBundle:Evaluacion:buscarCandidatosActivos }
            
 # Autenticacion
 

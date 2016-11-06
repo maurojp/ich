@@ -53,8 +53,26 @@
 					</div>
 				</div>
 				
+				
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="modalErrorModelo" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+							<div class="mensaje"></div>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_evaluacion_newStep1')}}"
+									class="btn btn-primary">Aceptar</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				
 		<!-- set up the modal to start hidden and fade in and out -->
-		<div id="myModal" class="modal fade">
+		<div id="modalExito" class="modal fade">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<!-- dialog body -->
@@ -118,7 +136,20 @@ var file_name;
                 $('#table-pagination').bootstrapTable('hideLoading');
                 
                 
-            }
+            },
+            error: function(data) {
+            	if(typeof data.responseJSON == 'string')
+				{	
+					$('div.errorModelo').remove();
+					$('.mensaje').append($('<div class="errorModelo"></div>').append(
+			                '<h4 align="center">'+ data.responseJSON +'</h4>'));
+
+		        	$("#modalErrorModelo").modal({                    // wire up the actual modal functionality and show the dialog
+		    	  	"backdrop"  : "static",
+		    	  	"keyboard"  : true,
+		    	  	"show"      : true                    // ensure the modal is shown immediately
+		    		});
+				}}
         })
     });
 
@@ -126,42 +157,79 @@ var file_name;
     $('#table-pagination').tableExport({type:'excel', fileName: file_name});
     })
     
-    $("#myModal").on("show", function() {    // wire up the OK button to dismiss the modal when shown
-    	    $("#myModal a.btn").on("click", function(e) {
+    $("#modalExito").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+    	    $("#modalExito a.btn").on("click", function(e) {
     	        console.log("button pressed");   // just as an example...
-    	        $("#myModal").modal('hide');     // dismiss the dialog
+    	        $("#modalExito").modal('hide');     // dismiss the dialog
     	    });
     	});
     	
-    	$("#myModal").on("hide", function() {    // remove the event listeners when the dialog is dismissed
-    	    $("#myModal a.btn").off("click");
+    	$("#modalExito").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+    	    $("#modalExito a.btn").off("click");
     	});
 
-    	$("#myModal").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
-    	    $("#myModal").remove();
+    	$("#modalExito").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+    	    $("#modalExito").remove();
     	});
 
+
+    	$("#modalErrorModelo").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+    	    $("#modalErrorModelo a.btn").on("click", function(e) {
+    	        console.log("button pressed");   // just as an example...
+    	        $("#modalErrorModelo").modal('hide');     // dismiss the dialog
+    	    });
+    	});
+    	$("#modalErrorModelo").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+    	    $("#modalErrorModelo a.btn").off("click");
+    	});
+
+    	$("#modalErrorModelo").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+    	    $("#modalErrorModelos").remove();
+    	});
+
+
+
+    	
     $(document).on('click', '.finalizar', function() {
     	$
 		.ajax({
 			url : '{{ path("ich_evaluacion_newStep5") }}',
 			cache: false,
-			success : function(data) {	
+			success : function(result) {	
+	
+					file_name = result;
 
-				if(typeof data == 'string')
+		        	$("#modalExito").modal({                    // wire up the actual modal functionality and show the dialog
+		    	  	"backdrop"  : "static",
+		    	  	"keyboard"  : true,
+		    	  	"show"      : true                    // ensure the modal is shown immediately
+		    		});
+			
+    				},
+			
+			error: function(result) {	
+				if(typeof result.responseJSON == 'string')
 				{	
-					file_name = data;
+					$('div.errorModelo').remove();
+					$('.mensaje').append($('<div class="errorModelo"></div>').append(
+			                '<h4 align="center">'+ result.responseJSON +'</h4>'));
 
-		        	$("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+		        	$("#modalErrorModelo").modal({                    // wire up the actual modal functionality and show the dialog
 		    	  	"backdrop"  : "static",
 		    	  	"keyboard"  : true,
 		    	  	"show"      : true                    // ensure the modal is shown immediately
 		    		});
 				}	
-				else{
-					for($i=0, $total = data.length; $i < $total; $i++) {
-					$('.candidatosActivos').append(
-	                '<span class="text-danger"><ul><li>'+data[$i].apellido+', '+data[$i].nombre+'</li></ul></span>');
+				else if(typeof result.responseJSON == 'object'){
+
+					
+					$('div.errorCandidatos').remove();
+					
+					var result = result.responseJSON;
+					
+					for($i=0, $total = result.length; $i < $total; $i++) {
+					$('.candidatosActivos').append($('<div class="errorCandidatos"></div>').append(
+	                '<span class="text-danger"><ul><li>'+result[$i].apellido+', '+result[$i].nombre+'</li></ul></span>'));
 					}
 					
 			    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
@@ -184,8 +252,10 @@ var file_name;
 			    	  "show"      : true                     // ensure the modal is shown immediately
 			    	});
 			    	}
-			
-    }})})
+				else 
+				alert("ERROR INTERNO.")
+    				}
+	    })})
     	
     
 </script>

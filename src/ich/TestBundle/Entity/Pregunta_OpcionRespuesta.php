@@ -36,14 +36,14 @@ class Pregunta_OpcionRespuesta
 	private $ponderacion;
 	
 	/**
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta",cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(name="pregunta_id",referencedColumnName="id", nullable=false)
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta")
+	 * @ORM\JoinColumn(name="pregunta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $pregunta;
 		
 	/**
-	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\OpcionRespuesta",inversedBy="preguntas",cascade={"persist"})
-	 * @ORM\JoinColumn(name="opcionRespuesta_id",referencedColumnName="id", nullable=false)
+	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\OpcionRespuesta",inversedBy="preguntas")
+	 * @ORM\JoinColumn(name="opcionRespuesta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $opcionRespuesta;
 	

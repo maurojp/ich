@@ -70,7 +70,7 @@
                 <h3 id="titulo2" align="center">Listado de
                     Candidatos a Evaluar</h3>
                 <table id="table-pagination2" data-height="399" data-striped="true" class="table table-condensed"
-                    data-pagination="true">
+                    data-pagination="true" >
                  <div class="fixed-table-toolbar">
                         <div class="columns columns-right btn-group pull-right">
                         <button type="button" class="btn btn-default pull-right quitar"
@@ -87,6 +87,7 @@
                         </tr>
                     </thead>
                 </table>
+                <div class="fixed-table-toolbar">
                 <br>
                 <br>
                 <br> 
@@ -115,18 +116,11 @@
 								<h4 align="center">Existen candidatos que tienen cuestionarios </h4>
 								  <h4 align="center"> activos y no pueden ser evaluados:</h4>
 								<br>
-								{% if candidatos|length %}
-								{% for candidato in candidatos %}
-								<td><span class="text-danger"><ul>
-											<li>{{ candidato.apellido }}, {{ candidato.nombre }}</li>
-										</ul></span></td>
-								{% endfor %}
-								{% endif %}
+								<div class="row candidatosActivos"></div>
 							</div>
 							<!-- dialog buttons -->
 							<div class="modal-footer">
-								<a href="{{ path('ich_evaluacion_newStep1')}}"
-									class="btn btn-primary">Aceptar</a>
+								<button type="button" class="btn btn-primary aceptar">Aceptar</button>
 							</div>
 						</div>
 					</div>
@@ -174,14 +168,7 @@
 {{ parent() }}
 <script type="text/javascript">
 
-if(!'{{ candidatosActivos }}')
-{
 var candidatosTotal;
-
-
-
-
-   
         
     $(document).ready(function() {
         
@@ -229,7 +216,7 @@ var candidatosTotal;
                 values: nrosCandidato
             });
             $('#table-pagination').bootstrapTable('prepend', $seleccionados);
-            candidatosTotal = JSON.parse(JSON.stringify($('#table-pagination').bootstrapTable('getData')));
+            candidatosTotal = $('#table-pagination').bootstrapTable('getData');
 
             $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
                 return row.nroCandidato;
@@ -294,7 +281,8 @@ var candidatosTotal;
  $(document).on('click', '.aceptar', function() {
                 
     $(function() {
-            $("#myModal").modal('hide'); // dismiss the dialog
+            $("#myModal").modal('hide');
+            $("#modalCandidatosActivos").modal('hide'); // dismiss the dialog
         });
     })
 
@@ -335,19 +323,31 @@ var candidatosTotal;
         }
     });
 
-    $(document).on('click', '.agregar', function filtrarDatos() {
+    $(document).on('click', '.agregar', function() {
         $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
         if ($seleccionados.length != 0) { 
             $nrosCandidato = $.map($seleccionados, function(row) {
                 return row.nroCandidato;
             });
+
+            var data = { nrosCandidato: $nrosCandidato};
+     	   
+            $.ajax({
+            type: 'post',
+            url: '{{ path("ich_evaluacion_buscarCandidatosActivos") }}',
+            cache: false,
+            data: data, 
+            success: function(data){
+                	
+            if(data.length == 0)
+            {    
             $('#table-pagination').bootstrapTable('filterBy', {});
             $('#table-pagination').bootstrapTable('load', candidatosTotal);
             $('#table-pagination').bootstrapTable('remove', {
                 field: 'nroCandidato',
                 values: $nrosCandidato
             });
-            candidatosTotal = JSON.parse(JSON.stringify($('#table-pagination').bootstrapTable('getData')));
+            candidatosTotal = $('#table-pagination').bootstrapTable('getData');
 
             if(($('#table-pagination2').bootstrapTable('getData')).length == 0)
             {
@@ -393,7 +393,35 @@ var candidatosTotal;
 	           }
 
 	       		}
-	       });
+
+            else{
+            	 $('div.error').remove();
+				for($i=0, $total = data.length; $i < $total; $i++) {
+				$('.candidatosActivos').append($('<div class="error"></div>').append(
+                '<span class="text-danger"><ul><li>'+data[$i].apellido+', '+data[$i].nombre+'</li></ul></span>'));
+				}
+				
+		    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+		    	    $("#modalCandidatosActivos a.btn").on("click", function(e) {
+		    	        console.log("button pressed");   // just as an example...
+		    	        $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
+		    	    });
+		    	});
+		    	$("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+		    	    $("#modalCandidatosActivos a.btn").off("click");
+		    	});
+
+		    	$("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+		    	    $("#modalCandidatosActivos").remove();
+		    	});
+
+		    	$("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
+		    	  "backdrop"  : "static",
+		    	  "keyboard"  : true,
+		    	  "show"      : true                     // ensure the modal is shown immediately
+		    	});
+		    	}
+	       }})}});
 
 
     
@@ -457,28 +485,7 @@ var candidatosTotal;
             }
         }
     });
-    }
-    else{
-    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
-    	    $("#modalCandidatosActivos a.btn").on("click", function(e) {
-    	        console.log("button pressed");   // just as an example...
-    	        $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
-    	    });
-    	});
-    	$("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
-    	    $("#modalCandidatosActivos a.btn").off("click");
-    	});
-
-    	$("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
-    	    $("#modalCandidatosActivos").remove();
-    	});
-
-    	$("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
-    	  "backdrop"  : "static",
-    	  "keyboard"  : true,
-    	  "show"      : true                     // ensure the modal is shown immediately
-    	});
-    	}
+    
     
 </script>
 {% endblock %}
