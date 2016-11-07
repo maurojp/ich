@@ -2,10 +2,7 @@
 {% extends 'layout.html.twig'%}
 
 {% block body %}
-
 {{ parent() }}
-
-
 <div class="container">
 	<div class="col-md-12">
 		<div class="page-header margin-none">
@@ -30,15 +27,10 @@
 				<button type="button" class="btn btn-info buscar">Buscar</button>
 			</div>
 		</div>
-		<div class="row1">
-		</div>
-        <br>    
 		<br>
-		<div class="row2">
+		<div class="row1">
 			<div class="col-md-6">
-            <h3 id="titulo1" align="center">Listado de
-                    Candidatos</h3>
-                <table id="table-pagination" data-height="399" data-striped="true" class="table table-condensed"
+                <table id="table-pagination" data-height="350" data-striped="true" class="table table-condensed"
                     data-pagination="true">
                     <div class="fixed-table-toolbar">
                         <div class="columns columns-right btn-group pull-right">
@@ -51,6 +43,8 @@
                         </div>
                     </div>
                     <thead>
+                    <h3 id="titulo1" align="left">Listado de
+                    Candidatos</h3>
                         <tr>
                             <th data-field="apellido" data-align="left" data-sortable="true"
                                 data-searchable="true">Apellido</th>
@@ -62,15 +56,11 @@
                         </tr>
                     </thead>
                 </table> 
-                <br>
-                <br>
-                <br>        
+        
             </div>
 			<div class="col-md-6">
-                <h3 id="titulo2" align="center">Listado de
-                    Candidatos a Evaluar</h3>
-                <table id="table-pagination2" data-height="399" data-striped="true" class="table table-condensed"
-                    data-pagination="true" >
+                <table id="table-pagination2" data-height="350" data-striped="true" class="table table-condensed"
+                    data-pagination="true">
                  <div class="fixed-table-toolbar">
                         <div class="columns columns-right btn-group pull-right">
                         <button type="button" class="btn btn-default pull-right quitar"
@@ -78,6 +68,8 @@
                         </div>
                         </div>
                              <thead>
+                             <h3 id="titulo2" align="left">Listado de
+                    Candidatos a Evaluar</h3>
                         <tr>
                             <th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
                             <th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
@@ -87,11 +79,7 @@
                         </tr>
                     </thead>
                 </table>
-                <div class="fixed-table-toolbar">
-                <br>
-                <br>
-                <br> 
-				</div>
+                
 			
 
 				{{ form_start(form) }}
@@ -188,9 +176,9 @@ var candidatosTotal;
             url: '{{ path("ich_evaluacion_newStep1") }}',
             cache: false,
             success: function(data) {
-
+				
                 $('#table-pagination').bootstrapTable('load', data);
-
+                $('.pagination-info').attr("style","display: none;");
                 $('#table-pagination').bootstrapTable('hideLoading');
 
                 candidatosTotal = data;
@@ -217,7 +205,7 @@ var candidatosTotal;
             });
             $('#table-pagination').bootstrapTable('prepend', $seleccionados);
             candidatosTotal = $('#table-pagination').bootstrapTable('getData');
-
+            $('.pagination-info').attr("style","display: none;");
             $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
                 return row.nroCandidato;
             });
@@ -321,6 +309,7 @@ var candidatosTotal;
             values: nrosCandidato
         });
         }
+        $('.pagination-info').attr("style","display: none;");
     });
 
     $(document).on('click', '.agregar', function() {
@@ -347,6 +336,7 @@ var candidatosTotal;
                 field: 'nroCandidato',
                 values: $nrosCandidato
             });
+            $('.pagination-info').attr("style","display: none;");
             candidatosTotal = $('#table-pagination').bootstrapTable('getData');
 
             if(($('#table-pagination2').bootstrapTable('getData')).length == 0)
@@ -357,7 +347,7 @@ var candidatosTotal;
             }
             
             $('#table-pagination2').bootstrapTable('prepend', $seleccionados);
-
+            $('.pagination-info').attr("style","display: none;");
             $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
                 return row.nroCandidato;
             });   
@@ -484,6 +474,8 @@ var candidatosTotal;
                 }
             }
         }
+        
+        $('.pagination-info').attr("style","display: none;");
     });
     
     

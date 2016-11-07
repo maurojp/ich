@@ -25,17 +25,12 @@ class EvaluacionController extends Controller {
 			
 		$defaultData = array ();
 		
-		$form = $this->createFormBuilder ( $defaultData )->add ( 'candidatos', CollectionType::class, array (
-				'entry_type' => NumberType::class,
-				'by_reference' => false,
-				'allow_add' => true
-		) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_newStep2' ) )->setMethod ( 'POST' )->getForm ();
+		$form = $this->createEvaluarForm($defaultData);
 		
 		return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
 				'form' => $form->createView ()
 		) );
 		}
-		
 		
 		$query = $em->createQuery ( "SELECT c.apellido, c.nombre, c.nroCandidato FROM ichTestBundle:Candidato c" );
 		$candidatos = $query->getResult ();
@@ -46,6 +41,24 @@ class EvaluacionController extends Controller {
 	}
 	
 	
+	private function createEvaluarForm($array){
+		
+		$form = $this->createFormBuilder ( $array )->add ( 'candidatos', CollectionType::class, array (
+				'entry_type' => NumberType::class,
+				'by_reference' => false,
+				'allow_add' => true
+		) )->add ( 'send', SubmitType::class )
+		->setAction ( $this->generateUrl ( 'ich_evaluacion_newStep2' ) )
+		->setMethod ( 'POST' )
+		->getForm ();
+		
+		
+		return $form;
+	}
+	
+	
+	
+	
 	public function newStep2Action(Request $request) {
 		
 		$co = $this->getDoctrine ()->getManager ();
@@ -53,18 +66,14 @@ class EvaluacionController extends Controller {
 		if ($request->getMethod () == 'POST') {
 			$defaultData = array ();
 			
-			$form = $this->createFormBuilder ( $defaultData )->add ( 'candidatos', CollectionType::class, array (
-					'entry_type' => NumberType::class,
-					'by_reference' => false,
-					'allow_add' => true 
-			) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_newStep2' ) )->setMethod ( 'POST' )->getForm ();
+			$form = $this->createEvaluarForm($defaultData);
+			
 			$form->handleRequest ( $request );
 			
 			if ($form->isValid ()) {
 				$data = $form->getData ();
 	
 				$this->get('session')->set('nroCandidatos',$data);
-
 
 				return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array () );
 					
