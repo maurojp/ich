@@ -9,7 +9,7 @@
 		<div class="page-header margin-none">
 			<h2 class="padding-none">
 				Caracter&#237;sticas del Puesto:
-				{{puesto.nombre }}
+				{{ nombrePuesto }}
 			</h2>
 		</div>
 		<div class="row2">
@@ -36,8 +36,8 @@
 				<div class="modal-body">
 					<h4>Existen competencias que no pueden ser evaluadas:</h4>
 					<br>
-					{% if competencias|length %}
-					{% for competencia in competencias %}
+					{% if competenciasInvalidas|length %}
+					{% for competencia in competenciasInvalidas %}
 					<td><span class="text-danger"><ul>
 								<li>{{ competencia.nombre }}</li>
 							</ul></span></td>
@@ -73,30 +73,13 @@
 {{ parent() }}
 <script type="text/javascript">
 
-$('#table-pagination').bootstrapTable({ data: [],
-    formatLoadingMessage: function () {
-        return 'Cargando datos. Por favor, espere...';
-    }
-            });
-            
-if(!'{{ error }}') {
+           
+if(({{ competencias | raw}}).length > 0) {
 
-		$(function() {
-			
-        $('#table-pagination').bootstrapTable('showLoading');
-			
 
-			$.ajax({
-						url : '{{ path("ich_evaluacion_newStep3", { id: puesto.id}) }}',
-						cache: false,
-						success : function(data) {
+	$('#table-pagination').bootstrapTable({data: {{ competencias | raw }}});
 
-							$('#table-pagination').bootstrapTable('load', data);
 
-                			$('#table-pagination').bootstrapTable('hideLoading');
-						}
-					})
-		});
 	} else {
 		$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
 			$("#myModal a.btn").on("click", function(e) {

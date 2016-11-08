@@ -19,25 +19,19 @@ use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 
 class EvaluacionController extends Controller {
 	public function newStep1Action(Request $request) {
+
 		$em = $this->getDoctrine ()->getManager ();
-		
-		if (! $request->isXMLHttpRequest ()) {
 			
 		$defaultData = array ();
 		
 		$form = $this->createEvaluarForm($defaultData);
-		
-		return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
-				'form' => $form->createView ()
-		) );
-		}
-		
+
 		$query = $em->createQuery ( "SELECT c.apellido, c.nombre, c.nroCandidato FROM ichTestBundle:Candidato c" );
 		$candidatos = $query->getResult ();
-			
-		return new JsonResponse ( $candidatos );
-		
-		
+
+		return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array ('candidatos' => json_encode($candidatos),
+				'form' => $form->createView ()
+		) );	
 	}
 	
 	
@@ -63,7 +57,6 @@ class EvaluacionController extends Controller {
 		
 		$co = $this->getDoctrine ()->getManager ();
 
-		if ($request->getMethod () == 'POST') {
 			$defaultData = array ();
 			
 			$form = $this->createEvaluarForm($defaultData);
@@ -75,40 +68,30 @@ class EvaluacionController extends Controller {
 	
 				$this->get('session')->set('nroCandidatos',$data);
 
-				return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array () );
+				/*
+				 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
+			 	* (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
+			 	* pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
+			 	* (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+			 	*/
+				
+				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
+				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
+				WHERE e.id = IDENTITY(p.empresa) and p.id IN
+				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN
+				(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+				$query = $co->createQuery ( $dql );
+				
+				$puestos= $query->getResult();
+
+				return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array ('puestos' => json_encode($puestos)) );
 					
 			}
 			
 			return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
 					'form' => $form->createView () 
 			) );
-		}
-		
-		
-		if ($request->isXMLHttpRequest ()) {
-		
-				
-			/*
-			 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
-			 * (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-			 * pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
-			 * (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-			 */
-				
-			$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
-			FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
-			WHERE e.id = IDENTITY(p.empresa) and p.id IN
-			(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN
-			(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
-			$query = $co->createQuery ( $dql );
-				
-			$puestos= $query->getResult();
-		
-			return new JsonResponse ( $puestos);
-		}
-		
-		
-		
+			
 	}
 	
 	
@@ -158,79 +141,57 @@ class EvaluacionController extends Controller {
 	public function newStep3Action(Request $request, $id) {
 		
 		$em = $this->getDoctrine ()->getManager ();
-
-		if (! $request->isXMLHttpRequest ()) {
-			
-			$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $id );
-			
-			if ($puesto->getAuditoria() != NULL) {
-				throw $this->createNotFoundException ( 'El Puesto ha sido eliminado.' );
-			}
-			
-			$this->get('session')->set('idPuesto',$id);
-			
-			$query = $em->createQuery ( "SELECT distinct c.id, c.nombre
-    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE pc.puesto = :p and pc.competencia = c and c.auditoria is NULL and c.id NOT IN
-				(SELECT distinct c2.id
-    			FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
-    			WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
-				SELECT distinct c3.id
-				FROM ichTestBundle:Competencia c3 JOIN ichTestBundle:Factor f
-				WHERE c3 = f.competencia and f.id IN (
-				SELECT distinct f2.id
-				FROM ichTestBundle:Factor f2 JOIN ichTestBundle:Pregunta pr
-				WHERE pr.factor = f2 and f2.auditoria is NULL and pr.auditoria is NULL
-				GROUP BY f2.id
-				HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto );
-			
-			$competencias = $query->getResult ();
-			
-			if (count ( $competencias ) > 0) {
-				return $this->render ( 'ichTestBundle:Evaluacion:add3.html.twig', array (
-						'competencias' => $competencias,
-						'error' => true,
-						'puesto' => $puesto
-				) );
-			}
-			
-			return $this->render ( 'ichTestBundle:Evaluacion:add3.html.twig', array (
-					'competencias' => $competencias,
-					'error' => false,
-					'puesto' => $puesto
-			) );
-		}
-		
 			
 		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $id );
 			
-		if ($puesto->getAuditoria() != NULL){
+		if ($puesto->getAuditoria() != NULL) {
 			throw $this->createNotFoundException ( 'El Puesto ha sido eliminado.' );
 		}
 			
-		$query = $em->createQuery ( 'SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
-    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL' )->setParameter ( 'p', $puesto->getId() );
+		$this->get('session')->set('idPuesto',$id);
 			
-		$competencias = $query->getResult ();
+		$query = $em->createQuery ( "SELECT c.nombre
+    	FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
+    	WHERE pc.puesto = :p and pc.competencia = c and c.auditoria is NULL and c.id NOT IN
+		(SELECT distinct c2.id
+    	FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
+    	WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
+		SELECT distinct c3.id
+		FROM ichTestBundle:Competencia c3 JOIN ichTestBundle:Factor f
+		WHERE c3 = f.competencia and f.id IN (
+		SELECT distinct f2.id
+		FROM ichTestBundle:Factor f2 JOIN ichTestBundle:Pregunta pr
+		WHERE pr.factor = f2 and f2.auditoria is NULL and pr.auditoria is NULL
+		GROUP BY f2.id
+		HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto );
+			
+		$competenciasInvalidas = $query->getResult ();
+		$competencias =  array();
+
+		if(count($competenciasInvalidas) == 0){
+
+			$query = $em->createQuery ( 'SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
+    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
+    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL' )
+				->setParameter ( 'p', $puesto->getId() );
+			
+			$competencias = $query->getResult ();
+
+			$this->get ( 'session' )->set ( 'competencias', $competencias );
 		
-		$this->get ( 'session' )->set ( 'competencias', $competencias );
-		
-		return new JsonResponse ( $competencias );
-		
+		}
+	
+		return $this->render ( 'ichTestBundle:Evaluacion:add3.html.twig', array (
+			'competencias' => json_encode($competencias),
+			'competenciasInvalidas' => $competenciasInvalidas,
+			'nombrePuesto' => $puesto->getNombre()
+				) );
 		
 	}
 	
 	
-	public function newStep4Action(Request $request) {
+	public function newStep4Action() {
 		
-		
-		if (! $request->isXMLHttpRequest ()) {
-				
-			return $this->render ( 'ichTestBundle:Evaluacion:add4.html.twig', array () );
-			
-		}
-
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$nroCandidatos = $this->get ( 'session' )->get ( 'nroCandidatos' );
@@ -241,11 +202,10 @@ class EvaluacionController extends Controller {
 		for($i=0, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
 		
 			$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
-			if (!$candidato) {
-				$response = new JsonResponse(null,500);
-				$response->setData('Candidato seleccionado no encontrado.');
-				return $response;
-			}
+
+			if (!$candidato)
+			throw $this->createNotFoundException ( "Candidato Nro ".' '.$nroCandidatos ['candidatos'] [$i].''." no encontrado.");
+
 			if($candidato->getTipoDocumento() == 1)
 				$tipo = "DNI";
 				else if($candidato->getTipoDocumento() == 2)
@@ -255,27 +215,28 @@ class EvaluacionController extends Controller {
 						else if($candidato->getTipoDocumento() == 4)
 							$tipo = "PP";
 		
-							$random = random_bytes(4);
-							$clave = bin2hex($random);
+			$random = random_bytes(4);
+			$clave = bin2hex($random);
 		
-							$array [] = array (
-									'apellido' => $candidato->getApellido(),
-									'nombre' => $candidato->getNombre(),
-									'tipoDocumento' => $tipo,
-									'documento' => $candidato->getNroDocumento(),
-									'clave'  => $clave
-							);
+			$candidatosSeleccionados [] = array (
+				'apellido' => $candidato->getApellido(),
+				'nombre' => $candidato->getNombre(),
+				'tipoDocumento' => $tipo,
+				'documento' => $candidato->getNroDocumento(),
+				'clave'  => $clave
+			);
 		
-							$claveNroCandidatos  [] = array (
-									'nroCandidato' => $nroCandidatos ['candidatos'] [$i],
-									'clave'  => $clave
-		
-							);
+			$claveNroCandidatos  [] = array (
+				'nroCandidato' => $nroCandidatos ['candidatos'] [$i],
+				'clave'  => $clave
+			);
 		}
 			
 		$this->get('session')->set('claveNroCandidatos',$claveNroCandidatos);
 			
-		return new JsonResponse ( $array );
+		return $this->render ( 'ichTestBundle:Evaluacion:add4.html.twig', array (
+			'candidatosSeleccionados' => json_encode($candidatosSeleccionados)
+		) );
 
 	}
 	

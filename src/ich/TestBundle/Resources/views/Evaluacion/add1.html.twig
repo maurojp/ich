@@ -156,38 +156,16 @@
 {{ parent() }}
 <script type="text/javascript">
 
-var candidatosTotal;
+var candidatosTotal = {{ candidatos | raw }};
         
     $(document).ready(function() {
-        
-
-          $('#table-pagination').bootstrapTable({
-                    data: [],
-        formatLoadingMessage: function () {
-            return 'Cargando datos. Por favor, espere...';
-        }
-                });
 
         $('#table-pagination2').bootstrapTable({data: []});
 
-        $('#table-pagination').bootstrapTable('showLoading');
+        $('#table-pagination').bootstrapTable({data: candidatosTotal });
 
-        $.ajax({
-            url: '{{ path("ich_evaluacion_newStep1") }}',
-            cache: false,
-            success: function(data) {
-				
-                $('#table-pagination').bootstrapTable('load', data);
-                $('.pagination-info').attr("style","display: none;");
-                $('#table-pagination').bootstrapTable('hideLoading');
+        $('.pagination-info').attr("style","display: none;");
 
-                candidatosTotal = data;
-
-                $opt= document.getElementById('form_send');
-        		if (null != $opt)
-        		{$opt.type = 'button'; $opt.name = '#'; $opt.id = '#modificar'; }
-            }
-        })
     });
 
 
@@ -205,17 +183,13 @@ var candidatosTotal;
             });
             $('#table-pagination').bootstrapTable('prepend', $seleccionados);
             candidatosTotal = $('#table-pagination').bootstrapTable('getData');
+
             $('.pagination-info').attr("style","display: none;");
+
             $nrosCandidato = $.map($('#table-pagination2').bootstrapTable('getData'), function(row) {
                 return row.nroCandidato;
             });
 
-            if($nrosCandidato.length == 0)
-            {
-        		$opt= document.getElementById('form_send');
-    			if (null != $opt)
-    			{$opt.type = 'button'; $opt.name = '#'; $opt.id = '#modificar'; }
-            }
             
             $collectionHolder = $('div.candidatos');
 	    	    
@@ -251,19 +225,68 @@ var candidatosTotal;
     });
 
 
-    $('.siguiente').click( function() {
+    $('.siguiente').on('click', function(e) {
+        
+        e.preventDefault(); 
+
         $seleccionados = $('#table-pagination2').bootstrapTable('getData');
 
-        if ($seleccionados.length == 0) {
+        if ($seleccionados.length == 0)
 
             $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
-          "backdrop"  : "static",
-          "keyboard"  : true,
-          "show"      : true                    // ensure the modal is shown immediately
-        });
-        	
+            "backdrop"  : "static",
+            "keyboard"  : true,
+            "show"      : true                    // ensure the modal is shown immediately
+            });
+        else {
+
+            $nrosCandidato = $.map($seleccionados, function(row) {
+                return row.nroCandidato;})
+
+            var data = { nrosCandidato: $nrosCandidato};
+            
+            $.ajax({
+            type: 'post',
+            url: '{{ path("ich_evaluacion_buscarCandidatosActivos") }}',
+            cache: false,
+            data: data, 
+            success: function(data){
+                    
+                if(data.length != 0){
+                    $('div.error').remove();
+                    for($i=0, $total = data.length; $i < $total; $i++) {
+                    $('.candidatosActivos').append($('<div class="error"></div>').append(
+                    '<span class="text-danger"><ul><li>'+data[$i].apellido+', '+data[$i].nombre+'</li></ul></span>'));
+                    }
+                
+                    $("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
+                        $("#modalCandidatosActivos a.btn").on("click", function(e) {
+                            console.log("button pressed");   // just as an example...
+                            $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
+                        });
+                    });
+                    $("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
+                        $("#modalCandidatosActivos a.btn").off("click");
+                    });
+
+                    $("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
+                        $("#modalCandidatosActivos").remove();
+                    });
+
+                    $("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
+                    "backdrop"  : "static",
+                    "keyboard"  : true,
+                    "show"      : true                     // ensure the modal is shown immediately
+                    });  	
+                }
+
+                else 
+                    $('form').submit();
+            }})
         }
-    });
+    })
+
+
 
 
  $(document).on('click', '.aceptar', function() {
@@ -312,24 +335,16 @@ var candidatosTotal;
         $('.pagination-info').attr("style","display: none;");
     });
 
+
     $(document).on('click', '.agregar', function() {
+
         $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
+
         if ($seleccionados.length != 0) { 
             $nrosCandidato = $.map($seleccionados, function(row) {
                 return row.nroCandidato;
             });
 
-            var data = { nrosCandidato: $nrosCandidato};
-     	   
-            $.ajax({
-            type: 'post',
-            url: '{{ path("ich_evaluacion_buscarCandidatosActivos") }}',
-            cache: false,
-            data: data, 
-            success: function(data){
-                	
-            if(data.length == 0)
-            {    
             $('#table-pagination').bootstrapTable('filterBy', {});
             $('#table-pagination').bootstrapTable('load', candidatosTotal);
             $('#table-pagination').bootstrapTable('remove', {
@@ -338,13 +353,6 @@ var candidatosTotal;
             });
             $('.pagination-info').attr("style","display: none;");
             candidatosTotal = $('#table-pagination').bootstrapTable('getData');
-
-            if(($('#table-pagination2').bootstrapTable('getData')).length == 0)
-            {
-            $opt= document.getElementById('#modificar');
-    		if (null != $opt)
-    		{$opt.type = 'submit'; $opt.name = 'form[send]'; $opt.id = 'form_send';} 
-            }
             
             $('#table-pagination2').bootstrapTable('prepend', $seleccionados);
             $('.pagination-info').attr("style","display: none;");
@@ -377,41 +385,11 @@ var candidatosTotal;
 	    	    // Display the form in the page in an li, before the "Add a tag" link li
 	    	    
 	    	    $collectionHolder.append(newFormLi);
-	           
-	           
-	             
+	         
 	           }
 
-	       		}
-
-            else{
-            	 $('div.error').remove();
-				for($i=0, $total = data.length; $i < $total; $i++) {
-				$('.candidatosActivos').append($('<div class="error"></div>').append(
-                '<span class="text-danger"><ul><li>'+data[$i].apellido+', '+data[$i].nombre+'</li></ul></span>'));
-				}
-				
-		    	$("#modalCandidatosActivos").on("show", function() {    // wire up the OK button to dismiss the modal when shown
-		    	    $("#modalCandidatosActivos a.btn").on("click", function(e) {
-		    	        console.log("button pressed");   // just as an example...
-		    	        $("#modalCandidatosActivos").modal('hide');     // dismiss the dialog
-		    	    });
-		    	});
-		    	$("#modalCandidatosActivos").on("hide", function() {    // remove the event listeners when the dialog is dismissed
-		    	    $("#modalCandidatosActivos a.btn").off("click");
-		    	});
-
-		    	$("#modalCandidatosActivos").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
-		    	    $("#modalCandidatosActivos").remove();
-		    	});
-
-		    	$("#modalCandidatosActivos").modal({                    // wire up the actual modal functionality and show the dialog
-		    	  "backdrop"  : "static",
-		    	  "keyboard"  : true,
-		    	  "show"      : true                     // ensure the modal is shown immediately
-		    	});
-		    	}
-	       }})}});
+	    }
+	       });
 
 
     

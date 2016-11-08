@@ -112,40 +112,9 @@
 var file_name;
 
     $(document).ready(function() {
-
-    	$('#table-pagination').bootstrapTable({ data: [],
-        formatLoadingMessage: function () {
-            return 'Cargando datos. Por favor, espere...';
-        }
-                });
-
-		$('#table-pagination').bootstrapTable('showLoading');
-
-        $.ajax({
-            url: '{{ path("ich_evaluacion_newStep4") }}',
-            cache: false,
-            success: function(data) {
-							
-				$('#table-pagination').bootstrapTable('load', data);
-
-                $('#table-pagination').bootstrapTable('hideLoading');
-                
-                
-            },
-            error: function(data) {
-            	if(typeof data.responseJSON == 'string')
-				{	
-					$('div.errorModelo').remove();
-					$('.mensaje').append($('<div class="errorModelo"></div>').append(
-			                '<h4 align="center">'+ data.responseJSON +'</h4>'));
-
-		        	$("#modalErrorModelo").modal({                    // wire up the actual modal functionality and show the dialog
-		    	  	"backdrop"  : "static",
-		    	  	"keyboard"  : true,
-		    	  	"show"      : true                    // ensure the modal is shown immediately
-		    		});
-				}}
-        })
+		
+		$('#table-pagination').bootstrapTable({data: {{ candidatosSeleccionados | raw }}});
+          
     });
 
     $('.si').click( function() {   
@@ -179,7 +148,7 @@ var file_name;
     	});
 
     	$("#modalErrorModelo").on("hidden", function() {  // remove the actual elements from the DOM when fully hidden
-    	    $("#modalErrorModelos").remove();
+    	    $("#modalErrorModelo").remove();
     	});
 
 
@@ -247,9 +216,19 @@ var file_name;
 			    	  "show"      : true                     // ensure the modal is shown immediately
 			    	});
 			    	}
-				else 
-				alert("ERROR INTERNO.")
-    				}
+				else {
+					
+					$('div.errorModelo').remove();
+					$('.mensaje').append($('<div class="errorModelo"></div>').append(
+			                '<h4 align="center">'+ $(result.responseText).filter('title').text() +'</h4>'));
+
+		        	$("#modalErrorModelo").modal({                    // wire up the actual modal functionality and show the dialog
+		    	  	"backdrop"  : "static",
+		    	  	"keyboard"  : true,
+		    	  	"show"      : true                    // ensure the modal is shown immediately
+		    		});
+    			}
+    		}
 	    })})
     	
     

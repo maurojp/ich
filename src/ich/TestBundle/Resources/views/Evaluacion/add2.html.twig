@@ -63,52 +63,38 @@
 {{ parent() }}
 <script type="text/javascript">
    
-var hrefOriginal, primeraVez= true;
+var hrefOriginal;
 
-     $(document).ready(function() {
-    	
-     	$('#table-pagination').bootstrapTable({ data: [],
-        formatLoadingMessage: function () {
-            return 'Cargando datos. Por favor, espere...';
+    $(document).ready(function() {
+
+        $('#table-pagination').bootstrapTable({data: {{ puestos | raw }}});
+
+        $opt= document.getElementById('sig');
+        if (null != $opt){
+        	$opt.id = '#sinSeleccion'; 
+        	hrefOriginal = $opt.href; 
+        	$opt.href = '#'; 
+        	$opt.setAttribute('onclick', 'mostrarAdvertencia();');
         }
-                });
 
-     	$('#table-pagination').bootstrapTable('showLoading');
-     	
-
-
-        $.ajax({
-            url: '{{ path("ich_evaluacion_newStep2") }}',
-            cache: false,
-            success: function(data) {
-
-                $('#table-pagination').bootstrapTable('load', data);
-
-                $('#table-pagination').bootstrapTable('hideLoading');
-
-                $opt= document.getElementById('sig');
-        		if (null != $opt)
-        		{$opt.id = '#modificar'; hrefOriginal = $opt.href; $opt.href = '#'; $opt.setAttribute('onclick', 'mostrarAdvertencia();');}
-            }
-        })
     });
 
-     $('#table-pagination').on('uncheck.bs.table', function(row, $element) {	
+    $('#table-pagination').on('uncheck.bs.table', function(row, $element) {	
 
      	$opt= document.getElementById('sig');
         		if (null != $opt)
         	{	
         		$opt.setAttribute('onclick', 'mostrarAdvertencia();');
-        		$opt.id = '#modificar';
+        		$opt.id = '#sinSeleccion';
         		$opt.href = '#';  
         	} 
         	})
 
 
 
- $('#table-pagination').on('check.bs.table', function(row, $element) {
+ 	$('#table-pagination').on('check.bs.table', function(row, $element) {
 
-        	 $opt= document.getElementById('#modificar');
+        	 $opt= document.getElementById('#sinSeleccion');
         		if (null != $opt) 
         	{	
         		$opt.setAttribute('onclick', '');
@@ -119,7 +105,7 @@ var hrefOriginal, primeraVez= true;
     );  
 
     
- $(document).on('click', '.aceptar', function() {
+ 	$(document).on('click', '.aceptar', function() {
 				
 	$(function() {
 			$("#myModal").modal('hide'); // dismiss the dialog
@@ -128,7 +114,7 @@ var hrefOriginal, primeraVez= true;
 
 
        
- $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+ 	$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
 			$("#myModal a.btn").on("click", function(e) {
 				console.log("button pressed"); // just as an example...
 				$("#myModal").modal('hide'); // dismiss the dialog
