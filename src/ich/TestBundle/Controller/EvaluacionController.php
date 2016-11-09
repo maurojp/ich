@@ -102,13 +102,12 @@ class EvaluacionController extends Controller {
 		
 		$co = $this->getDoctrine ()->getManager ();
 		
-		$query = $co->createQuery ( "SELECT c.nroCandidato
+		$query = $co->createQuery ( "SELECT c
 					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
 					where cu.candidato = c and cu.estado = 0
 					" );
 		
-		$candidatosSeleccionadosActivos = array ();
-		$candidatos = array ();
+		$datosCandidatosActivos = array ();
 		// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
 		$candidatosActivos = $query->getResult ();
 		
@@ -116,20 +115,11 @@ class EvaluacionController extends Controller {
 
 			for($i=0, $total = count ( $data ); $i < $total; $i ++) {
 				
-				if ($candidato ['nroCandidato'] == $data [$i])
-					$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
-			}
-		}
-		
-		$datosCandidatosActivos = array ();
-		foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
-			
-			$candidato = $co->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
-			
-			$datosCandidatosActivos [] = array (
+				if ($candidato->getNroCandidato() == $data [$i])
+					$datosCandidatosActivos [] = array (
 					'apellido' => $candidato->getApellido (),
-					'nombre' => $candidato->getNombre () 
-			);
+					'nombre' => $candidato->getNombre ());
+			}
 		}
 		
 		return new JsonResponse ( $datosCandidatosActivos );
