@@ -24,6 +24,7 @@ class PuestoCompetenciaType extends AbstractType
                 'choice_label' => 'getNombre'
             ))
             ->add('ponderacion', null, array('label' => 'Ponderación'))
+            ->add('activa', 'checkbox')
         ;
     }
     

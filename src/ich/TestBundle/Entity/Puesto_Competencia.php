@@ -44,9 +44,17 @@ class Puesto_Competencia
     /**
      * @var int
      * @Assert\NotBlank()
+     * @Assert\LessThanOrEqual(value = 10)
      * @ORM\Column(name="ponderacion", type="integer")
      */
     private $ponderacion;
+    
+     /**
+     * @var bool
+     *
+     * @ORM\Column(name="activa", type="boolean")
+     */
+    private $activa;
 
     /**
      * Set ponderacion
@@ -125,5 +133,28 @@ class Puesto_Competencia
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set activa
+     *
+     * @param boolean $activa
+     * @return Puesto_Competencia
+     */
+    public function setActiva($activa)
+    {
+        $this->activa = $activa;
+
+        return $this;
+    }
+
+    /**
+     * Get activa
+     *
+     * @return boolean 
+     */
+    public function getActiva()
+    {
+        return $this->activa;
     }
 }

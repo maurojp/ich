@@ -96,5 +96,9 @@
     <div class="col-md-4">{{ form_widget(puestocompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
         <span class="pull-left text-danger">{{ form_errors(puestocompetencia.ponderacion) }}</span>
     </div>
-    
+    <div class = 'col-md-1 checkbox'>
+        <label class='lb-lg'>
+            {{ form_widget(puestocompetencia.activa)}}Activa
+        </label>
+    </div>
 {% endmacro %}

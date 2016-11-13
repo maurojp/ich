@@ -1,7 +1,14 @@
 {% extends 'layout.html.twig' %}
 
 {% block body %}
+
+    <script>
+        var indexroute = "{{ path('ich_puesto_index') }}";
+    </script>
+    
     {{ parent() }}
+    
+    {{ include('ichTestBundle:Puesto:messages/success.html.twig')}}
     
     <div class = "main container">
         <div class = "row well">
@@ -87,11 +94,17 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('bundles/ichtest/js/list-forms.js') }}"></script>
+    <script src="{{ asset('bundles/ichtest/js/loop-add.js') }}"></script>
 {% endblock %}
 
 {% macro model_prototype(puestocompetencia) %}
     <div class="col-md-4">{{ form_widget(puestocompetencia.competencia,{'attr' : {'class' : 'form-control'} }) }}</div>
     <div class="col-md-4">{{ form_widget(puestocompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
         <span class="pull-left text-danger">{{ form_errors(puestocompetencia.ponderacion) }}</span>
-    </div>    
+    </div>
+    <div class = 'col-md-1 checkbox'>
+        <label class='lb-lg'>
+            {{ form_widget(puestocompetencia.activa)}}Activa
+        </label>
+    </div>
 {% endmacro %}
