@@ -19,7 +19,7 @@ use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 
 class EvaluacionController extends Controller {
 	public function newStep1Action(Request $request) {
-
+		
 		$em = $this->getDoctrine ()->getManager ();
 			
 		$defaultData = array ();
@@ -60,7 +60,7 @@ class EvaluacionController extends Controller {
 			$defaultData = array ();
 			
 			$form = $this->createEvaluarForm($defaultData);
-			
+
 			$form->handleRequest ( $request );
 			
 			if ($form->isValid ()) {
@@ -74,6 +74,7 @@ class EvaluacionController extends Controller {
 			 	* pc.habilitada = true)";
 			 	*/
 				
+				//BUSCAR PUESTOS CON AL MENOS UNA COMPETENCIA ASIGNADA
 				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
 				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
 				WHERE e.id = IDENTITY(p.empresa) and p.id IN
@@ -86,8 +87,10 @@ class EvaluacionController extends Controller {
 					
 			}
 			
+			
 			$form = $this->createEvaluarForm($defaultData);
 			
+			//ERROR EN FORMULARIO - VOLVER A SOLICITAR CANDIDATOS
 			return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
 					'form' => $form->createView () 
 			) );
@@ -128,7 +131,7 @@ class EvaluacionController extends Controller {
 	
 	
 	
-	public function newStep3Action(Request $request, $id) {
+	public function newStep3Action($id) {
 		
 		$em = $this->getDoctrine ()->getManager ();
 			
@@ -272,6 +275,7 @@ class EvaluacionController extends Controller {
 	return $datosCandidatosActivos;
 	
 }
+
 	
 	public function newStep5Action(Request $request) {
 		
@@ -343,7 +347,17 @@ class EvaluacionController extends Controller {
 			return $response;
 		}
 		
+		//VERIFICAR SI EXISTE PARÁMETRO DE CONFIGURACIÓN
+		if(!$this->container->hasParameter('ichTestBundle.preguntasPorBloque'))
+		{
+			$response = new JsonResponse(null,500);
+			$response->setData('ParÃ¡metro preguntasPorBloque requerido no disponible.');
+			return $response;
+		}
 		
+		
+		
+		//CREAR EVALUACIÓN
 		
 		$evaluacion = new Evaluacion();
 		
@@ -434,6 +448,8 @@ class EvaluacionController extends Controller {
 						
 						$copiaFactor->setNombre ( $factor->getNombre () );
 						
+						$copiaFactor->setNroOrden ( $factor->getNroOrden () );
+						
 						$copiaFactor->setCopiaCompetencia ( $copiaCompetencia );
 						
 						$copiaCompetencia->addCopiaFactore ( $copiaFactor );
@@ -500,10 +516,11 @@ class EvaluacionController extends Controller {
 		
 		$em->flush ();
 		
-		
-		
-		
+	
 		foreach ( $cuestionarios as $cuestionario ) {
+			
+			//GUARDAR COPIA PREGUNTAS PARA MEZCLARLAS Y DIVIDIRLAS POR BLOQUES
+			$copiaPreguntasCuestionario = array();
 			
 			foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
 				
@@ -557,16 +574,45 @@ class EvaluacionController extends Controller {
 						}
 						
 						$em->persist ( $copiaPregunta );
+						
+						$copiaPreguntasCuestionario[] = $copiaPregunta;
+		
 					}
 				}
 			}
+			
+			//ASIGNAR A COPIA PREGUNTAS NRO ORDEN Y NRO BLOQUE ALEATORIAMENTE 
+			shuffle ( $copiaPreguntasCuestionario );
+			
+			$preguntasPorBloque = $this->container->getParameter('ichTestBundle.preguntasPorBloque');
+			
+			$bloqueActual = 1;
+			
+			$preguntasBloqueActual = 0;
+				
+			for($i = 0, $total = count ($copiaPreguntasCuestionario); $i < $total; $i ++) {
+			
+				if($preguntasPorBloque == $preguntasBloqueActual){
+					$preguntasBloqueActual = 0;
+					$bloqueActual++;
+				}
+				
+				$copiaPregunta = $copiaPreguntasCuestionario[$i];
+				
+				$preguntasBloqueActual++;
+				
+				$copiaPregunta->setNroOrden($preguntasBloqueActual);
+				
+				$copiaPregunta->setNroBloque($bloqueActual);
+				
+			}
+				
 		}
 		
 		$em->flush ();
 		
-		$date = date_format ( new \datetime (), 'Y-m-d-H-i' );
-		
-		$nombre_xls = $date . '' . "-" . '' . $puesto->getNombre ();
+		//GENERAR NOMBRE PLANILLA EXCEL
+		$nombre_xls = date_format ( new \datetime (), 'Y-m-d-H-i' ) . '' . "-" . '' . $puesto->getNombre ();
 		
 		$this->get ( 'session' )->remove ( 'competencias' );
 		
@@ -578,4 +624,23 @@ class EvaluacionController extends Controller {
 		
 		return new JsonResponse ( $nombre_xls );
 	}
+	
+	
+	public function verificarEstadoCuestionarioAction(){
+	
+		if($request->getMethod() == 'POST');
+		
+		$date2 = new \DateTime;
+		$date1 = new \DateTime('2016-11-10');
+		$diff = $date1->diff($date2);
+		echo ($diff->format('%d') * 24)+ $diff->format('%h')+ ($diff->format('%i')/100) == 82.55;
+	}
+	
+
+	
+	public function ingresoCuestionarioAction(){
+		
+		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
+	}
+
 }

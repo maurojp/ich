@@ -52,7 +52,7 @@ class CopiaFactor
 
     /**
      * @var int
-     * @ORM\Column(name="nroOrden", type="integer", nullable=true)
+     * @ORM\Column(name="nroOrden", type="integer")
      */
     private $nroOrden;
 
@@ -64,7 +64,13 @@ class CopiaFactor
     private $descripcion;
 
 
-   
+    /**
+     * @var int
+     * @ORM\Column(name="puntajeObtenido", type="integer", nullable=true)
+     */
+    private $puntajeObtenido;
+    
+    
     /**
      * Constructor
      */
@@ -152,6 +158,30 @@ class CopiaFactor
         return $this->nroOrden;
     }
 
+    
+    /**
+     * Set puntajeObtenido
+     *
+     * @param integer $puntajeObtenido
+     * @return CopiaFactor
+     */
+    public function setPuntajeObtenido($puntajeObtenido)
+    {
+    	$this->puntajeObtenido = $puntajeObtenido;
+    
+    	return $this;
+    }
+    
+    /**
+     * Get puntajeObtenido
+     *
+     * @return integer
+     */
+    public function getPuntajeObtenido()
+    {
+    	return $this->puntajeObtenido;
+    }
+    
     /**
      * Set descripcion
      *
