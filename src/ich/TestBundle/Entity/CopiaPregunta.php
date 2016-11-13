@@ -55,6 +55,18 @@ class CopiaPregunta
     private $pregunta;
 
 
+    /**
+     * @var int
+     * @ORM\Column(name="nroOrden", type="integer", nullable=true)
+     */
+    private $nroOrden;
+    
+    
+    /**
+     * @var int
+     * @ORM\Column(name="nroBloque", type="integer", nullable=true)
+     */
+    private $nroBloque;
   
   
     /**
@@ -145,6 +157,54 @@ class CopiaPregunta
         return $this->pregunta;
     }
 
+    
+    /**
+     * Set nroOrden
+     *
+     * @param integer $nroOrden
+     * @return CopiaPregunta
+     */
+    public function setNroOrden($nroOrden)
+    {
+    	$this->nroOrden = $nroOrden;
+    
+    	return $this;
+    }
+    
+    /**
+     * Get nroOrden
+     *
+     * @return integer
+     */
+    public function getNroOrden()
+    {
+    	return $this->nroOrden;
+    }
+    
+    
+    /**
+     * Set nroBloque
+     *
+     * @param integer $nroBloque
+     * @return CopiaPregunta
+     */
+    public function setNroBloque($nroBloque)
+    {
+    	$this->nroBloque = $nroBloque;
+    
+    	return $this;
+    }
+    
+    /**
+     * Get nroBloque
+     *
+     * @return integer
+     */
+    public function getNroBloque()
+    {
+    	return $this->nroBloque;
+    }
+    
     /**
      * Set copiaFactor
      *

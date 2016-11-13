@@ -19,7 +19,7 @@ use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 
 class EvaluacionController extends Controller {
 	public function newStep1Action(Request $request) {
-
+		
 		$em = $this->getDoctrine ()->getManager ();
 			
 		$defaultData = array ();
@@ -60,7 +60,7 @@ class EvaluacionController extends Controller {
 			$defaultData = array ();
 			
 			$form = $this->createEvaluarForm($defaultData);
-			
+
 			$form->handleRequest ( $request );
 			
 			if ($form->isValid ()) {
@@ -71,15 +71,14 @@ class EvaluacionController extends Controller {
 				/*
 				 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
 			 	* (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-			 	* pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
-			 	* (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+			 	* pc.habilitada = true)";
 			 	*/
 				
+				//BUSCAR PUESTOS CON AL MENOS UNA COMPETENCIA ASIGNADA
 				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
 				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
 				WHERE e.id = IDENTITY(p.empresa) and p.id IN
-				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN
-				(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc)";
 				$query = $co->createQuery ( $dql );
 				
 				$puestos= $query->getResult();
@@ -88,6 +87,10 @@ class EvaluacionController extends Controller {
 					
 			}
 			
+			
+			$form = $this->createEvaluarForm($defaultData);
+			
+			//ERROR EN FORMULARIO - VOLVER A SOLICITAR CANDIDATOS
 			return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
 					'form' => $form->createView () 
 			) );
@@ -128,7 +131,7 @@ class EvaluacionController extends Controller {
 	
 	
 	
-	public function newStep3Action(Request $request, $id) {
+	public function newStep3Action($id) {
 		
 		$em = $this->getDoctrine ()->getManager ();
 			
@@ -185,10 +188,11 @@ class EvaluacionController extends Controller {
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$nroCandidatos = $this->get ( 'session' )->get ( 'nroCandidatos' );
-		$array = array ();
 			
 		$claveNroCandidatos = array ();
-			
+		
+		$candidatosSeleccionados = array ();
+		
 		for($i=0, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
 		
 			$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
@@ -231,72 +235,78 @@ class EvaluacionController extends Controller {
 	}
 	
 	
+	private function comprobarCandidatosActivos($nroCandidatos){
+		
+	$em = $this->getDoctrine ()->getManager ();
+		
+	$query = $em->createQuery ( "SELECT c.nroCandidato
+					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
+					where cu.candidato = c and cu.estado = 0
+					" );
+	
+	$candidatosSeleccionadosActivos = array ();
+	// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
+	$candidatosActivos = $query->getResult ();
+	
+	foreach ( $candidatosActivos as $candidato ) {
+		$i = 0;
+	
+		for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
+			if ($candidato ['nroCandidato'] == $nroCandidatos ['candidatos'] [$i])
+				$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
+		}
+	}
+	
+	$datosCandidatosActivos = array ();
+	
+	if (count ( $candidatosSeleccionadosActivos ) != 0) {
+
+		foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
+	
+			$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
+	
+			$datosCandidatosActivos [] = array (
+					'apellido' => $candidato->getApellido (),
+					'nombre' => $candidato->getNombre ()
+			);
+		}
+	}
+	
+	return $datosCandidatosActivos;
+	
+}
+
+	
 	public function newStep5Action(Request $request) {
 		
 		$em = $this->getDoctrine ()->getManager ();
 		
-
-		//COMPROBAR SI HAY CANDIDATOS ACTIVOS ENTRE LOS SELECCIONADOS PARA SER EVALUADOS
 		$nroCandidatos = $this->get ( 'session' )->get ( 'nroCandidatos' );
-		
-		$query = $em->createQuery ( "SELECT c.nroCandidato
-					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
-					where cu.candidato = c and cu.estado = 0
-					" );
-		
-		$candidatosSeleccionadosActivos = array ();
 		
 		$candidatos = array ();
 		
-		// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
-		$candidatosActivos = $query->getResult ();
-		
-		foreach ( $candidatosActivos as $candidato ) {
-			$i = 0;
-				
-			for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
-				if ($candidato ['nroCandidato'] == $nroCandidatos ['candidatos'] [$i])
-					$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
-			}
-		}
-		
-		if (count ( $candidatosSeleccionadosActivos ) == 0) {
-				
-			$i = 0;
-				
-			for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
-		
-				$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
-				if (!$candidato) {
-					$response = new JsonResponse(null,500);
-					$response->setData('Candidato seleccionado no encontrado.');
-					return $response;
-				}
-				$candidatos [] = $candidato;
-			}
-		}
-		
-		else {
-				
-			$datosCandidatosActivos = array ();
-			foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
-		
-				$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
-		
-				$datosCandidatosActivos [] = array (
-						'apellido' => $candidato->getApellido (),
-						'nombre' => $candidato->getNombre ()
-				);
-			}
-				
+		//COMPROBAR SI HAY CANDIDATOS ACTIVOS ENTRE LOS SELECCIONADOS PARA SER EVALUADOS
+		if(count($candidatosSeleccionadosActivos = $this->comprobarCandidatosActivos($nroCandidatos)) != 0){
 			$response = new JsonResponse(null,500);
-			$response->setData($datosCandidatosActivos);
+			$response->setData($candidatosSeleccionadosActivos);
 			return $response;
-
 		}
-		
-		
+		else //OBTENER ENTIDADES DE CANDIDATOS SELECCIONADOS
+			{
+				for($i= 0, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
+			
+					$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
+					if (!$candidato) {
+						$response = new JsonResponse(null,500);
+						$response->setData('Candidato seleccionado no encontrado.');
+						return $response;
+					}
+					
+					$candidatos [] = $candidato;
+				}
+			}
 	
+			
 		$idPuesto = $this->get('session')->get('idPuesto');
 		
 		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $idPuesto );
@@ -329,7 +339,7 @@ class EvaluacionController extends Controller {
 		
 		$competencias = $query->getResult ();
 		
-		
+		//VERIFICAR SI COMPETENCIAS PREVIAMENTE VALIDADAS COINCIDEN CON ACTUALES
 		if (count ( $competencias ) != count ( $competenciasTemporal ))
 		{
 			$response = new JsonResponse(null,500);
@@ -337,7 +347,17 @@ class EvaluacionController extends Controller {
 			return $response;
 		}
 		
+		//VERIFICAR SI EXISTE PARÁMETRO DE CONFIGURACIÓN
+		if(!$this->container->hasParameter('ichTestBundle.preguntasPorBloque'))
+		{
+			$response = new JsonResponse(null,500);
+			$response->setData('ParÃ¡metro preguntasPorBloque requerido no disponible.');
+			return $response;
+		}
 		
+		
+		
+		//CREAR EVALUACIÓN
 		
 		$evaluacion = new Evaluacion();
 		
@@ -428,6 +448,8 @@ class EvaluacionController extends Controller {
 						
 						$copiaFactor->setNombre ( $factor->getNombre () );
 						
+						$copiaFactor->setNroOrden ( $factor->getNroOrden () );
+						
 						$copiaFactor->setCopiaCompetencia ( $copiaCompetencia );
 						
 						$copiaCompetencia->addCopiaFactore ( $copiaFactor );
@@ -494,10 +516,11 @@ class EvaluacionController extends Controller {
 		
 		$em->flush ();
 		
-		
-		
-		
+	
 		foreach ( $cuestionarios as $cuestionario ) {
+			
+			//GUARDAR COPIA PREGUNTAS PARA MEZCLARLAS Y DIVIDIRLAS POR BLOQUES
+			$copiaPreguntasCuestionario = array();
 			
 			foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
 				
@@ -551,16 +574,45 @@ class EvaluacionController extends Controller {
 						}
 						
 						$em->persist ( $copiaPregunta );
+						
+						$copiaPreguntasCuestionario[] = $copiaPregunta;
+		
 					}
 				}
 			}
+			
+			//ASIGNAR A COPIA PREGUNTAS NRO ORDEN Y NRO BLOQUE ALEATORIAMENTE 
+			shuffle ( $copiaPreguntasCuestionario );
+			
+			$preguntasPorBloque = $this->container->getParameter('ichTestBundle.preguntasPorBloque');
+			
+			$bloqueActual = 1;
+			
+			$preguntasBloqueActual = 0;
+				
+			for($i = 0, $total = count ($copiaPreguntasCuestionario); $i < $total; $i ++) {
+			
+				if($preguntasPorBloque == $preguntasBloqueActual){
+					$preguntasBloqueActual = 0;
+					$bloqueActual++;
+				}
+				
+				$copiaPregunta = $copiaPreguntasCuestionario[$i];
+				
+				$preguntasBloqueActual++;
+				
+				$copiaPregunta->setNroOrden($preguntasBloqueActual);
+				
+				$copiaPregunta->setNroBloque($bloqueActual);
+				
+			}
+				
 		}
 		
 		$em->flush ();
 		
-		$date = date_format ( new \datetime (), 'Y-m-d-H-i' );
-		
-		$nombre_xls = $date . '' . "-" . '' . $puesto->getNombre ();
+		//GENERAR NOMBRE PLANILLA EXCEL
+		$nombre_xls = date_format ( new \datetime (), 'Y-m-d-H-i' ) . '' . "-" . '' . $puesto->getNombre ();
 		
 		$this->get ( 'session' )->remove ( 'competencias' );
 		
@@ -572,4 +624,23 @@ class EvaluacionController extends Controller {
 		
 		return new JsonResponse ( $nombre_xls );
 	}
+	
+	
+	public function verificarEstadoCuestionarioAction(){
+	
+		if($request->getMethod() == 'POST');
+		
+		$date2 = new \DateTime;
+		$date1 = new \DateTime('2016-11-10');
+		$diff = $date1->diff($date2);
+		echo ($diff->format('%d') * 24)+ $diff->format('%h')+ ($diff->format('%i')/100) == 82.55;
+	}
+	
+
+	
+	public function ingresoCuestionarioAction(){
+		
+		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
+	}
+
 }
