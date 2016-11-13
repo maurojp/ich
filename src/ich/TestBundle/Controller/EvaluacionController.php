@@ -71,15 +71,13 @@ class EvaluacionController extends Controller {
 				/*
 				 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
 			 	* (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-			 	* pc.habilitada = true and IDENTITY(pc.competencia) NOT IN
-			 	* (SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+			 	* pc.habilitada = true)";
 			 	*/
 				
 				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
 				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
 				WHERE e.id = IDENTITY(p.empresa) and p.id IN
-				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE IDENTITY(pc.competencia) NOT IN
-				(SELECT c.id FROM ichTestBundle:Competencia c where c.auditoria is not NULL))";
+				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc)";
 				$query = $co->createQuery ( $dql );
 				
 				$puestos= $query->getResult();
@@ -87,6 +85,8 @@ class EvaluacionController extends Controller {
 				return $this->render ( 'ichTestBundle:Evaluacion:add2.html.twig', array ('puestos' => json_encode($puestos)) );
 					
 			}
+			
+			$form = $this->createEvaluarForm($defaultData);
 			
 			return $this->render ( 'ichTestBundle:Evaluacion:add1.html.twig', array (
 					'form' => $form->createView () 
@@ -185,10 +185,11 @@ class EvaluacionController extends Controller {
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$nroCandidatos = $this->get ( 'session' )->get ( 'nroCandidatos' );
-		$array = array ();
 			
 		$claveNroCandidatos = array ();
-			
+		
+		$candidatosSeleccionados = array ();
+		
 		for($i=0, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
 		
 			$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
@@ -231,72 +232,77 @@ class EvaluacionController extends Controller {
 	}
 	
 	
+	private function comprobarCandidatosActivos($nroCandidatos){
+		
+	$em = $this->getDoctrine ()->getManager ();
+		
+	$query = $em->createQuery ( "SELECT c.nroCandidato
+					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
+					where cu.candidato = c and cu.estado = 0
+					" );
+	
+	$candidatosSeleccionadosActivos = array ();
+	// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
+	$candidatosActivos = $query->getResult ();
+	
+	foreach ( $candidatosActivos as $candidato ) {
+		$i = 0;
+	
+		for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
+			if ($candidato ['nroCandidato'] == $nroCandidatos ['candidatos'] [$i])
+				$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
+		}
+	}
+	
+	$datosCandidatosActivos = array ();
+	
+	if (count ( $candidatosSeleccionadosActivos ) != 0) {
+
+		foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
+	
+			$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
+	
+			$datosCandidatosActivos [] = array (
+					'apellido' => $candidato->getApellido (),
+					'nombre' => $candidato->getNombre ()
+			);
+		}
+	}
+	
+	return $datosCandidatosActivos;
+	
+}
+	
 	public function newStep5Action(Request $request) {
 		
 		$em = $this->getDoctrine ()->getManager ();
 		
-
-		//COMPROBAR SI HAY CANDIDATOS ACTIVOS ENTRE LOS SELECCIONADOS PARA SER EVALUADOS
 		$nroCandidatos = $this->get ( 'session' )->get ( 'nroCandidatos' );
-		
-		$query = $em->createQuery ( "SELECT c.nroCandidato
-					FROM ichTestBundle:Candidato c JOIN ichTestBundle:Cuestionario cu
-					where cu.candidato = c and cu.estado = 0
-					" );
-		
-		$candidatosSeleccionadosActivos = array ();
 		
 		$candidatos = array ();
 		
-		// DEVUELVE ARRAY CON ARRAYS DE CANDIDATO
-		$candidatosActivos = $query->getResult ();
-		
-		foreach ( $candidatosActivos as $candidato ) {
-			$i = 0;
-				
-			for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
-				if ($candidato ['nroCandidato'] == $nroCandidatos ['candidatos'] [$i])
-					$candidatosSeleccionadosActivos [] = $candidato ['nroCandidato'];
-			}
-		}
-		
-		if (count ( $candidatosSeleccionadosActivos ) == 0) {
-				
-			$i = 0;
-				
-			for($i, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
-		
-				$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
-				if (!$candidato) {
-					$response = new JsonResponse(null,500);
-					$response->setData('Candidato seleccionado no encontrado.');
-					return $response;
-				}
-				$candidatos [] = $candidato;
-			}
-		}
-		
-		else {
-				
-			$datosCandidatosActivos = array ();
-			foreach ( $candidatosSeleccionadosActivos as $nroCandidato ) {
-		
-				$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidato );
-		
-				$datosCandidatosActivos [] = array (
-						'apellido' => $candidato->getApellido (),
-						'nombre' => $candidato->getNombre ()
-				);
-			}
-				
+		//COMPROBAR SI HAY CANDIDATOS ACTIVOS ENTRE LOS SELECCIONADOS PARA SER EVALUADOS
+		if(count($candidatosSeleccionadosActivos = $this->comprobarCandidatosActivos($nroCandidatos)) != 0){
 			$response = new JsonResponse(null,500);
-			$response->setData($datosCandidatosActivos);
+			$response->setData($candidatosSeleccionadosActivos);
 			return $response;
-
 		}
-		
-		
+		else //OBTENER ENTIDADES DE CANDIDATOS SELECCIONADOS
+			{
+				for($i= 0, $total = count ( $nroCandidatos ['candidatos'] ); $i < $total; $i ++) {
+			
+					$candidato = $em->getRepository ( 'ichTestBundle:Candidato' )->find ( $nroCandidatos ['candidatos'] [$i] );
+					if (!$candidato) {
+						$response = new JsonResponse(null,500);
+						$response->setData('Candidato seleccionado no encontrado.');
+						return $response;
+					}
+					
+					$candidatos [] = $candidato;
+				}
+			}
 	
+			
 		$idPuesto = $this->get('session')->get('idPuesto');
 		
 		$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $idPuesto );
@@ -329,7 +335,7 @@ class EvaluacionController extends Controller {
 		
 		$competencias = $query->getResult ();
 		
-		
+		//VERIFICAR SI COMPETENCIAS PREVIAMENTE VALIDADAS COINCIDEN CON ACTUALES
 		if (count ( $competencias ) != count ( $competenciasTemporal ))
 		{
 			$response = new JsonResponse(null,500);
