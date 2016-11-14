@@ -68,17 +68,12 @@ class EvaluacionController extends Controller {
 	
 				$this->get('session')->set('nroCandidatos',$data);
 
-				/*
-				 * $dql = "SELECT p FROM ichTestBundle:Puesto p WHERE p.id IN
-			 	* (SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE
-			 	* pc.habilitada = true)";
-			 	*/
 				
 				//BUSCAR PUESTOS CON AL MENOS UNA COMPETENCIA ASIGNADA
 				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
 				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
 				WHERE e.id = IDENTITY(p.empresa) and p.id IN
-				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc)";
+				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE pc.activa = true)";
 				$query = $co->createQuery ( $dql );
 				
 				$puestos= $query->getResult();
@@ -145,7 +140,7 @@ class EvaluacionController extends Controller {
 			
 		$query = $em->createQuery ( "SELECT c.nombre
     	FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    	WHERE pc.puesto = :p and pc.competencia = c and c.auditoria is NULL and c.id NOT IN
+    	WHERE pc.puesto = :p and pc.competencia = c and pc.activa = true and c.auditoria is NULL and c.id NOT IN
 		(SELECT distinct c2.id
     	FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
     	WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
@@ -165,7 +160,7 @@ class EvaluacionController extends Controller {
 
 			$query = $em->createQuery ( 'SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
     			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL' )
+    			WHERE IDENTITY(pc.puesto) = :p and pc.activa = true and pc.competencia = c and c.auditoria is NULL' )
 				->setParameter ( 'p', $puesto->getId() );
 			
 			$competencias = $query->getResult ();
@@ -324,7 +319,7 @@ class EvaluacionController extends Controller {
 		//COMPETENCIAS VÁLIDAS PARA SER EVALUADAS
 		$query = $em->createQuery ( "SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
     			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and c.auditoria is NULL and c.id IN
+    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and pc.activa = true and c.auditoria is NULL and c.id IN
 				(SELECT distinct c2.id
     			FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
     			WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
@@ -347,14 +342,31 @@ class EvaluacionController extends Controller {
 			return $response;
 		}
 		
-		//VERIFICAR SI EXISTE PARÁMETRO DE CONFIGURACIÓN
+		//VERIFICAR SI EXISTEN PARÁMETROS DE CONFIGURACIÓN
 		if(!$this->container->hasParameter('ichTestBundle.preguntasPorBloque'))
 		{
 			$response = new JsonResponse(null,500);
 			$response->setData('ParÃ¡metro preguntasPorBloque requerido no disponible.');
 			return $response;
 		}
-		
+		else if(!$this->container->hasParameter('ichTestBundle.tiempoMaxCuestionario'))
+		{
+			$response = new JsonResponse(null,500);
+			$response->setData('ParÃ¡metro tiempoMaxCuestionario requerido no disponible.');
+			return $response;
+		}
+		else if(!$this->container->hasParameter('ichTestBundle.tiempoMaxActivoCuestionario'))
+		{
+			$response = new JsonResponse(null,500);
+			$response->setData('ParÃ¡metro tiempoMaxActivoCuestionario requerido no disponible.');
+			return $response;
+		}
+		else if(!$this->container->hasParameter('ichTestBundle.cantMaxAccesosCuestionario'))
+		{
+			$response = new JsonResponse(null,500);
+			$response->setData('ParÃ¡metro cantMaxAccesosCuestionario requerido no disponible.');
+			return $response;
+		}
 		
 		
 		//CREAR EVALUACIÓN
@@ -379,13 +391,27 @@ class EvaluacionController extends Controller {
 			}
 				
 			$cuestionario->setEstado(0);
+			
 			$cuestionario->setCantAccesos(0);
-			$cuestionario->setCantMaxAccesos(2);
-			$cuestionario->setTiempoMax(48.00);
-			$cuestionario->setTiempoMaxActivo(0.30);
+			
+			$cantMaxAccesos = $this->container->getParameter('ichTestBundle.cantMaxAccesosCuestionario');
+
+			$cuestionario->setCantMaxAccesos($cantMaxAccesos);
+			
+			$tiempoMax = $this->container->getParameter('ichTestBundle.tiempoMaxCuestionario');
+
+			$cuestionario->setTiempoMax($tiempoMax);
+
+			$tiempoMaxActivo = $this->container->getParameter('ichTestBundle.tiempoMaxActivoCuestionario');
+			
+			$cuestionario->setTiempoMaxActivo($tiempoMaxActivo);
+			
 			$cuestionario->setPuntajeTotal(0);
+			
 			$cuestionario->setCandidato($candidato);
+			
 			$cuestionario->setEvaluacion($evaluacion);
+			
 			$evaluacion->addCuestionario($cuestionario);	
 		}
 		
@@ -605,6 +631,8 @@ class EvaluacionController extends Controller {
 				
 				$copiaPregunta->setNroBloque($bloqueActual);
 				
+				$em->persist ( $copiaPregunta );
+				
 			}
 				
 		}
@@ -624,16 +652,108 @@ class EvaluacionController extends Controller {
 		
 		return new JsonResponse ( $nombre_xls );
 	}
-	
-	
-	public function verificarEstadoCuestionarioAction(){
-	
-		if($request->getMethod() == 'POST');
+	public function verificarEstadoCuestionarioAction(Request $request, $id) {
+		$em = $this->getDoctrine ()->getManager ();
 		
-		$date2 = new \DateTime;
-		$date1 = new \DateTime('2016-11-10');
-		$diff = $date1->diff($date2);
-		echo ($diff->format('%d') * 24)+ $diff->format('%h')+ ($diff->format('%i')/100) == 82.55;
+		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $id );
+		
+		if (! $cuestionario) {
+			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
+		}
+		
+		if ($cuestionario->getEstado () == 2)
+			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+					'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
+			) );
+		
+		if ($request->getMethod () == 'GET') {
+			$cantAccesos = $cuestionario->getCantAccesos ();
+			
+			$cuestionario->setCantAccesos ( $cantAccesos + 1 );
+		}
+		
+		if ($cuestionario->getCantAccesos () > $cuestionario->getCantMaxAccesos ()) {
+			$cuestionario->setEstado ( 2 );
+			
+			$cuestionario->setEstadoEn ( new \DateTime () );
+			
+			$em->persist ( $cuestionario );
+			
+			$em->flush ();
+			
+			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+					'mensaje' => "Ha superado la cantidad mÃ¡xima de accesos permitidos." 
+			) );
+		}
+		
+		// VERIFICAR SI SE HA SUPERADO EL TIEMPO MÁXIMO PARA COMPLETAR EL CUESTIONARIO
+		$fechaHoraActual = new \DateTime ();
+		
+		$fechaHoraComienzoCuestionario = $cuestionario->getComienzoEn ();
+		
+		$tiempoTranscurrido = $fechaHoraComienzoCuestionario->diff ( $fechaHoraActual );
+		
+		$horasMinutosFloat = ($tiempoTranscurrido->format ( '%d' ) * 24) + $tiempoTranscurrido->format ( '%h' ) + ($tiempoTranscurrido->format ( '%i' ) / 100);
+		
+		if ($horasMinutosFloat >= $cuestionario->getTiempoMax ()) {
+			$cuestionario->setEstado ( 2 );
+			
+			$cuestionario->setEstadoEn ( new \DateTime () );
+			
+			$em->persist ( $cuestionario );
+			
+			$em->flush ();
+			
+			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+					'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
+			) );
+		}
+		
+		if (! $cuestionario->getComienzoEn ())
+			return $this->redirectToRoute ( 'ich_evaluacion_ingresoCuestionario', array (
+					'cuestionarioId' => $id 
+			) );
+		
+		if ($cuestionario->getEstado () == 0) {
+			
+			$fechaHoraActual = new \DateTime ();
+			
+			$fechaHoraEstadoCuestionario = $cuestionario->getEstadoEn ();
+			
+			$tiempoTranscurrido = $fechaHoraEstadoCuestionario->diff ( $fechaHoraActual );
+			
+			$horasMinutosFloat = ($tiempoTranscurrido->format ( '%d' ) * 24) + $tiempoTranscurrido->format ( '%h' ) + ($tiempoTranscurrido->format ( '%i' ) / 100);
+			
+			if ($horasMinutosFloat >= $cuestionario->getTiempoMaxActivo ()) {
+				
+				$cuestionario->setEstado ( 3 );
+				
+				$cuestionario->setEstadoEn ( new \DateTime () );
+				
+				$em->persist ( $cuestionario );
+				
+				$em->flush ();
+				
+				return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+						'mensaje' => "Ha superado el tiempo de actividad permitido. Por favor, vuelva a ingresar." 
+				) );
+			}
+		}
+		
+		if ($cuestionario->getEstado () == 3) {
+			$cuestionario->setEstado ( 0 );
+			
+			$cuestionario->setEstadoEn ( new \DateTime () );
+			
+			$em->persist ( $cuestionario );
+			
+			$em->flush ();
+		}
+		
+		return $this->redirectToRoute ( 'ich_evaluacion_completarCuestionario', array (
+				'request' => $request,
+				'idCuestionario' => $id 
+		) );
 	}
 	
 

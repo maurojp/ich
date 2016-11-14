@@ -20,7 +20,7 @@ class CopiaPregunta
 	protected $copiaFactor;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaOpcionRespuesta", mappedBy="copiaPregunta", cascade={"persist", "remove"})
+	 * @ORM\OneToMany(targetEntity="ich\TestBundle\Entity\CopiaOpcionRespuesta", mappedBy="copiaPregunta", cascade={"persist"})
 	 */
 	protected $copiaOpcionesRespuesta;
 		

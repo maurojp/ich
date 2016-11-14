@@ -7,7 +7,12 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
-
+    ichTestBundle.preguntasPorBloque: 2
+    ichTestBundle.instruccionesCuestionario: [En el siguiente cuestionario se evaluarán sus actitudes Técnicas y Actitudinales.,Cuando haya ingresado el sistema le mostrará el primer bloque con preguntas a responder elegidas de manera aleatoria.,Por cada pregunta deberá seleccionar una opción de respuesta, cuando haya terminado el bloque presione SIGUIENTE para continuar.,Considere que no puede regresar a bloques de preguntas ya respondidos, ya sea para ver o modificar respuestas seleccionadas.,Si excede el tiempo máximo para completar el cuestionario, el sistema le informará de tal situación y será redirigido al login de la Web.,Al completar el último bloque de preguntas presione FINALIZAR, el sistema le notificará de la finalización con éxito del cuestionario.]
+    ichTestBundle.tiempoMaxCuestionario: 48
+    ichTestBundle.tiempoMaxActivoCuestionario: 0.30
+    ichTestBundle.cantMaxAccesosCuestionario: 2
+    
 framework:
     #esi:             ~
     translator:      { fallbacks: [en] }
