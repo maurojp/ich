@@ -22,15 +22,15 @@ var getUrlParameter = function getUrlParameter(sParam) {
     if (loop == 'true') {
         
         bootbox.confirm({
-        message: "Desea agregar un nuevo puesto?",
+        message: "Â¿Desea crear un nuevo Puesto?",
         buttons: {
             confirm: {
                 label: 'Si',
-                className: 'btn-success'
+                className: 'btn-success pull-left'
             },
             cancel: {
                 label: 'No',
-                className: 'btn-danger'
+                className: 'btn-danger pull-left'
             }
         },
         callback: function (result) {
@@ -39,6 +39,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
              
             $(location).attr('href',indexroute);
             //alert('Redirijo a Index');
+
         }
         }
     });

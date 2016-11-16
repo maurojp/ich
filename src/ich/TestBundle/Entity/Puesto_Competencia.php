@@ -45,6 +45,7 @@ class Puesto_Competencia
      * @var int
      * @Assert\NotBlank()
      * @Assert\LessThanOrEqual(value = 10)
+     * @Assert\GreaterThanOrEqual(value = 0)
      * @ORM\Column(name="ponderacion", type="integer")
      */
     private $ponderacion;
