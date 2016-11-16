@@ -22,15 +22,15 @@ var getUrlParameter = function getUrlParameter(sParam) {
     if (loop == 'true') {
         
         bootbox.confirm({
-        message: "Â¿Desea crear un nuevo Puesto?",
+        message: "&#191;Desea crear un nuevo Puesto?",
         buttons: {
             confirm: {
                 label: 'Si',
-                className: 'btn-success pull-left'
+                className: 'btn-success'
             },
             cancel: {
                 label: 'No',
-                className: 'btn-danger pull-left'
+                className: 'btn-danger'
             }
         },
         callback: function (result) {
