@@ -59,11 +59,15 @@
                 
                 <div class="col-md-10 table table-striped table-hover">
                     
-                <h3>{{ form_label(form.competencias) }}</h3>
+                <h4>{{ form_label(form.competencias) }}</h4>
                 
-                {% if not form.competencias|length %}
-                    <h4 class="text-info">No existen competencias en el puesto.</h4>
-                {% endif %}
+                <div class="text notificacionCompetencias">
+                    {% if not form.competencias|length %}
+                    <div class="text-info noExistenCompetencias">
+                        <h5>No existen competencias en el puesto.</h5>
+                    </div>
+                    {% endif %}
+                </div>
                 
                 <div class="list-group competencias" data-prototype="{{ _self.model_prototype(form.competencias.vars.prototype)|e('html_attr') }}">
                     {% for puestocompetencia in form.competencias %}
@@ -93,7 +97,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('bundles/ichtest/js/list-forms.js') }}"></script>
+    <script src="{{ asset('bundles/ichtest/js/list-form.js') }}"></script>
     <script src="{{ asset('bundles/ichtest/js/loop-add.js') }}"></script>
 {% endblock %}
 

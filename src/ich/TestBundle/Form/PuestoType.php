@@ -32,7 +32,8 @@ class PuestoType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'cascade_validation' => true
+                'cascade_validation' => true,
+                'required' => false
             ))
             ->add('save', 'submit', array('label' => 'Guardar'))
         ;

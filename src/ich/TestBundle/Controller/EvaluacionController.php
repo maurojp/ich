@@ -48,7 +48,6 @@ class EvaluacionController extends Controller {
 		->setMethod ( 'POST' )
 		->getForm ();
 		
-		
 		return $form;
 	}
 	
@@ -920,13 +919,13 @@ class EvaluacionController extends Controller {
 		*/
 		 if($bloqueMayor == $bloqueMenor){
 
-		 	$this->get('session')->set('ultimoBloque',true);
+		 	$this->get('session')->set('esUltimoBloque',true);
 		 	return $this->render ( 'ichTestBundle:Evaluacion:ultimoBloqueCuestionario.html.twig', array (
 				'form' => $form->createView () 
 			) );
 		}	
 
-		$this->get('session')->set('ultimoBloque',false);
+		$this->get('session')->set('esUltimoBloque',false);
 		return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
 				'form' => $form->createView () 
 		) );
@@ -978,22 +977,48 @@ class EvaluacionController extends Controller {
 
 
 	public function gestionarBloqueCuestionarioAction($idCuestionario){
-		/*
 
-		$ultimoBloque = $this->get('session')->get('ultimoBloque'); 
+
+		$esUltimoBloque = $this->get('session')->get('esUltimoBloque'); 
 
 		$datosBloque = $this->get('session')->get('datosBloque'); 
 
-		if($this->bloqueRespondido($datosBloque)){
+		if($this->bloqueFueRespondido($datosBloque)){
 
+			foreach($datosBloque['copiaPreguntas'] as $copiaPregunta){
 
+				$idOpcionSeleccionada = $this->getIdOpcionSeleccionada($copiaPregunta);
+
+				$copiaOpcionRespuesta = $em->getRepository ( 'ichTestBundle:CopiaOpcionRespuesta' )->find ( $idOpcionSeleccionada );
+				
+				if (! $copiaOpcionRespuesta)
+					throw $this->createNotFoundException ( 'Opción de Respuesta no encontrada.' );
+				
+				$copiaOpcionRespuesta->setSeleccionada(true);
+				
+			}
+
+			if($esUltimoBloque){
+
+				if($this->finalizarCuestionario($idCuestionario))
+					return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+						'mensaje' => "Cuestionario finalizado con éxito." 
+					) );
+				else
+					return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
+					'idCuestionario' => $idCuestionario
+					) );
+			}
 		}
 
-		else 
-		print_r($datosBloque);
-	 throw $this->createNotFoundException (count($datosBloque) );
-	
-		*/
+		else{
+
+			$form = $this->createBloqueCuestionarioForm ( $datosBloque, $idCuestionario );
+		
+			return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
+				'form' => $form->createView () 
+			) );
+		} 
 
 	}
 
