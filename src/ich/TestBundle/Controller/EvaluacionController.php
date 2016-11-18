@@ -16,6 +16,7 @@ use ich\TestBundle\Entity\CopiaCompetencia;
 use ich\TestBundle\Entity\CopiaFactor;
 use ich\TestBundle\Entity\CopiaPregunta;
 use ich\TestBundle\Entity\CopiaOpcionRespuesta;
+use ich\TestBundle\Form\CopiaPreguntaType;
 
 class EvaluacionController extends Controller {
 
@@ -153,7 +154,7 @@ class EvaluacionController extends Controller {
 		WHERE pr.factor = f2 and f2.auditoria is NULL and pr.auditoria is NULL
 		GROUP BY f2.id
 		HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto );
-			
+
 		$competenciasInvalidas = $query->getResult ();
 		$competencias =  array();
 
@@ -315,9 +316,9 @@ class EvaluacionController extends Controller {
 		
 		
 
-		$competenciasTemporal = $this->get ( 'session' )->get ( 'competencias' );
+		$arrayCompetenciasTemporal = $this->get ( 'session' )->get ( 'competencias' );
 		
-		//COMPETENCIAS VÁLIDAS PARA SER EVALUADAS
+		//COMPETENCIAS VALIDAS PARA SER EVALUADAS
 		$query = $em->createQuery ( "SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
     			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
     			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and pc.activa = true and c.auditoria is NULL and c.id IN
@@ -333,17 +334,35 @@ class EvaluacionController extends Controller {
 				GROUP BY f2.id
 				HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto->getId () );
 		
-		$competencias = $query->getResult ();
+		$arrayCompetenciasValidas = $query->getResult ();
 		
 		//VERIFICAR SI COMPETENCIAS PREVIAMENTE VALIDADAS COINCIDEN CON ACTUALES
-		if (count ( $competencias ) != count ( $competenciasTemporal ))
-		{
-			$response = new JsonResponse(null,500);
-			$response->setData('Existe al menos una Competencia que ya no cumple los requisitos para ser evaluada.');
-			return $response;
+
+		if(count ($arrayCompetenciasValidas) == count ($arrayCompetenciasTemporal)){
+			foreach($arrayCompetenciasValidas as $competenciaValida)
+			{
+				$esValida = false;
+
+				foreach($arrayCompetenciasTemporal as $competenciaTemporal){
+					if($competenciaTemporal['codigo'] == $competenciaValida['codigo'])
+						$esValida = true;
+				}
+
+				if (!$esValida){
+					$response = new JsonResponse(null,500);
+					$response->setData('Existe al menos una Competencia que ya no cumple los requisitos para ser evaluada.');
+					return $response;
+				}	
+			}
 		}
+		else{
+			$response = new JsonResponse(null,500);
+			$response->setData('Se detectaron cambios en Competencias del Puesto seleccionado.');
+			return $response;
+		}	
+
 		
-		//VERIFICAR SI EXISTEN PARÁMETROS DE CONFIGURACIÓN
+		//VERIFICAR SI EXISTEN PARAMETROS DE CONFIGURACIÓN
 		if(!$this->container->hasParameter('ichTestBundle.preguntasPorBloque'))
 		{
 			$response = new JsonResponse(null,500);
@@ -425,7 +444,7 @@ class EvaluacionController extends Controller {
 			
 		foreach ( $cuestionarios as $cuestionario ) {
 			
-			foreach ( $competencias as $competencia ) {
+			foreach ( $arrayCompetenciasValidas as $competencia ) {
 				
 				$copiaCompetencia = new CopiaCompetencia ();
 				
@@ -515,17 +534,15 @@ class EvaluacionController extends Controller {
 					//SELECCIONAR 2 PREGUNTAS AL AZAR
 					shuffle ($arrayPreguntas );
 					
-					$preguntasRandom = array_slice ($arrayPreguntas, 0, 2 );
-					
 					for($i = 0; $i < 2; $i ++) {
 						
 						$copiaPregunta = new CopiaPregunta ();
 						
-						$copiaPregunta->setCodigo ( $preguntasRandom [$i]->getCodigo () );
+						$copiaPregunta->setCodigo ( $arrayPreguntas [$i]->getCodigo () );
 						
-						$copiaPregunta->setPregunta ( $preguntasRandom [$i]->getPregunta () );
+						$copiaPregunta->setPregunta ( $arrayPreguntas [$i]->getPregunta () );
 						
-						$copiaPregunta->setDescripcion ( $preguntasRandom [$i]->getDescripcion () );
+						$copiaPregunta->setDescripcion ( $arrayPreguntas [$i]->getDescripcion () );
 						
 						$copiaPregunta->setCopiaFactor ( $copiaFactor );
 						
@@ -694,7 +711,7 @@ class EvaluacionController extends Controller {
 
 		}
 		
-		// VERIFICAR SI SE HA SUPERADO EL TIEMPO MÁXIMO PARA COMPLETAR EL CUESTIONARIO
+		// VERIFICAR SI SE HA SUPERADO EL TIEMPO MAXIMO PARA COMPLETAR EL CUESTIONARIO
 		$fechaHoraActual = new \DateTime ();
 		
 		$fechaHoraComienzoCuestionario = $cuestionario->getComienzoEn ();
@@ -794,45 +811,129 @@ class EvaluacionController extends Controller {
 	}
 	
 
-	private function recuperarUltimoBloqueCuestionario($idCuestionario){
-		
+	public function recuperarUltimoBloqueCuestionarioAction($idCuestionario) {
 		$em = $this->getDoctrine ()->getManager ();
 		
-		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $id );
+		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $idCuestionario );
 		
 		if (! $cuestionario) {
 			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
 		}
 		
-		$query = $em->createQuery ( "SELECT cp
-    	FROM ichTestBundle:CopiaCompetencia cc JOIN ichTestBundle:CopiaFactor cf JOIN ichTestBundle:CopiaPregunta cp 
-    	WHERE IDENTITY(cc.cuestionario) = :ID and cf.copiaCompetencia = cc and cp.copiaFactor = cf and IDENTITY(cp) NOT IN
-		(SELECT distinct cp2.id
-    	FROM ichTestBundle:CopiaCompetencia cc2 JOIN ichTestBundle:CopiaFactor cf2 JOIN ichTestBundle:CopiaPregunta cp2 JOIN ichTestBundle:CopiaOpcionRespuesta cor
-    	WHERE IDENTITY(cc2.cuestionario) = :ID and cf2.copiaCompetencia = cc2 and cp2.copiaFactor = cf2 and cor.copiaPregunta = cp2 and cor.seleccionada = true
-		) and cp.nroBloque <= all 
-		(SELECT distinct cp3.nroBloque
-    	FROM ichTestBundle:CopiaCompetencia cc3 JOIN ichTestBundle:CopiaFactor cf3 JOIN ichTestBundle:CopiaPregunta cp3 
-    	WHERE IDENTITY(cc3.cuestionario) = :ID and cf3.copiaCompetencia = cc3 and cp3.copiaFactor = cf3 and IDENTITY(cp3) NOT IN
-		(SELECT distinct cp4.id
-    	FROM ichTestBundle:CopiaCompetencia cc4 JOIN ichTestBundle:CopiaFactor cf4 JOIN ichTestBundle:CopiaPregunta cp4 JOIN ichTestBundle:CopiaOpcionRespuesta cor2
-    	WHERE IDENTITY(cc4.cuestionario) = :ID and cf4.copiaCompetencia = cc4 and cp4.copiaFactor = cf4 and cor2.copiaPregunta = cp2 and cor2.seleccionada = true
-		)) ORDER BY cp.nroOrden ASC")->setParameter ( 'ID', $idCuestionario );
+		$copiaPreguntasCuestionario = array ();
+		$bloqueMenor = 0;
+		
+		// OBTENER NRO DE BLOQUE A RESPONDER Y TODAS LAS PREGUNTAS NO RESPONDIDAS
+		foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
 			
-		$copiaPreguntasBloque = $query->getResult ();
-
-		$form = createBloqueCuestionarioForm($copiaPreguntasBloque, $idCuestionario);
-
-		return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array ('form' => $form->createView()) );
-
+			foreach ( $copiaCompetencia->getCopiaFactores () as $copiaFactor ) {
+				
+				foreach ( $copiaFactor->getCopiaPreguntas () as $copiaPregunta ) {
+					
+					$seleccionada = false;
+					
+					foreach ( $copiaPregunta->getCopiaOpcionesRespuesta () as $copiaOpcionRespuesta ) {
+						
+						if ($copiaOpcionRespuesta->getSeleccionada () != NULL && $copiaOpcionRespuesta->getSeleccionada () == true)
+							$seleccionada = true;
+					}
+					
+					if ($bloqueMenor == 0)
+						$bloqueMenor = $copiaPregunta->getNroBloque ();
+					
+					else if ($copiaPregunta->getNroBloque () < $bloqueMenor)
+						$bloqueMenor = $copiaPregunta->getNroBloque ();
+					
+					if (! $seleccionada)
+						$copiaPreguntasCuestionario [] = $copiaPregunta;
+				}
+			}
+		}
+		
+		$copiasPreguntasBloqueMenor = array ();
+		
+		$copiasPreguntasByNroOrden = array (
+				'copiaPreguntas' => array () 
+		);
+		
+		// OBTENER PREGUNTAS NO RESPONDIDAS QUE PERTENECEN AL NRO DE BLOQUE A RESPONDER Y ORDENARLAS POR NRO ORDEN
+		foreach ( $copiaPreguntasCuestionario as $copiaPreguntaCuestionario ) {
+			
+			if ($copiaPreguntaCuestionario->getNroBloque () == $bloqueMenor)
+				$copiasPreguntasBloqueMenor [] = $copiaPreguntaCuestionario;
+		}
+		
+		for($i = 1, $totalPreguntas = count ( $copiasPreguntasBloqueMenor ); $i <= $totalPreguntas; $i ++) {
+			
+			foreach ( $copiasPreguntasBloqueMenor as $copiaPreguntaBloqueMenor ) {
+				
+				if ($copiaPreguntaBloqueMenor->getNroOrden () == $i) {
+					
+					$copiasOpcionesRespuestaByOrdenEvaluacion = array ();
+					
+					// OBTENER OPCIONES DE RESPUESTA Y ORDENARLAS POR NRO EVALUACION
+					for($j = 1, $totalOpciones = count ( $copiaPreguntaBloqueMenor->getCopiaOpcionesRespuesta () ); $j <= $totalOpciones; $j ++) {
+						
+						foreach ( $copiaPreguntaBloqueMenor->getCopiaOpcionesRespuesta () as $copiaOpcionRespuesta ) {
+							
+							if ($copiaOpcionRespuesta->getOrdenEvaluacion () == $j) {
+								$copiasOpcionesRespuestaByOrdenEvaluacion [] = array (
+										'id' => $copiaOpcionRespuesta->getId (),
+										'descripcion' => $copiaOpcionRespuesta->getDescripcion (),
+										'seleccionada' => false 
+								);
+								
+								break;
+							}
+						}
+					}
+					
+					$copiasPreguntasByNroOrden ['copiaPreguntas'] [] = array (
+							'pregunta' => $copiaPreguntaBloqueMenor->getPregunta (),
+							'copiaOpcionesRespuesta' => $copiasOpcionesRespuestaByOrdenEvaluacion 
+					);
+				}
+			}
+		}
+		
+		$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario );
+		
+		
+		/* print_r ( $form->getData () );
+		 throw $this->createNotFoundException ( count ( $form->getData () ['copiaPreguntas'] ) );*/
+		 
+		
+		return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
+				'form' => $form->createView () 
+		) );
 	}
 
-
+	
+	
+	private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCuestionario){
+		
+	$form = $this->createFormBuilder ( $copiasPreguntasByNroOrden )->add ( 'copiaPreguntas', CollectionType::class, array (
+			'entry_type' => CopiaPreguntaType::class,
+			'by_reference' => false
+	) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_verificarEstadoCuestionario', array (
+			'idCuestionario' => $idCuestionario
+	) ) )->setMethod ( 'POST' )->getForm ();
+	
+	return $form;
+	
+	}
+	
+	
 	private function ingresoCuestionario(){
 		
 		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
 	}
 
+
+	private function verificarEstadoCuestionario(Request $request, $idCuestionario){
+		
+		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
+	}
 
 	private function gestionarBloqueCuestionario($datosBloque, $idCuestionario){
 		

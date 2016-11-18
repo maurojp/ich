@@ -100,7 +100,16 @@ ich_evaluacion_newStep5:
 ich_evaluacion_buscarCandidatosActivos:
     path:       /evaluacion/buscarCandidatosActivos
     defaults:   { _controller: ichTestBundle:Evaluacion:buscarCandidatosActivos }
+
+ich_evaluacion_recuperarUltimoBloqueCuestionario:
+    path:       /evaluacion/recuperarUltimoBloque/{idCuestionario}
+    defaults:   { _controller: ichTestBundle:Evaluacion:recuperarUltimoBloqueCuestionario }
            
+ich_evaluacion_verificarEstadoCuestionario:
+    path:       /evaluacion/verificarEstadoCuestionario/{idCuestionario}
+    defaults:   { _controller: ichTestBundle:Evaluacion:verificarEstadoCuestionario }
+
+    
 # Autenticacion
 
 ich_test_homepage:
