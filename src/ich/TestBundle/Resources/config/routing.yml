@@ -106,10 +106,18 @@ ich_evaluacion_recuperarUltimoBloqueCuestionario:
     defaults:   { _controller: ichTestBundle:Evaluacion:recuperarUltimoBloqueCuestionario }
            
 ich_evaluacion_verificarEstadoCuestionario:
-    path:       /evaluacion/verificarEstadoCuestionario/{idCuestionario}
+    path:       /evaluacion/verificarEstadoCuestionario/{id}
     defaults:   { _controller: ichTestBundle:Evaluacion:verificarEstadoCuestionario }
+    methods: [POST,GET]
 
-    
+ich_evaluacion_ingresoCuestionario:
+    path:       /evaluacion/ingresoCuestionario/{cuestionarioId}
+    defaults:   { _controller: ichTestBundle:Evaluacion:ingresoCuestionario }
+
+ich_evaluacion_gestionarBloqueCuestionario:
+    path:       /evaluacion/gestionarBloqueCuestionario/{idCuestionario}
+    defaults:   { _controller: ichTestBundle:Evaluacion:gestionarBloqueCuestionario }
+
 # Autenticacion
 
 ich_test_homepage:

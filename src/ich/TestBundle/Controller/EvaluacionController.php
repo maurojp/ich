@@ -687,6 +687,10 @@ class EvaluacionController extends Controller {
 			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 					'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
 			) );
+		else if($estadoCuestionario == 1)
+			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+					'mensaje' => "El cuestionario ha sido completado. Acceso denegado." 
+			) );
 
 		//REQUEST GET, ENTONCES ACABA DE INGRESAR AL CUESTIONARIO
 		if ($method == 'GET') {
@@ -710,35 +714,36 @@ class EvaluacionController extends Controller {
 		}
 
 		}
-		
-		// VERIFICAR SI SE HA SUPERADO EL TIEMPO MAXIMO PARA COMPLETAR EL CUESTIONARIO
-		$fechaHoraActual = new \DateTime ();
-		
-		$fechaHoraComienzoCuestionario = $cuestionario->getComienzoEn ();
-		
-		$tiempoTranscurrido = $fechaHoraComienzoCuestionario->diff ( $fechaHoraActual );
-		
-		$horasMinutosFloat = ($tiempoTranscurrido->format ( '%d' ) * 24) + $tiempoTranscurrido->format ( '%h' ) + ($tiempoTranscurrido->format ( '%i' ) / 100);
-		
-		if ($horasMinutosFloat >= $cuestionario->getTiempoMax ()) {
-			$cuestionario->setEstado ( 2 );
-			
-			$cuestionario->setEstadoEn ( new \DateTime () );
-			
-			$em->persist ( $cuestionario );
-			
-			$em->flush ();
-			
-			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
-					'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
-			) );
-		}
-		
+
 
 		if (! $cuestionario->getComienzoEn ())
 			return $this->redirectToRoute ( 'ich_evaluacion_ingresoCuestionario', array (
 					'cuestionarioId' => $id 
 			) );
+		else {
+			// VERIFICAR SI SE HA SUPERADO EL TIEMPO MAXIMO PARA COMPLETAR EL CUESTIONARIO
+			$fechaHoraActual = new \DateTime ();
+		
+			$fechaHoraComienzoCuestionario = $cuestionario->getComienzoEn ();
+		
+			$tiempoTranscurrido = $fechaHoraComienzoCuestionario->diff ( $fechaHoraActual );
+		
+			$horasMinutosFloat = ($tiempoTranscurrido->format ( '%d' ) * 24) + $tiempoTranscurrido->format ( '%h' ) + ($tiempoTranscurrido->format ( '%i' ) / 100);
+		
+			if ($horasMinutosFloat >= $cuestionario->getTiempoMax ()) {
+				$cuestionario->setEstado ( 2 );
+			
+				$cuestionario->setEstadoEn ( new \DateTime () );
+			
+				$em->persist ( $cuestionario );
+			
+				$em->flush ();
+			
+				return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+						'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
+				) );
+			}
+		}
 		
 		if ($method == 'POST') {
 
@@ -773,13 +778,15 @@ class EvaluacionController extends Controller {
 
 			$form->handlerequest($request);
 
-			if($form->isValid())
-			return $this->redirectToRoute ( 'ich_evaluacion_gestionarBloqueCuestionario', array (
-					'datosBloque' => $form->getData(),
+			if(!$form->isValid()){
+				$this->get('session')->set('datosBloque',$form->getData()); 
+
+				return $this->redirectToRoute ( 'ich_evaluacion_gestionarBloqueCuestionario', array (
 					'idCuestionario' => $id
-			) );
+				) );
+			}
 			else
-				return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloque', array ('idCuestionario' => $id 
+				return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array ('idCuestionario' => $id 
 				) );
 
 		} //SI ACABA DE INGRESAR SE RENUEVA EL ESTADO ACTIVO
@@ -805,7 +812,7 @@ class EvaluacionController extends Controller {
 			}
 		}
 		
-		return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloque', array (
+		return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
 				'idCuestionario' => $id 
 		) );
 	}
@@ -822,7 +829,8 @@ class EvaluacionController extends Controller {
 		
 		$copiaPreguntasCuestionario = array ();
 		$bloqueMenor = 0;
-		
+		$bloqueMayor = 0;
+
 		// OBTENER NRO DE BLOQUE A RESPONDER Y TODAS LAS PREGUNTAS NO RESPONDIDAS
 		foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
 			
@@ -838,9 +846,16 @@ class EvaluacionController extends Controller {
 							$seleccionada = true;
 					}
 					
+
+					if ($bloqueMayor == 0)
+						$bloqueMayor = $copiaPregunta->getNroBloque ();
+
+					else if ($copiaPregunta->getNroBloque () > $bloqueMayor)
+						$bloqueMayor = $copiaPregunta->getNroBloque ();
+
 					if ($bloqueMenor == 0)
 						$bloqueMenor = $copiaPregunta->getNroBloque ();
-					
+
 					else if ($copiaPregunta->getNroBloque () < $bloqueMenor)
 						$bloqueMenor = $copiaPregunta->getNroBloque ();
 					
@@ -849,7 +864,7 @@ class EvaluacionController extends Controller {
 				}
 			}
 		}
-		
+
 		$copiasPreguntasBloqueMenor = array ();
 		
 		$copiasPreguntasByNroOrden = array (
@@ -898,11 +913,20 @@ class EvaluacionController extends Controller {
 		
 		$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario );
 		
-		
-		/* print_r ( $form->getData () );
-		 throw $this->createNotFoundException ( count ( $form->getData () ['copiaPreguntas'] ) );*/
+		/*
+		 print_r ( $form->getData () );
+		 throw $this->createNotFoundException ( count ( $form->getData () ['copiaPreguntas'] ) );
 		 
-		
+		*/
+		 if($bloqueMayor == $bloqueMenor){
+
+		 	$this->get('session')->set('ultimoBloque',true);
+		 	return $this->render ( 'ichTestBundle:Evaluacion:ultimoBloqueCuestionario.html.twig', array (
+				'form' => $form->createView () 
+			) );
+		}	
+
+		$this->get('session')->set('ultimoBloque',false);
 		return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
 				'form' => $form->createView () 
 		) );
@@ -916,7 +940,7 @@ class EvaluacionController extends Controller {
 			'entry_type' => CopiaPreguntaType::class,
 			'by_reference' => false
 	) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_verificarEstadoCuestionario', array (
-			'idCuestionario' => $idCuestionario
+			'id' => $idCuestionario
 	) ) )->setMethod ( 'POST' )->getForm ();
 	
 	return $form;
@@ -924,22 +948,53 @@ class EvaluacionController extends Controller {
 	}
 	
 	
-	private function ingresoCuestionario(){
+	public function ingresoCuestionarioAction($cuestionarioId){
 		
-		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
+		$em = $this->getDoctrine ()->getManager ();
+		
+		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $cuestionarioId );
+		
+		if (! $cuestionario) {
+			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
+		}
+
+			$cuestionario->setComienzoEn ( new \DateTime () );
+
+			$cuestionario->setEstado ( 0 );
+			
+			$cuestionario->setEstadoEn ( new \DateTime () );
+			
+			$em->persist ( $cuestionario );
+			
+			$em->flush ();
+			
+			return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
+					'idCuestionario' => $cuestionarioId
+			) );
+		
+		/*$this->container->getParameter('ichTestBundle.instruccionesCuestionario');*/
 	}
 
 
-	private function verificarEstadoCuestionario(Request $request, $idCuestionario){
-		
-		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
-	}
 
-	private function gestionarBloqueCuestionario($datosBloque, $idCuestionario){
-		
+	public function gestionarBloqueCuestionarioAction($idCuestionario){
+		/*
+
+		$ultimoBloque = $this->get('session')->get('ultimoBloque'); 
+
+		$datosBloque = $this->get('session')->get('datosBloque'); 
+
+		if($this->bloqueRespondido($datosBloque)){
+
+
+		}
+
+		else 
+		print_r($datosBloque);
+	 throw $this->createNotFoundException (count($datosBloque) );
 	
-		$this->container->getParameter('ichTestBundle.instruccionesCuestionario');
-	
+		*/
+
 	}
 
 }

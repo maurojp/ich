@@ -71,7 +71,11 @@ class SeguridadController extends Controller
             
             if ($cuestionario->getCandidato()->getId() == $candidato->getId())
             {
-                print_r('Acceso Autorizado');
+              
+              return $this->redirectToRoute( 'ich_evaluacion_verificarEstadoCuestionario', array (
+                    'id' => $cuestionario->getId()
+            ) );  
+
             } else
             {
                 print_r('Datos no Coherentes');

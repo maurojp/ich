@@ -1,0 +1,73 @@
+{% extends 'layout.html.twig' %}
+
+
+{% block body %}
+{{ parent() }}
+
+<div class="main container">
+	<div class="row well">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h2>Completar Cuestionario</h2>
+			</div>
+
+
+			<fieldset>
+
+				{{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
+
+				<div class="row">
+				  <h3>{{ form_label(form.copiaPreguntas) }}</h3>
+                
+                {% if not form.copiaPreguntas|length %}
+                    <h4 class="text-info">No existen preguntas en el bloque.</h4>
+                {% endif %}
+                
+                <div class="list-group copiaPreguntas">
+                    {% for copiaPregunta in form.copiaPreguntas %}
+                        <div class="row renglon">
+                         <div class="col-md-8">{{ form_widget(copiaPregunta.pregunta,{'attr' : {'class' : 'form-control'} }) }}</div>
+                    <div class="list-group copiaPreguntas">
+                    {% for copiaOpcionRespuesta in copiaPregunta.copiaOpcionesRespuesta %}
+                        <div class="row renglon">
+                        {{ _self.model_prototype_opcionRespuesta(copiaOpcionRespuesta) }}
+                        </div>
+                    {% endfor %}
+                </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                </div>
+
+
+
+			</fieldset>
+
+		<p>
+          {{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
+          <a href="{{ path('ich_test_homepage') }}"
+            class="btn btn-warning salir">Salir</a>
+        </p>
+
+			{{ form_widget(form._token) }}
+			{{ form_end(form,{ 'render_rest' : false}) }}
+
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+{{ parent() }}
+{% endblock %}
+
+
+{% macro model_prototype_opcionRespuesta(copiaOpcionRespuesta) %}
+    <div class="col-md-6">{{ form_widget(copiaOpcionRespuesta.descripcion,{'attr' : {'class' : 'form-control', 'disabled' : 'disabled'} }) }}</div>
+    <div class = 'col-md-1 checkbox'>
+        <label class='lb-lg'>
+            {{ form_widget(copiaOpcionRespuesta.seleccionada)}}
+        </label>
+    </div>
+{% endmacro %}
