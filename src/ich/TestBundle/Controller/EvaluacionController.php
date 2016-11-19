@@ -1004,10 +1004,6 @@ class EvaluacionController extends Controller {
 					return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 						'mensaje' => "Cuestionario finalizado con éxito." 
 					) );
-				else
-					return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
-					'idCuestionario' => $idCuestionario
-					) );
 			}
 		}
 

@@ -13,10 +13,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="puesto_competencia",uniqueConstraints = 
  *	{ @ORM\UniqueConstraint(columns = {"puesto_id", "competencia_id"}) })
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\Puesto_CompetenciaRepository")
- * @UniqueEntity(
- *     fields={"puesto", "competencia"},
- *     message="Hay competencias duplicadas en el puesto."
- * )
  */
 class Puesto_Competencia
 {
@@ -30,14 +26,14 @@ class Puesto_Competencia
     private $id;
 	
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="competencias", cascade={"persist", "remove"}) 
-     * @ORM\JoinColumn(name="puesto_id",referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="competencias") 
+     * @ORM\JoinColumn(name="puesto_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $puesto;
   
     /**
-     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="puestos", cascade={"persist"}) 
-     * @ORM\JoinColumn(name="competencia_id",referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="puestos") 
+     * @ORM\JoinColumn(name="competencia_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $competencia;
 

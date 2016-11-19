@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="puesto")
  * @ORM\Entity(repositoryClass="ich\TestBundle\Repository\PuestoRepository")
  * @UniqueEntity("codigo")
+ * @UniqueEntity("nombre")
  */
 class Puesto
 {
@@ -57,7 +58,7 @@ class Puesto
     /**
      * @var string
      * @Assert\NotBlank()
-     * @ORM\Column(name="nombre", type="string", length=30)
+     * @ORM\Column(name="nombre", type="string", length=30, unique=true)
      */
     private $nombre;
 

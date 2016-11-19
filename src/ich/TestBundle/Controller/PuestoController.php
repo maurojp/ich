@@ -65,6 +65,22 @@ class PuestoController extends Controller
         $form = $this->createCreateForm($puesto);
         $form->handleRequest($request);
         
+        // Verificar si existen competencias repetidas
+        $competencias = new arrayCollection();
+
+        foreach($puesto->getCompetencias() as $puestoCompetencia){
+
+        if($competencias->contains($puestoCompetencia->getCompetencia()->getCodigo())){
+
+            $form->get('competencias')->addError(new FormError('Hay competencias duplicadas en el puesto.'));
+
+            return $this->render('ichTestBundle:Puesto:add.html.twig', array('form' => $form->createView()));
+        }
+
+        else
+            $competencias->add($puestoCompetencia->getCompetencia()->getCodigo());
+        }
+
         if ($form->isValid())
         {
             $co = $this->getDoctrine()->getManager();
@@ -124,6 +140,22 @@ class PuestoController extends Controller
         $form = $this->createEditForm($puesto);
         
         $form->handleRequest($request);
+
+        // Verificar si existen competencias repetidas
+        $competencias = new arrayCollection();
+
+        foreach($puesto->getCompetencias() as $puestoCompetencia){
+
+        if($competencias->contains($puestoCompetencia->getCompetencia()->getCodigo())){
+
+            $form->get('competencias')->addError(new FormError('Hay competencias duplicadas en el puesto.'));
+
+            return $this->render('ichTestBundle:Puesto:edit.html.twig', array('puesto' => $puesto, 'form' => $form->createView()));
+        }
+
+        else
+            $competencias->add($puestoCompetencia->getCompetencia()->getCodigo());
+        }
         
         if ($form->isSubmitted() && $form->isValid())
         {
