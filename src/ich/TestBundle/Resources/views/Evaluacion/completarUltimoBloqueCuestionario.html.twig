@@ -1,6 +1,4 @@
 {% extends 'layout.html.twig' %}
-
-
 {% block body %}
 {{ parent() }}
 
@@ -8,42 +6,84 @@
 	<div class="row well">
 		<div class="col-md-12">
 			<div class="page-header">
-				<h2>Completar Cuestionario</h2>
+				<h2>Cuestionario</h2>
 			</div>
+            <div class="panel-group">
 
+  
+            <fieldset>
 
-			<fieldset>
+                {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
 
-				{{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
-
-				<div class="row">
-				  <h3>{{ form_label(form.copiaPreguntas) }}</h3>
-                
                 {% if not form.copiaPreguntas|length %}
                     <h4 class="text-info">No existen preguntas en el bloque.</h4>
                 {% endif %}
-                
-                <div class="list-group copiaPreguntas">
-                    {% for copiaPregunta in form.copiaPreguntas %}
-                     <div class="row renglon">
-                         <div class="col-md-6">{{ form_widget(copiaPregunta.id,{'attr' : {'class' : 'form-control'} }) }}</div>
+
+                <div class="panel panel-warning">
+                {% for copiaPregunta in form.copiaPreguntas %}
+                     <div class="panel-heading">
+                         <div class="col-md-6">{{ form_widget(copiaPregunta.id) }}</div>
+
+                        {{ form_widget(copiaPregunta.pregunta) }}<h4>{{copiaPregunta.pregunta.vars.value}}</h4>
                          </div>
-                        <div class="row renglon">
-                         <div class="col-md-12">{{ form_widget(copiaPregunta.pregunta,{'attr' : {'class' : 'form-control', 'readonly' : 'readonly'} }) }}</div>
-                         </div>
-                         <br>
-                    <div class="row opcionesRespuesta">
-                        {{ form_widget(copiaPregunta.copiaOpcionesRespuesta,{'attr' : {'class' : 'form-control'} }) }}
-                    </div>
-                        <br>
-                        <br>
+                    <div class="panel-body">
+                    {% set respondida = false %}
+                    {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+                        {% set checked  %}{{ opcion.vars.checked }}{% endset %}
+                        {% if checked %}
+                            {% set respondida = true %}
+                        {% endif %}
+
                     {% endfor %}
+                    {% if respondida %}
+                        {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+                            <div class="list-group">
+                            {{ form_widget(opcion, {'attr' : {'disabled' : 'disabled'} }) }}   
+                            {{ opcion.vars.label }}
+                            </div>
+                        {% endfor %}
+                    {% endif %} 
+                    {% if not respondida %}
+                        {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+                            <div class="list-group">
+                            {{ form_widget(opcion) }}   
+                            {{ opcion.vars.label }}
+                            </div>
+                            {% endfor %}
+                    {% endif %}
+                    {% set respondida = false %}  
+                    </div>
+                {% endfor %}
                 </div>
+           
+
+            </fieldset>
+
+            </div>
+
+ <!-- set up the modal to start hidden and fade in and out -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- dialog body -->
+                <div class="modal-body">
+                    <h4>Debe responder las siguientes Preguntas para continuar:</h4>
+                    <br>
+                    {% if preguntasNoRespondidas|length %}
+                    {% for nroPregunta in preguntasNoRespondidas %}
+                    <td><span class="text-danger"><ul>
+                                <li>Pregunta {{ nroPregunta }}</li>
+                            </ul></span></td>
+                    {% endfor %}
+                    {% endif %}
                 </div>
-
-
-
-			</fieldset>
+                <!-- dialog buttons -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 		<p>
           {{ form_widget(form.send, {'label' : 'Finalizar', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
@@ -58,8 +98,41 @@
 	</div>
 </div>
 {% endblock %}
-
-
 {% block javascripts %}
 {{ parent() }}
+<script type="text/javascript">
+
+ $('form').bind('submit', function () {
+    $(this).find(':input').prop('disabled', false);
+      });
+
+    if(({{ preguntasNoRespondidas|json_encode() }}).length > 0) {
+
+        $("#myModal").modal({ // wire up the actual modal functionality and show the dialog
+            "backdrop" : "static",
+            "keyboard" : true,
+            "show" : true,
+        // ensure the modal is shown immediately
+        })
+   
+        $("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+            $("#myModal a.btn").off("click");
+        })
+
+        $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+            $("#myModal").remove();
+        })
+    
+        $(document).on('click', '.aceptar', function() {
+
+            $("#myModal").modal('hide');// dismiss the dialog
+
+        })
+
+    }
+
+   
+
+
+</script>
 {% endblock %}

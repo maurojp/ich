@@ -94,13 +94,19 @@ var hrefOriginal;
 
  	$('#table-pagination').on('check.bs.table', function(row, $element) {
 
-        	 $opt= document.getElementById('#sinSeleccion');
-        		if (null != $opt) 
+        	$opt= document.getElementById('#sinSeleccion');
+
+        	if (null != $opt) 
         	{	
         		$opt.setAttribute('onclick', '');
         		$opt.id = 'sig';
         		$opt.href = hrefOriginal.replace('0',$element.idPuesto);  
-        	}  
+        	}
+        	else  
+        	{
+        		$opt= document.getElementById('sig');
+        		$opt.href = hrefOriginal.replace('0',$element.idPuesto);
+        	}
         }
     );  
 

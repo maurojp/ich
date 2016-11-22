@@ -908,7 +908,7 @@ class EvaluacionController extends Controller {
 		 	$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario, 1);
 
 		 	return $this->render ( 'ichTestBundle:Evaluacion:completarUltimoBloqueCuestionario.html.twig', array (
-				'form' => $form->createView () 
+				'form' => $form->createView (), 'preguntasNoRespondidas' => array() 
 			) );
 		 }
 		 else{
@@ -916,7 +916,7 @@ class EvaluacionController extends Controller {
 			$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario, 0);
 			
 			return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
-				'form' => $form->createView () 
+				'form' => $form->createView (), 'preguntasNoRespondidas' => array() 
 			) );
 		}
 	}
@@ -1016,9 +1016,16 @@ class EvaluacionController extends Controller {
 		}
 
 		else{
-		
+
+			$preguntasNoRespondidas = $this->getPreguntasNoRespondidas($datosBloque);
+
+			if($esUltimoBloque)
+				return $this->render ( 'ichTestBundle:Evaluacion:completarUltimoBloqueCuestionario.html.twig', array (
+				'form' => $form->createView (), 'preguntasNoRespondidas' => $preguntasNoRespondidas 
+				) );
+			else
 			return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
-				'form' => $form->createView () 
+				'form' => $form->createView (), 'preguntasNoRespondidas' => $preguntasNoRespondidas
 			) );
 		} 
 
@@ -1036,5 +1043,20 @@ class EvaluacionController extends Controller {
 		}
 
 		return true;
+		}
+
+
+
+	private function getPreguntasNoRespondidas($datosBloque){
+
+		$preguntasNoRespondidas = array();
+
+		for($i = 0, $totalPreguntas = count ( $datosBloque['copiaPreguntas'] ); $i < $totalPreguntas; $i ++) {
+
+			if(NULL == $datosBloque['copiaPreguntas'][$i]['copiaOpcionesRespuesta'])
+				$preguntasNoRespondidas[] = $i+1;
+		}
+
+		return $preguntasNoRespondidas;
 		}
 }

@@ -19,7 +19,7 @@ class CopiaPreguntaType extends AbstractType {
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$builder->add ( 'id', 'hidden', array () )
-		->add ( 'pregunta', 'text', array () );
+		->add ( 'pregunta', 'hidden', array () );
 	
 	
 
@@ -34,7 +34,8 @@ class CopiaPreguntaType extends AbstractType {
                   ->setParameter(1, $idCopiaPregunta);
                                     },
 					'choice_label' => 'getDescripcion',
-                	'expanded' => true, 
+                	'expanded' => true,
+                	'required' => true,
 			) );
 		};
 		
