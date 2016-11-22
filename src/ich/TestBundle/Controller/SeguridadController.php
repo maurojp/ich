@@ -73,7 +73,7 @@ class SeguridadController extends Controller
             {
               
               return $this->redirectToRoute( 'ich_evaluacion_verificarEstadoCuestionario', array (
-                    'id' => $cuestionario->getId()
+                    'id' => $cuestionario->getId(), 'esUltimoBloque' => 0
             ) );  
 
             } else

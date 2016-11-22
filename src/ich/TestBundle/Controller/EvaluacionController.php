@@ -669,7 +669,7 @@ class EvaluacionController extends Controller {
 
 
 
-	public function verificarEstadoCuestionarioAction(Request $request, $id) {
+	public function verificarEstadoCuestionarioAction(Request $request, $id, $esUltimoBloque) {
 
 		$em = $this->getDoctrine ()->getManager ();
 		
@@ -682,10 +682,18 @@ class EvaluacionController extends Controller {
 		$estadoCuestionario = $cuestionario->getEstado ();
 		$method = $request->getMethod ();
 
-		if ($estadoCuestionario == 2)
-			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+		if ($estadoCuestionario == 2){
+			if ($cuestionario->getCantAccesos () > $cuestionario->getCantMaxAccesos ())
+				return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
+					'mensaje' => "Ha superado la cantidad máxima de accesos permitidos.
+					Acceso denegado." 
+				) );
+			else
+				return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 					'mensaje' => "Ha caducado el tiempo asignado para completar el cuestionario. Acceso denegado." 
-			) );
+				) );
+		}
+			
 		else if($estadoCuestionario == 1)
 			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 					'mensaje' => "El cuestionario ha sido completado. Acceso denegado." 
@@ -707,7 +715,7 @@ class EvaluacionController extends Controller {
 			$em->flush ();
 			
 			return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
-					'mensaje' => "Ha superado la cantidad mÃ¡xima de accesos permitidos.
+					'mensaje' => "Ha superado la cantidad máxima de accesos permitidos.
 					Acceso denegado." 
 			) );
 		}
@@ -773,20 +781,12 @@ class EvaluacionController extends Controller {
 
 			}
 
-			$form = $this->createBloqueCuestionarioForm(null, $id);
-
-			$form->handlerequest($request);
-
-			if(!$form->isValid()){
-				$this->get('session')->set('datosBloque',$form->getData()); 
+				$this->get('session')->set('request',$request); 
 
 				return $this->redirectToRoute ( 'ich_evaluacion_gestionarBloqueCuestionario', array (
-					'idCuestionario' => $id
+					'idCuestionario' => $id, 'esUltimoBloque' => $esUltimoBloque
 				) );
-			}
-			else
-				return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array ('idCuestionario' => $id 
-				) );
+
 
 		} //SI ACABA DE INGRESAR SE RENUEVA EL ESTADO ACTIVO
 		else if($method == 'GET'){
@@ -818,6 +818,7 @@ class EvaluacionController extends Controller {
 	
 
 	public function recuperarUltimoBloqueCuestionarioAction($idCuestionario) {
+
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $idCuestionario );
@@ -825,7 +826,7 @@ class EvaluacionController extends Controller {
 		if (! $cuestionario) {
 			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
 		}
-		
+
 		$copiaPreguntasCuestionario = array ();
 		$bloqueMenor = 0;
 		$bloqueMayor = 0;
@@ -845,6 +846,7 @@ class EvaluacionController extends Controller {
 							$seleccionada = true;
 					}
 					
+					if (! $seleccionada){
 
 					if ($bloqueMayor == 0)
 						$bloqueMayor = $copiaPregunta->getNroBloque ();
@@ -858,8 +860,9 @@ class EvaluacionController extends Controller {
 					else if ($copiaPregunta->getNroBloque () < $bloqueMenor)
 						$bloqueMenor = $copiaPregunta->getNroBloque ();
 					
-					if (! $seleccionada)
+					
 						$copiaPreguntasCuestionario [] = $copiaPregunta;
+					}
 				}
 			}
 		}
@@ -877,40 +880,23 @@ class EvaluacionController extends Controller {
 				$copiasPreguntasBloqueMenor [] = $copiaPreguntaCuestionario;
 		}
 		
+
 		for($i = 1, $totalPreguntas = count ( $copiasPreguntasBloqueMenor ); $i <= $totalPreguntas; $i ++) {
 			
 			foreach ( $copiasPreguntasBloqueMenor as $copiaPreguntaBloqueMenor ) {
 				
 				if ($copiaPreguntaBloqueMenor->getNroOrden () == $i) {
-					
-					$copiasOpcionesRespuestaByOrdenEvaluacion = array ();
-					
-					// OBTENER OPCIONES DE RESPUESTA Y ORDENARLAS POR NRO EVALUACION
-					for($j = 1, $totalOpciones = count ( $copiaPreguntaBloqueMenor->getCopiaOpcionesRespuesta () ); $j <= $totalOpciones; $j ++) {
-						
-						foreach ( $copiaPreguntaBloqueMenor->getCopiaOpcionesRespuesta () as $copiaOpcionRespuesta ) {
-							
-							if ($copiaOpcionRespuesta->getOrdenEvaluacion () == $j) {
-								$copiasOpcionesRespuestaByOrdenEvaluacion [] = array (
-										'id' => $copiaOpcionRespuesta->getId (),
-										'descripcion' => $copiaOpcionRespuesta->getDescripcion (),
-										'seleccionada' => false 
-								);
-								
-								break;
-							}
-						}
-					}
-					
+
 					$copiasPreguntasByNroOrden ['copiaPreguntas'] [] = array (
-							'pregunta' => $copiaPreguntaBloqueMenor->getPregunta (),
-							'copiaOpcionesRespuesta' => $copiasOpcionesRespuestaByOrdenEvaluacion 
+							'id' => $copiaPreguntaBloqueMenor->getId (),
+							'pregunta' => $copiaPreguntaBloqueMenor->getPregunta ()
 					);
 				}
 			}
 		}
+
 		
-		$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario );
+		
 		
 		/*
 		 print_r ( $form->getData () );
@@ -919,27 +905,32 @@ class EvaluacionController extends Controller {
 		*/
 		 if($bloqueMayor == $bloqueMenor){
 
-		 	$this->get('session')->set('esUltimoBloque',true);
-		 	return $this->render ( 'ichTestBundle:Evaluacion:ultimoBloqueCuestionario.html.twig', array (
+		 	$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario, 1);
+
+		 	return $this->render ( 'ichTestBundle:Evaluacion:completarUltimoBloqueCuestionario.html.twig', array (
 				'form' => $form->createView () 
 			) );
-		}	
+		 }
+		 else{
 
-		$this->get('session')->set('esUltimoBloque',false);
-		return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
+			$form = $this->createBloqueCuestionarioForm ( $copiasPreguntasByNroOrden, $idCuestionario, 0);
+			
+			return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
 				'form' => $form->createView () 
-		) );
+			) );
+		}
 	}
 
 	
 	
-	private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCuestionario){
+	private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCuestionario, $esUltimoBloque){
 		
 	$form = $this->createFormBuilder ( $copiasPreguntasByNroOrden )->add ( 'copiaPreguntas', CollectionType::class, array (
 			'entry_type' => CopiaPreguntaType::class,
+			'allow_add' => true,
 			'by_reference' => false
 	) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_verificarEstadoCuestionario', array (
-			'id' => $idCuestionario
+			'id' => $idCuestionario, 'esUltimoBloque' => $esUltimoBloque
 	) ) )->setMethod ( 'POST' )->getForm ();
 	
 	return $form;
@@ -976,18 +967,26 @@ class EvaluacionController extends Controller {
 
 
 
-	public function gestionarBloqueCuestionarioAction($idCuestionario){
+	public function gestionarBloqueCuestionarioAction($idCuestionario, $esUltimoBloque){
 
+		
+		$request = $this->get('session')->get('request'); 
 
-		$esUltimoBloque = $this->get('session')->get('esUltimoBloque'); 
+		$em = $this->getDoctrine ()->getManager ();
 
-		$datosBloque = $this->get('session')->get('datosBloque'); 
+		$form = $this->createBloqueCuestionarioForm(null, $idCuestionario, $esUltimoBloque);
+
+		$form->handlerequest($request);
+
+		if($form->isValid()){
+		
+		$datosBloque = $form->getData(); 
 
 		if($this->bloqueFueRespondido($datosBloque)){
 
 			foreach($datosBloque['copiaPreguntas'] as $copiaPregunta){
 
-				$idOpcionSeleccionada = $this->getIdOpcionSeleccionada($copiaPregunta);
+				$idOpcionSeleccionada = $copiaPregunta['copiaOpcionesRespuesta']->getId();
 
 				$copiaOpcionRespuesta = $em->getRepository ( 'ichTestBundle:CopiaOpcionRespuesta' )->find ( $idOpcionSeleccionada );
 				
@@ -995,27 +994,47 @@ class EvaluacionController extends Controller {
 					throw $this->createNotFoundException ( 'Opción de Respuesta no encontrada.' );
 				
 				$copiaOpcionRespuesta->setSeleccionada(true);
-				
+
+				$em->persist ($copiaOpcionRespuesta );
+
 			}
+
+			$em->flush ();
 
 			if($esUltimoBloque){
 
-				if($this->finalizarCuestionario($idCuestionario))
+				/*if($this->finalizarCuestionario($idCuestionario))*/
 					return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 						'mensaje' => "Cuestionario finalizado con éxito." 
 					) );
 			}
+
+			else
+				return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
+				'idCuestionario' => $idCuestionario 
+				) );
 		}
 
 		else{
-
-			$form = $this->createBloqueCuestionarioForm ( $datosBloque, $idCuestionario );
 		
 			return $this->render ( 'ichTestBundle:Evaluacion:completarCuestionario.html.twig', array (
 				'form' => $form->createView () 
 			) );
 		} 
 
+		}
+
 	}
 
+
+	private function bloqueFueRespondido($datosBloque){
+
+		foreach($datosBloque['copiaPreguntas'] as $copiaPregunta){
+
+			if(NULL == $copiaPregunta['copiaOpcionesRespuesta'])
+				return false;
+		}
+
+		return true;
+		}
 }
