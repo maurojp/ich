@@ -118,6 +118,11 @@ ich_evaluacion_gestionarBloqueCuestionario:
     path:       /evaluacion/gestionarBloqueCuestionario/{idCuestionario}-{esUltimoBloque}
     defaults:   { _controller: ichTestBundle:Evaluacion:gestionarBloqueCuestionario }
 
+ich_evaluacion_registrarComienzoCuestionario:
+    path:       /evaluacion/registrarComienzoCuestionario/{cuestionarioId}
+    defaults:   { _controller: ichTestBundle:Evaluacion:registrarComienzoCuestionario }
+
+
 # Autenticacion
 
 ich_test_homepage:

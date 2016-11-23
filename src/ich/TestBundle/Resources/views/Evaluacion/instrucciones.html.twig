@@ -1,0 +1,82 @@
+{% extends 'layout.html.twig' %}
+{% block body %}
+	{{ parent() }}
+
+   <div class="main container">
+    <div class="row well">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>Instrucciones</h2>
+            </div>  
+             <div class="panel panel-success">
+            <div class="panel-heading">
+            <h4 align="center">En el siguiente Cuestionario se evaluarán sus actitudes Técnicas y Actitudinales.</h4>
+            </div>
+            <div class="panel-body">
+            {% if not instrucciones|length %}
+                    <h4 class="text-info">Instrucciones no disponibles.</h4>
+                {% endif %}
+                    {% for linea in instrucciones %}
+                    <h4>{{linea}}</h4>
+                    {% endfor %}
+                    <br>
+                </div>
+                </div>
+           <div class="panel panel-warning">
+            <div class="panel-heading">
+           <h3>Condiciones</h3>
+           </div>
+           <div class="panel-body">
+                       <h4>Al aceptar las instrucciones dispondrá de:</h4>
+                       <td><span class="text-danger"><ul>
+                                <li><h4>{{condiciones.tiempoMax}} horas para completar el Cuestionario.</h4></li>
+                            </ul></span></td>
+                        <td><span class="text-danger"><ul>
+                                <li><h4>{{condiciones.tiempoMaxActivo}} horas para permanecer activo.</h4></li>
+                            </ul></span></td>
+                        <td><span class="text-danger"><ul>
+                                <li><h4>{{condiciones.cantMaxAccesos}} accesos permitidos.</h4></li>
+                            </ul></span></td>
+                       
+                       
+                </div>
+                </div>
+                <br>
+           
+        <p>
+        <a href="{{ path('ich_evaluacion_registrarComienzoCuestionario', { cuestionarioId: idCuestionario }) }}"
+            class="btn btn-success aceptar">Aceptar</a>
+        <a href="{{ path('ich_test_homepage') }}"
+            class="btn btn-warning cancelar">Cancelar</a>
+    </p>
+    
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+            $("#myModal a.btn").on("click", function(e) {
+                console.log("button pressed"); // just as an example...
+                $("#myModal").modal('hide'); // dismiss the dialog
+            });
+        });
+        $("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+            $("#myModal a.btn").off("click");
+        });
+
+        $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+            $("#myModal").remove();
+        });
+
+        $("#myModal").modal({ // wire up the actual modal functionality and show the dialog
+            "backdrop" : "static",
+            "keyboard" : true,
+            "show" : true
+        // ensure the modal is shown immediately
+        });
+</script>
+{% endblock %}

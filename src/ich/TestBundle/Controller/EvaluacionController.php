@@ -940,6 +940,11 @@ class EvaluacionController extends Controller {
 	
 	public function ingresoCuestionarioAction($cuestionarioId){
 		
+		if(!$this->container->hasParameter('ichTestBundle.instruccionesCuestionario'))
+			throw $this->createNotFoundException ( 'ParÃ¡metro instruccionesCuestionario requerido no disponible.' );
+
+		$instrucciones = $this->container->getParameter('ichTestBundle.instruccionesCuestionario');
+
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $cuestionarioId );
@@ -948,6 +953,15 @@ class EvaluacionController extends Controller {
 			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
 		}
 
+		
+
+		$condiciones = array('tiempoMax' => $this->floatTimeToString($cuestionario->getTiempoMax ()),
+							 'tiempoMaxActivo'  => $this->floatTimeToString($cuestionario->getTiempoMaxActivo()),
+							 'cantMaxAccesos' => $cuestionario->getCantMaxAccesos()
+			);
+
+
+			/*
 			$cuestionario->setComienzoEn ( new \DateTime () );
 
 			$cuestionario->setEstado ( 0 );
@@ -960,12 +974,22 @@ class EvaluacionController extends Controller {
 			
 			return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
 					'idCuestionario' => $cuestionarioId
-			) );
+			) );*/
 		
-		/*$this->container->getParameter('ichTestBundle.instruccionesCuestionario');*/
+		return $this->render ( 'ichTestBundle:Evaluacion:instrucciones.html.twig', array (
+				'idCuestionario' => $cuestionarioId, 'instrucciones' => $instrucciones, 'condiciones' => $condiciones 
+			) );
 	}
 
 
+	private function floatTimeToString($timeFloat){
+
+		$hour = floor($timeFloat);
+		$minutes = ($timeFloat - $hour)*100; 
+		if($minutes < 10)
+		$minutes = "0".$minutes;
+		return $hour.":".$minutes;
+	}	
 
 	public function gestionarBloqueCuestionarioAction($idCuestionario, $esUltimoBloque){
 
