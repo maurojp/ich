@@ -700,7 +700,7 @@ class EvaluacionController extends Controller {
 			) );
 
 		//REQUEST GET, ENTONCES ACABA DE INGRESAR AL CUESTIONARIO
-		if ($method == 'GET') {
+		if ($method == 'GET' && $cuestionario->getComienzoEn ()) {
 			$cantAccesos = $cuestionario->getCantAccesos ();
 			
 			$cuestionario->setCantAccesos ( $cantAccesos + 1 );
@@ -719,6 +719,10 @@ class EvaluacionController extends Controller {
 					Acceso denegado." 
 			) );
 		}
+
+			$em->persist ( $cuestionario );
+			
+			$em->flush ();
 
 		}
 
@@ -953,28 +957,12 @@ class EvaluacionController extends Controller {
 			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
 		}
 
-		
 
 		$condiciones = array('tiempoMax' => $this->floatTimeToString($cuestionario->getTiempoMax ()),
 							 'tiempoMaxActivo'  => $this->floatTimeToString($cuestionario->getTiempoMaxActivo()),
-							 'cantMaxAccesos' => $cuestionario->getCantMaxAccesos()
+							 'cantAccesos' => ($cuestionario->getCantMaxAccesos()-1)
 			);
 
-
-			/*
-			$cuestionario->setComienzoEn ( new \DateTime () );
-
-			$cuestionario->setEstado ( 0 );
-			
-			$cuestionario->setEstadoEn ( new \DateTime () );
-			
-			$em->persist ( $cuestionario );
-			
-			$em->flush ();
-			
-			return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
-					'idCuestionario' => $cuestionarioId
-			) );*/
 		
 		return $this->render ( 'ichTestBundle:Evaluacion:instrucciones.html.twig', array (
 				'idCuestionario' => $cuestionarioId, 'instrucciones' => $instrucciones, 'condiciones' => $condiciones 
@@ -1027,7 +1015,7 @@ class EvaluacionController extends Controller {
 
 			if($esUltimoBloque){
 
-				/*if($this->finalizarCuestionario($idCuestionario))*/
+				if($this->finalizarCuestionario($idCuestionario))
 					return $this->render ( 'ichTestBundle:Evaluacion:notificacion.html.twig', array (
 						'mensaje' => "Cuestionario finalizado con éxito." 
 					) );
@@ -1058,6 +1046,85 @@ class EvaluacionController extends Controller {
 	}
 
 
+	private function finalizarCuestionario($idCuestionario){
+
+		$em = $this->getDoctrine ()->getManager ();
+
+		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $idCuestionario );
+		
+		if (! $cuestionario) {
+			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
+		}
+
+
+		// OBTENER NRO DE BLOQUE A RESPONDER Y TODAS LAS PREGUNTAS NO RESPONDIDAS
+
+		$puntajeMaximoCuestionario = 0;
+
+		$puntajeCuestionario = 0;
+
+		foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
+			
+			$puntajeCopiaCompetencia = 0;
+
+			$cantCopiasFactor = 0;
+
+			$puntajeCopiasFactor = 0;
+
+			foreach ( $copiaCompetencia->getCopiaFactores () as $copiaFactor ) {
+				
+				$puntajeCopiaFactor = 0;
+
+				$puntajeCopiasPregunta = 0;
+
+				foreach ( $copiaFactor->getCopiaPreguntas () as $copiaPregunta ) {
+					
+					foreach ( $copiaPregunta->getCopiaOpcionesRespuesta () as $copiaOpcionRespuesta ) {
+						
+						if ($copiaOpcionRespuesta->getSeleccionada () != NULL && $copiaOpcionRespuesta->getSeleccionada () == true)
+							$puntajeCopiasPregunta = $copiaOpcionRespuesta->getPonderacion() + $puntajeCopiasPregunta;
+					}
+					
+				}
+					$cantCopiasFactor++;
+
+					$puntajeCopiaFactor = $puntajeCopiasPregunta / 2.00;
+
+					$puntajeCopiasFactor = $puntajeCopiaFactor + $puntajeCopiasFactor;
+
+					$copiaFactor->setPuntajeObtenido($puntajeCopiaFactor);
+
+					$em->persist($copiaFactor);
+			}
+
+			$puntajeCopiaCompetencia = $puntajeCopiasFactor / $cantCopiasFactor;
+
+			$copiaCompetencia->setPuntajeObtenido($puntajeCopiaCompetencia);
+
+			$em->persist($copiaCompetencia);
+
+			$puntajeMaximoCuestionario = $copiaCompetencia->getPonderacion() + $puntajeMaximoCuestionario;
+
+			$puntajeCuestionario = (($copiaCompetencia->getPonderacion() * $puntajeCopiaCompetencia)/10) + $puntajeCuestionario;
+		
+		}
+
+		$cuestionario->setPuntajeTotal(($puntajeCuestionario*100)/$puntajeMaximoCuestionario);
+
+		$cuestionario->setEstado ( 1 );
+			
+		$cuestionario->setEstadoEn ( new \DateTime () );
+
+		$em->persist($cuestionario);
+
+		$em->flush();
+
+		return true;
+
+	}
+
+
+
 	private function bloqueFueRespondido($datosBloque){
 
 		foreach($datosBloque['copiaPreguntas'] as $copiaPregunta){
@@ -1083,4 +1150,32 @@ class EvaluacionController extends Controller {
 
 		return $preguntasNoRespondidas;
 		}
+
+
+	public function registrarComienzoCuestionarioAction($idCuestionario){
+
+		$em = $this->getDoctrine ()->getManager ();
+
+		$cuestionario = $em->getRepository ( 'ichTestBundle:Cuestionario' )->find ( $idCuestionario );
+		
+		if (! $cuestionario) {
+			throw $this->createNotFoundException ( 'Cuestionario no encontrado.' );
+		}
+
+
+		$cuestionario->setComienzoEn ( new \DateTime () );
+
+		$cuestionario->setEstado ( 0 );
+			
+		$cuestionario->setEstadoEn ( new \DateTime () );
+			
+		$em->persist ( $cuestionario );
+			
+		$em->flush ();
+			
+		return $this->redirectToRoute ( 'ich_evaluacion_verificarEstadoCuestionario', array (
+			'id' => $idCuestionario, 'esUltimoBloque' => 0
+			) );
+
+	}
 }

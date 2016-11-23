@@ -16,7 +16,7 @@
                 {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
 
                 {% if not form.copiaPreguntas|length %}
-                    <h4 class="text-info">No existen preguntas en el bloque.</h4>
+                    <h4 class="text-info">Todos los bloques han sido respondidos.</h4>
                 {% endif %}
 
                 <div class="panel panel-warning">
@@ -87,7 +87,7 @@
 
 		<p>
           {{ form_widget(form.send, {'label' : 'Finalizar', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
-          <a href="{{ path('ich_test_homepage') }}"
+          <a href="{{ path('ich_test_ingresocandidato') }}"
             class="btn btn-warning salir">Salir</a>
         </p>
 

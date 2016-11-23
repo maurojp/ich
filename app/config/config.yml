@@ -8,7 +8,7 @@ imports:
 parameters:
     locale: en
     ichTestBundle.preguntasPorBloque: 3
-    ichTestBundle.instruccionesCuestionario: [Al ingresar:,    - El sistema le mostrará el primer bloque con preguntas a responder elegidas de manera aleatoria.,    -  Por cada pregunta deberá seleccionar una opción de respuesta.,    -  Cuando haya completado el bloque de preguntas presione SIGUIENTE para continuar.,- Al completar el último bloque de preguntas presione FINALIZAR. El sistema le notificará de la finalización con éxito del cuestionario.,Considere que:,- No puede modificar respuestas de bloques anteriores.,- Si excede el tiempo máximo para completar el cuestionario deberá ingresar nuevamente.]
+    ichTestBundle.instruccionesCuestionario: [Al ingresar:,El sistema le mostrará el primer bloque de preguntas elegidas aleatoriamente.,Por cada pregunta deberá seleccionar una opción de respuesta.,Cuando haya completado el bloque de preguntas presione SIGUIENTE o FINALIZAR para continuar.,Al completar el último bloque de preguntas el sistema le notificará de la finalización con éxito del cuestionario.,Considere que:,No puede modificar respuestas de bloques anteriores.,Si excede el tiempo máximo para permanecer activo deberá ingresar nuevamente.]
     ichTestBundle.tiempoMaxCuestionario: 48
     ichTestBundle.tiempoMaxActivoCuestionario: 0.30
     ichTestBundle.cantMaxAccesosCuestionario: 2

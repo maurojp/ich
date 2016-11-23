@@ -63,8 +63,8 @@ class CopiaCompetencia
     private $ponderacion;
     
     /**
-     * @var int
-     * @ORM\Column(name="puntajeObtenido", type="integer", nullable=true)
+     * @var float
+     * @ORM\Column(name="puntajeObtenido", type="float", nullable=true)
      */
     private $puntajeObtenido;
     
