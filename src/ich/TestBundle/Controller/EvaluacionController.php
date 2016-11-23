@@ -700,7 +700,7 @@ class EvaluacionController extends Controller {
 			) );
 
 		//REQUEST GET, ENTONCES ACABA DE INGRESAR AL CUESTIONARIO
-		if ($method == 'GET' && $cuestionario->getComienzoEn ()) {
+		if ($method == 'GET') {
 			$cantAccesos = $cuestionario->getCantAccesos ();
 			
 			$cuestionario->setCantAccesos ( $cantAccesos + 1 );
@@ -1169,12 +1169,14 @@ class EvaluacionController extends Controller {
 			
 		$cuestionario->setEstadoEn ( new \DateTime () );
 			
+		$cuestionario->setCantAccesos ( 1 );
+			
 		$em->persist ( $cuestionario );
 			
 		$em->flush ();
 			
-		return $this->redirectToRoute ( 'ich_evaluacion_verificarEstadoCuestionario', array (
-			'id' => $idCuestionario, 'esUltimoBloque' => 0
+		return $this->redirectToRoute ( 'ich_evaluacion_recuperarUltimoBloqueCuestionario', array (
+			'idCuestionario' => $idCuestionario
 			) );
 
 	}

@@ -21,15 +21,14 @@
 		<div class="table-responsive">
 
 			<div class="col-md-9">
-				<form method="get" action="" class="form-inline" role="search">
-					<div class="form-group">
-						<input type"text" name="query"
-							value="{{ app.request.get('query') }}" class="form-control"
-							placeholder="Buscar pregunta..." required />
-					</div>
-					<input type="submit" value="Buscar" class="btn btn-default">
-				</form>
-			</div>
+                        <form method="get" action="" class="form-inline" role="search">
+                            <div class="form-group">
+                                <input type"text" name="query" value="{{ app.request.get('query') }}" class="form-control" placeholder= "Buscar pregunta..." required />
+                            </div>
+                            <input type="submit" value="Buscar" class="btn btn-default">
+                            <a href="{{ path('ich_puesto_index') }}" class="btn btn-default">Limpiar</a>
+                        </form>
+                    </div>
 			<div class="col-md-3">
 				<a href="{{ path('ich_pregunta_add') }}"
 					class="btn btn-lg btn-primary">Nueva Pregunta</a>

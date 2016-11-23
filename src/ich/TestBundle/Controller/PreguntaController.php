@@ -15,10 +15,23 @@ use ich\TestBundle\Form\PreguntaType;
 class PreguntaController extends Controller
 {
 	public function indexAction(Request $request) {
-		// Consulta DQL
-		$co = $this->getDoctrine ()->getManager ();
-		$dql = "SELECT p FROM ichTestBundle:Pregunta p ORDER BY p.id DESC";
-		$preguntas = $co->createQuery ( $dql );
+		
+		 $searchQuery = $request->get('query');
+        
+        if(!empty($searchQuery))
+        {
+            $co = $this->getDoctrine()->getManager();
+            $dql = "SELECT p FROM ichTestBundle:Pregunta p WHERE p.codigo LIKE '%$searchQuery%' ORDER BY p.id DESC";
+            $preguntas = $co->createQuery($dql);
+        }
+        else
+        {
+            $co = $this->getDoctrine ()->getManager ();
+			$dql = "SELECT p FROM ichTestBundle:Pregunta p ORDER BY p.id DESC";
+			$preguntas = $co->createQuery ( $dql );    
+        }
+        
+		
 		
 		// Paginacion
 		$paginator = $this->get ( 'knp_paginator' );
