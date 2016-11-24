@@ -1296,11 +1296,11 @@ class EvaluacionController extends Controller {
 				$cuestionariosIncompletos = $this->getCuestionariosIncompletos($evaluacion);
 
 
-				$cantCuestionariosCompletos = count($cuestionariosCompletos[0]['cuestionariosCompletosAptos']) + count($cuestionariosCompletos[0]['cuestionariosCompletosNoAptos']);
+				$cantCuestionariosCompletos = count($cuestionariosCompletos[0][0]['cuestionarios']) + count($cuestionariosCompletos[0][1]['cuestionarios']);
 
 				$cantCuestionariosIncompletos = count($cuestionariosIncompletos);
 
-				$evaluacionHeader = "Reporte de Evaluación: ".''.$evaluacion->getNombre().''." de Fecha: ".''.date_format($evaluacion->getFechaCreacion(), 'd-m-Y');
+				$evaluacionHeader = "Reporte de Evaluación: ".''.$evaluacion->getNombre().''."-".''."Fecha: ".''.date_format($evaluacion->getFechaCreacion(), 'd-m-Y');
 
 				$cuestionariosCompletosHeader = "Cuestionarios completados: ".''.$cantCuestionariosCompletos;
 
@@ -1308,17 +1308,16 @@ class EvaluacionController extends Controller {
 
 				
 				$ordenMeritoEvaluaciones[] = array(
-												'evaluacionHeader' => $evaluacionHeader, 
-												'cuestionariosCompletos' => array(
+												'evaluacionHeader' => $evaluacionHeader,
+												'cuestionarios' => array(array(
 													'header' => $cuestionariosCompletosHeader,
-													'cuestionarios' => $cuestionariosCompletos
-												), 
-												'cuestionariosIncompletos' => array(
-													'header' => $cuestionariosIncompletosHeader, 
+													'cuestionarios' => $cuestionariosCompletos[0]), array('header' => $cuestionariosIncompletosHeader, 
 													'cuestionarios' => $cuestionariosIncompletos)
-											);
+												));
+
 			}
 
+			//print_r($ordenMeritoEvaluaciones);
 			return $this->render('ichTestBundle:Evaluacion:step3Merito.html.twig', array('evaluaciones'=>Json_encode($ordenMeritoEvaluaciones)));
 	
 		}
@@ -1363,14 +1362,14 @@ class EvaluacionController extends Controller {
 
 
 			if($this->ponderacionesMinimasAlcanzadas($cuestionario->getCopiaCompetencias()))
-				$cuestionariosCompletosAptos [] = $datosCuestionario;
+				$cuestionariosCompletosAptos [] =  $datosCuestionario;
 			else
 				$cuestionariosCompletosNoAptos [] = $datosCuestionario;
 
 			}
 		}
 
-		$cuestionariosCompletos[] = array('cuestionariosCompletosAptos' => $cuestionariosCompletosAptos, 'cuestionariosCompletosNoAptos' => $cuestionariosCompletosNoAptos);
+		$cuestionariosCompletos[] = array(array('header' => "Cuestionarios Aptos", 'cuestionarios' => $cuestionariosCompletosAptos), array('header' => "Cuestionarios No Aptos", 'cuestionarios' => $cuestionariosCompletosNoAptos));
 
 		return $cuestionariosCompletos;
 	}

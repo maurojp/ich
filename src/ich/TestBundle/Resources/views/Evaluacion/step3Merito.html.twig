@@ -11,29 +11,13 @@
 		<br>
     <div class="row2">
             <div class="col-md-1"></div>
-            <div class="col-md-9">
-                <table id="table-pagination" data-height="350" data-striped="true">
-                    <thead>
-                    <h3 id="titulo1" align="center">Listado de
+            <div class="col-md-10">
+            <h3 id="titulo1" align="center">Listado de
                     Candidatos</h3>
-                        <tr>
-                            <th data-field="evaluacionHeader" data-align="left"></th>
-                            <thead>
-                            <tr>
-                                <th data-field="cuestionariosCompletos.header" data-align="left"></th>
-                                <thead>
-                                <tr>
-                                    <th data-field="cuestionariosCompletos.cuestionarios.cuestionariosCompletosAptos.documento" data-align="left">Documento</th>
-                                </tr>
-                                </thead>
-                            </tr>
-                            </thead>
-                        </tr>
-                    </thead>
-                </table> 
-
-
-               
+            <table id="table">
+            </table>
+<br>
+<br>
 				<p>
                     <button type="button" class="btn btn-success imprimir">Imprimir</button>
                     <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar">Cancelar</a>
@@ -51,10 +35,90 @@
 
 {% block javascripts %}
 {{ parent() }}
+<script src=" {{ asset('assets/vendor/dist/extensions/flat-json/bootstrap-table-flat-json.js') }} "></script>
+<script src=" {{ asset('assets/vendor/tableExport/libs/FileSaver/FileSaver.min.js') }} "></script>
+<script src=" {{ asset('assets/vendor/tableExport/libs/js-xlsx/xlsx.core.min.js') }} "></script>
+<script src=" {{ asset('assets/vendor/tableExport/tableExport.min.js') }} "></script>
+<script type="text/javascript" src="{{asset('assets/vendor/tableExport/libs/jsPDF/jspdf.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/vendor/tableExport/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js')}}"></script>
 <script type="text/javascript">
-     
 
-    $('#table-pagination').bootstrapTable({data: {{ evaluaciones | raw}}});
 
+$(function() {
+
+   // alert(JSON.stringify({{ evaluaciones | raw}}));
+  $('#table').bootstrapTable({
+    columns: [{
+      field: 'evaluacionHeader'
+    }],
+    data: {{ evaluaciones | raw}},
+    detailView: true,
+    striped: true,
+    height: 400,
+    showHeader: false,
+    onExpandRow: function(index, row, $detail) {
+      console.log(row)
+      $detail.html('<table></table>').find('table').bootstrapTable({
+        columns: [{
+            field: 'header'
+        }],
+        data: row.cuestionarios,
+        detailView: true,
+        showHeader: false,
+        onExpandRow: function(index2, row2, $detail2) {
+      console.log(row2)
+      $detail2.html('<table></table>').find('table').bootstrapTable({
+        columns: [{
+            field: 'header'
+        }],
+        data: row2.cuestionarios,
+        detailView: true,
+        showHeader: false,
+         onExpandRow: function(index3, row3, $detail3) {
+      console.log(row3)
+      $detail3.html('<table></table>').find('table').bootstrapTable({
+        columns: [{
+            field: 'tipoDocumento',
+            title: 'Tipo Documento'
+            },
+            {
+            field: 'documento',
+            title: 'Documento'
+            },
+            {
+            field: 'apellido',
+            title: 'Apellido'
+            },
+            {
+            field: 'nombre',
+            title: 'Nombre'
+            },
+            {
+            field: 'puntajeObtenido',
+            title: 'Puntaje %'
+            },
+            {
+            field: 'fechaInicio',
+            title: 'Fecha Inicio'
+            },
+            {
+            field: 'fechaFin',
+            title: 'Fecha de Fin'
+            },
+            {
+            field: 'cantAccesos',
+            title: 'Cant. Accesos'
+            }],
+        data: row3.cuestionarios
+    }
+  )}
+    }
+  )}
+    }
+  )}})})
+
+$('.imprimir').click( function() {  
+$('#table').tableExport({type:'excel', fileName: "yo"})
+});
 </script>
 {% endblock %}
