@@ -1,0 +1,60 @@
+
+{% extends 'layout.html.twig'%}
+
+{% block body %}
+{{ parent() }}
+<div class="container">
+	<div class="col-md-12">
+		<div class="page-header margin-none">
+			<h2 class="padding-none">Orden de Mérito</h2>
+		</div>
+		<br>
+    <div class="row2">
+            <div class="col-md-1"></div>
+            <div class="col-md-9">
+                <table id="table-pagination" data-height="350" data-striped="true">
+                    <thead>
+                    <h3 id="titulo1" align="center">Listado de
+                    Candidatos</h3>
+                        <tr>
+                            <th data-field="evaluacionHeader" data-align="left"></th>
+                            <thead>
+                            <tr>
+                                <th data-field="cuestionariosCompletos.header" data-align="left"></th>
+                                <thead>
+                                <tr>
+                                    <th data-field="cuestionariosCompletos.cuestionarios.cuestionariosCompletosAptos.documento" data-align="left">Documento</th>
+                                </tr>
+                                </thead>
+                            </tr>
+                            </thead>
+                        </tr>
+                    </thead>
+                </table> 
+
+
+               
+				<p>
+                    <button type="button" class="btn btn-success imprimir">Imprimir</button>
+                    <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar">Cancelar</a>
+                </p>
+
+            </div>
+		</div>
+	</div>
+</div>
+<br>
+<br>
+<br>
+{% endblock %}
+
+
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+     
+
+    $('#table-pagination').bootstrapTable({data: {{ evaluaciones | raw}}});
+
+</script>
+{% endblock %}

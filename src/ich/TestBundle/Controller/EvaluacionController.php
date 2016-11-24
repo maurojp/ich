@@ -1059,9 +1059,10 @@ class EvaluacionController extends Controller {
 
 		// OBTENER NRO DE BLOQUE A RESPONDER Y TODAS LAS PREGUNTAS NO RESPONDIDAS
 
-		$puntajeMaximoCuestionario = 0;
+		$puntajeMaximoCuestionario = count($cuestionario->getCopiaCompetencias ())*10;
 
-		$puntajeCuestionario = 0;
+		$puntajeCopiasCompetencia = 0;
+
 
 		foreach ( $cuestionario->getCopiaCompetencias () as $copiaCompetencia ) {
 			
@@ -1099,17 +1100,16 @@ class EvaluacionController extends Controller {
 
 			$puntajeCopiaCompetencia = $puntajeCopiasFactor / $cantCopiasFactor;
 
+			$puntajeCopiasCompetencia = $puntajeCopiaCompetencia + $puntajeCopiasCompetencia;
+
 			$copiaCompetencia->setPuntajeObtenido($puntajeCopiaCompetencia);
 
 			$em->persist($copiaCompetencia);
 
-			$puntajeMaximoCuestionario = $copiaCompetencia->getPonderacion() + $puntajeMaximoCuestionario;
-
-			$puntajeCuestionario = (($copiaCompetencia->getPonderacion() * $puntajeCopiaCompetencia)/10) + $puntajeCuestionario;
 		
 		}
 
-		$cuestionario->setPuntajeTotal(($puntajeCuestionario*100)/$puntajeMaximoCuestionario);
+		$cuestionario->setPuntajeTotal(($puntajeCopiasCompetencia*100)/$puntajeMaximoCuestionario);
 
 		$cuestionario->setEstado ( 1 );
 			
@@ -1180,4 +1180,305 @@ class EvaluacionController extends Controller {
 			) );
 
 	}
+
+
+	public function step1MeritoAction(){
+
+		$datosTabla = $this->getPuestosStep1Merito();
+
+		$defaultData = array();
+
+		$formBusqueda = $this->createOrdenMeritoBusquedaForm($defaultData);
+
+		$this->render('ichTestBundle:Evaluacion:step1Merito.html.twig', array('form' => $formBusqueda->createView(), 'datosTabla'=> $datosTabla));
+
+	
+		
+	}
+
+	private function getPuestosStep1Merito(){
+
+		$em = $this->getDoctrine()->getManager();
+
+		$query = $em->createQuery ( "SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
+    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
+    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and pc.activa = true and c.auditoria is NULL and c.id IN
+				(SELECT distinct c2.id
+    			FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
+    			WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
+				SELECT distinct c3.id
+				FROM ichTestBundle:Competencia c3 JOIN ichTestBundle:Factor f
+				WHERE c3 = f.competencia and f.id IN (
+				SELECT distinct f2.id
+				FROM ichTestBundle:Factor f2 JOIN ichTestBundle:Pregunta pr
+				WHERE pr.factor = f2 and f2.auditoria is NULL and pr.auditoria is NULL
+				GROUP BY f2.id                                                                                
+				HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto->getId () );
+		
+		$arrayCompetenciasValidas = $query->getResult ();
+ 
+	}
+
+
+	public function step2MeritoAction($id){
+
+		$em = $this->getDoctrine()->getManager();
+
+		$puesto = $em->getRepository('ichTestBundle:Puesto')->find($id);
+
+		if($puesto->getAuditoria() != NULL)
+		throw $this->createNotFoundException ('El puesto ha sido eliminado');
+
+		$form = $this->createEvaluacionesForm();
+
+		if(count($puesto->getEvaluaciones()) == 0){
+
+			return $this->render('ichTestBundle:Evaluacion:step2Merito.html.twig', array('evaluaciones'=>json_encode(array()), 'form'=>$form->createView()));
+
+		}
+
+		$evaluaciones = array();
+
+		foreach($puesto->getEvaluaciones() as $evaluacion){
+			$evaluaciones[] =  array('id' => $evaluacion->getId(), 'nombre' => $evaluacion->getNombre() ,'fechaCreacion' => date_format($evaluacion->getFechaCreacion(), 'd-m-Y'));
+		}
+		
+
+		$this->get('session')->set('idPuesto',$id);
+
+		return $this->render('ichTestBundle:Evaluacion:step2Merito.html.twig', array('evaluaciones'=>json_encode($evaluaciones), 'form'=>$form->createView()));
+
+	
+		
+	}
+
+	private function createEvaluacionesForm(){
+
+		$form = $this->createFormBuilder ( array() )->add ( 'evaluaciones', CollectionType::class, array (
+				'entry_type' => NumberType::class,
+				'by_reference' => false,
+				'allow_add' => true
+		) )->add ( 'send', SubmitType::class )
+		->setAction ( $this->generateUrl ( 'ich_evaluacion_step3Merito' ) )
+		->setMethod ( 'POST' )
+		->getForm ();
+		
+		return $form;
+
+	}
+
+	public function step3MeritoAction(Request $request){
+
+		$form = $this->createEvaluacionesForm();
+
+		$ordenMeritoEvaluaciones = array();
+
+		$form->handleRequest($request);
+
+		if($form->isValid()){
+
+			$data = $form->getData();
+
+			$idsEvaluaciones = $data['evaluaciones'];
+
+			$em = $this->getDoctrine()->getManager();
+
+			foreach($idsEvaluaciones as $idEvaluacion){
+
+				$evaluacion = $em->getRepository('ichTestBundle:Evaluacion')->find($idEvaluacion);
+
+				if(!$evaluacion)
+				throw $this->createNotFoundException ('Evaluación no encontrada.');
+
+
+				$cuestionariosCompletos = $this->getCuestionariosCompletos($evaluacion);
+
+				$cuestionariosIncompletos = $this->getCuestionariosIncompletos($evaluacion);
+
+
+				$cantCuestionariosCompletos = count($cuestionariosCompletos[0]['cuestionariosCompletosAptos']) + count($cuestionariosCompletos[0]['cuestionariosCompletosNoAptos']);
+
+				$cantCuestionariosIncompletos = count($cuestionariosIncompletos);
+
+				$evaluacionHeader = "Reporte de Evaluación: ".''.$evaluacion->getNombre().''." de Fecha: ".''.date_format($evaluacion->getFechaCreacion(), 'd-m-Y');
+
+				$cuestionariosCompletosHeader = "Cuestionarios completados: ".''.$cantCuestionariosCompletos;
+
+				$cuestionariosIncompletosHeader = "Cuestionarios incompletos: ".''.$cantCuestionariosIncompletos;
+
+				
+				$ordenMeritoEvaluaciones[] = array(
+												'evaluacionHeader' => $evaluacionHeader, 
+												'cuestionariosCompletos' => array(
+													'header' => $cuestionariosCompletosHeader,
+													'cuestionarios' => $cuestionariosCompletos
+												), 
+												'cuestionariosIncompletos' => array(
+													'header' => $cuestionariosIncompletosHeader, 
+													'cuestionarios' => $cuestionariosIncompletos)
+											);
+			}
+
+			return $this->render('ichTestBundle:Evaluacion:step3Merito.html.twig', array('evaluaciones'=>Json_encode($ordenMeritoEvaluaciones)));
+	
+		}
+
+		$this->redirectToRoute('ich_evaluacion_Paso2Merito', array('idPuesto' => $this->get('session')->get('idPuesto')));
+
+	}
+
+
+	private function getCuestionariosCompletos($evaluacion){
+
+		$cuestionariosCompletos = array();
+
+		$cuestionariosCompletosAptos = array();
+
+		$cuestionariosCompletosNoAptos = array();
+
+		foreach($evaluacion->getCuestionarios() as $cuestionario){
+
+			if($cuestionario->getEstado() == 1){
+
+				$candidato = $cuestionario->getCandidato();
+
+				if($candidato->getTipoDocumento() == 1)
+				$tipo = "DNI";
+				else if($candidato->getTipoDocumento() == 2)
+					$tipo = "LE";
+					else if($candidato->getTipoDocumento() == 3)
+						$tipo = "LC";
+						else if($candidato->getTipoDocumento() == 4)
+							$tipo = "PP";
+		
+				$datosCuestionario = array (
+					'tipoDocumento' => $tipo,
+					'documento' => $candidato->getNroDocumento(),
+					'apellido' => $candidato->getApellido(),
+					'nombre' => $candidato->getNombre(),
+					'puntajeObtenido' => $cuestionario->getPuntajeTotal(),
+					'fechaInicio' => date_format($cuestionario->getComienzoEn(), 'd-m-Y'),
+					'fechaFin' => date_format($cuestionario->getEstadoEn(), 'd-m-Y'),
+					'cantAccesos' => $cuestionario->getCantAccesos());
+
+
+			if($this->ponderacionesMinimasAlcanzadas($cuestionario->getCopiaCompetencias()))
+				$cuestionariosCompletosAptos [] = $datosCuestionario;
+			else
+				$cuestionariosCompletosNoAptos [] = $datosCuestionario;
+
+			}
+		}
+
+		$cuestionariosCompletos[] = array('cuestionariosCompletosAptos' => $cuestionariosCompletosAptos, 'cuestionariosCompletosNoAptos' => $cuestionariosCompletosNoAptos);
+
+		return $cuestionariosCompletos;
+	}
+
+
+
+	private function ponderacionesMinimasAlcanzadas($copiasCompetencia){
+
+
+		foreach($copiasCompetencia as $copiaCompetencia){
+
+			if($copiaCompetencia->getPonderacion() > $copiaCompetencia->getPuntajeObtenido())
+				return false;
+		}
+
+		return true;
+	}
+
+
+		private function getCuestionariosIncompletos($evaluacion){
+
+		$cuestionariosIncompletos = array();
+
+		foreach($evaluacion->getCuestionarios() as $cuestionario){
+
+			if($cuestionario->getEstado() != 1){
+
+				$candidato = $cuestionario->getCandidato();
+
+				if($candidato->getTipoDocumento() == 1)
+				$tipo = "DNI";
+				else if($candidato->getTipoDocumento() == 2)
+					$tipo = "LE";
+					else if($candidato->getTipoDocumento() == 3)
+						$tipo = "LC";
+						else if($candidato->getTipoDocumento() == 4)
+							$tipo = "PP";
+		
+				if($cuestionario->getComienzoEn())
+					$cuestionariosIncompletos [] = array (
+						'tipoDocumento' => $tipo,
+						'documento' => $candidato->getNroDocumento(),
+						'apellido' => $candidato->getApellido(),
+						'nombre' => $candidato->getNombre(),
+						'fechaInicio' => date_format($cuestionario->getComienzoEn(), 'd-m-Y'),
+						'ultimoIngreso' => date_format($cuestionario->getEstadoEn(), 'd-m-Y'),
+						'cantAccesos' => $cuestionario->getCantAccesos());
+
+				else
+					$cuestionariosIncompletos [] = array (
+						'tipoDocumento' => $tipo,
+						'documento' => $candidato->getNroDocumento(),
+						'apellido' => $candidato->getApellido(),
+						'nombre' => $candidato->getNombre(),
+						'fechaInicio' => "-",
+						'ultimoIngreso' => "-",
+						'cantAccesos' => $cuestionario->getCantAccesos());
+
+			}
+		}
+
+		return $cuestionariosIncompletos;
+	}
+
+
+	public function buscarPuestoEmpresaAction(Request $request){
+
+
+		$codigo = $request->request->get( 'codigo' );
+
+		$puesto = $request->request->get( 'puesto' );
+
+		$empresa = $request->request->get( 'empresa' );
+
+		$em = $this->getDoctrine()->getManager();
+
+		$query = $em->createQuery($dql)->setParameter('cod',$codigo)->setParameter('p',$puesto)->setParameter('emp',$empresa);
+
+		$puestos = $query->getResult();
+
+
+		return new JsonResponse($puestos);
+
+	}
+
+
+	private function createOrdenMeritoBusquedaForm($defaultData){
+		
+	$form = $this->createFormBuilder ( $defaultData )->add('codigo', null, array('label' => 'Código'))
+            ->add('puesto', 'entity', array(
+                'class' => 'ichTestBundle:Puesto',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u');
+                },
+                'choice_label' => 'getNombre',
+                'label' => 'Puesto'
+            ))
+            ->add('empresa', 'entity', array(
+                'class' => 'ichTestBundle:Empresa',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u');
+                },
+                'choice_label' => 'getNombre',
+                'label' => 'Empresa'
+            ))->getForm ();
+	
+	return $form;
+	
+	}
+
 }

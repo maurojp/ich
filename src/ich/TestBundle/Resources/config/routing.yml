@@ -122,6 +122,18 @@ ich_evaluacion_registrarComienzoCuestionario:
     path:       /evaluacion/registrarComienzoCuestionario/{idCuestionario}
     defaults:   { _controller: ichTestBundle:Evaluacion:registrarComienzoCuestionario }
 
+ich_evaluacion_step1Merito:
+    path:       /evaluacion/step1Merito
+    defaults:   { _controller: ichTestBundle:Evaluacion:step1Merito }
+
+ich_evaluacion_step2Merito:
+    path:       /evaluacion/step2Merito/{id}
+    defaults:   { _controller: ichTestBundle:Evaluacion:step2Merito }
+
+ich_evaluacion_step3Merito:
+    path:       /evaluacion/step3Merito
+    defaults:   { _controller: ichTestBundle:Evaluacion:step3Merito }
+
 
 # Autenticacion
 
