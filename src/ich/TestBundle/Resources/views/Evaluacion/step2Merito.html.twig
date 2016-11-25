@@ -8,10 +8,9 @@
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Selección de Evaluaciones</h2>
 		</div>
-		<br>
     <div class="row2">
             <div class="col-md-1"></div>
-            <div class="col-md-9">
+            <div class="col-md-10">
                 <table id="table-pagination" data-height="350" data-striped="true"
                     data-pagination="true">
                     <thead>
@@ -51,7 +50,7 @@
                 </div>
                 <!-- dialog buttons -->
                 <div class="modal-footer">
-                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+                <button type="button" class="btn btn-primary aceptarModal">Aceptar</button>
                 </div>
             </div>
             </div>
@@ -69,7 +68,7 @@
                 <!-- dialog buttons -->
                 <div class="modal-footer">
                 <a href="{{ path('ich_evaluacion_step1Merito')}}"
-                                    class="btn btn-primary">Aceptar</a>
+                                    class="btn btn-primary aceptarModal">Aceptar</a>
                 </div>
             </div>
             </div>
@@ -78,7 +77,7 @@
 
                
 				<p>
-					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
+					{{ form_widget(form.send, {'label' : 'Aceptar', 'attr' : {'class' : 'btn btn-success  aceptar'} }) }}
 					<a href="{{ path('ich_test_homepage') }}"
 						class="btn btn-warning cancelar">Cancelar</a>
 				</p>
@@ -114,7 +113,7 @@ if(({{ evaluaciones | raw}}).length > 0){
 
     $('#table-pagination').on('uncheck-all.bs.table', cargarForm)
 
-    $('.siguiente').on('click', function(e) {
+    $('.aceptar').on('click', function(e) {
         
         e.preventDefault(); 
 
@@ -172,13 +171,6 @@ if(({{ evaluaciones | raw}}).length > 0){
         }
 
        
- $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
-            $("#myModal a.btn").on("click", function(e) {
-                console.log("button pressed"); // just as an example...
-                $("#myModal").modal('hide'); // dismiss the dialog
-            });
-        });
-
         $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
             $("#myModal").remove();
 
@@ -200,7 +192,7 @@ else{
 
 }
 
- $(document).on('click', '.aceptar', function() {
+ $(document).on('click', '.aceptarModal', function() {
                 
     $(function() {
             $("#myModal").modal('hide');

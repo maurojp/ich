@@ -74,7 +74,7 @@ class EvaluacionController extends Controller {
 				//BUSCAR PUESTOS CON AL MENOS UNA COMPETENCIA ASIGNADA
 				$dql = "SELECT p.id idPuesto, p.nombre nombrePuesto, e.nombre nombreEmpresa
 				FROM ichTestBundle:Puesto p JOIN ichTestBundle:Empresa e
-				WHERE e.id = IDENTITY(p.empresa) and p.id IN
+				WHERE e.id = IDENTITY(p.empresa) and p.auditoria is NULL and p.id IN
 				(SELECT IDENTITY(pc.puesto) FROM ichTestBundle:Puesto_Competencia pc WHERE pc.activa = true)";
 				$query = $co->createQuery ( $dql );
 				
@@ -1185,13 +1185,11 @@ class EvaluacionController extends Controller {
 
 	public function step1MeritoAction(){
 
-		$datosTabla = $this->getPuestosStep1Merito();
+		$puestos = $this->getPuestosStep1Merito();
 
-		$defaultData = array();
+		$formBusqueda = $this->createOrdenMeritoBusquedaForm();
 
-		$formBusqueda = $this->createOrdenMeritoBusquedaForm($defaultData);
-
-		$this->render('ichTestBundle:Evaluacion:step1Merito.html.twig', array('form' => $formBusqueda->createView(), 'datosTabla'=> $datosTabla));
+		return $this->render('ichTestBundle:Evaluacion:step1Merito.html.twig', array('form' => $formBusqueda->createView(), 'puestos'=> json_encode($puestos)));
 
 	
 		
@@ -1201,24 +1199,168 @@ class EvaluacionController extends Controller {
 
 		$em = $this->getDoctrine()->getManager();
 
-		$query = $em->createQuery ( "SELECT c.nombre, c.codigo, c.descripcion, pc.ponderacion
-    			FROM ichTestBundle:Puesto_Competencia pc JOIN ichTestBundle:Competencia c
-    			WHERE IDENTITY(pc.puesto) = :p and pc.competencia = c and pc.activa = true and c.auditoria is NULL and c.id IN
-				(SELECT distinct c2.id
-    			FROM ichTestBundle:Puesto_Competencia pc2 JOIN ichTestBundle:Competencia c2
-    			WHERE pc2.puesto = :p and pc2.competencia = c2 and c2.auditoria is NULL and c2.id in (
-				SELECT distinct c3.id
-				FROM ichTestBundle:Competencia c3 JOIN ichTestBundle:Factor f
-				WHERE c3 = f.competencia and f.id IN (
-				SELECT distinct f2.id
-				FROM ichTestBundle:Factor f2 JOIN ichTestBundle:Pregunta pr
-				WHERE pr.factor = f2 and f2.auditoria is NULL and pr.auditoria is NULL
-				GROUP BY f2.id                                                                                
-				HAVING count(distinct pr.id) >= 2)))" )->setParameter ( 'p', $puesto->getId () );
+		$query = $em->createQuery ("SELECT p FROM ichTestBundle:Puesto p WHERE p.auditoria is NULL ORDER BY p.codigo ASC");
+				
+		$puestos= $query->getResult();
+
+		$puestosArray = array();
+
+		foreach($puestos as $puesto){
 		
-		$arrayCompetenciasValidas = $query->getResult ();
- 
+			$candidatosEvaluaciones = $this->getPuestoEvaluacionesQuery($puesto->getId());
+			
+			$puestosArray[]= $this->getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto);
+
+			}	
+
+		return $puestosArray;
 	}
+
+		public function buscarPuestoEmpresaAction(Request $request){
+
+
+		$codigo = $request->request->get( 'codigo' );
+
+		$idPuesto = $request->request->get( 'puesto' );
+
+		$idEmpresa = $request->request->get( 'empresa' );
+
+		$puestosArray = array();
+
+		$em = $this->getDoctrine()->getManager();
+
+		if($idPuesto != 0){
+
+			$puesto = $em->getRepository ( 'ichTestBundle:Puesto' )->find ( $idPuesto );
+
+			if (! $puesto) {
+			throw $this->createNotFoundException ( 'Puesto no encontrado.' );
+			}
+
+			$candidatosEvaluaciones = $this->getPuestoEvaluacionesQuery($idPuesto);
+			
+			$puestosArray[]= $this->getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto);
+
+			return new JsonResponse($puestosArray);
+
+		}	
+        else if($codigo != null && $idEmpresa != 0){
+
+        	$query = $em->createQuery ( "SELECT p FROM ichTestBundle:Puesto p WHERE p.codigo LIKE :codigo and IDENTITY(p.empresa) = :idEmpresa ORDER BY p.nombre ASC" )->setParameter ( 'codigo', '%'.$codigo.'%' )->setParameter ( 'idEmpresa', $idEmpresa  );
+
+        	$puestos =  $query->getResult ();
+
+        	foreach($puestos as $puesto){
+		
+			$candidatosEvaluaciones = $this->getPuestoEvaluacionesQuery($puesto->getId());
+			
+			$puestosArray[]= $this->getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto);
+
+			}	
+
+			return new JsonResponse($puestosArray);
+
+		}
+        else if($codigo != null){
+
+        	$query = $em->createQuery ( "SELECT p FROM ichTestBundle:Puesto p WHERE p.codigo LIKE :codigo ORDER BY p.nombre ASC" )->setParameter ( 'codigo', '%'.$codigo.'%' );
+
+        	$puestos =  $query->getResult ();
+
+        	foreach($puestos as $puesto){
+		
+			$candidatosEvaluaciones = $this->getPuestoEvaluacionesQuery($puesto->getId());
+			
+			$puestosArray[]= $this->getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto);
+
+			}	
+
+			return new JsonResponse($puestosArray);
+
+        }
+
+        else{
+
+        	$query = $em->createQuery ( "SELECT p FROM ichTestBundle:Puesto p WHERE IDENTITY(p.empresa) = :idEmpresa ORDER BY p.nombre ASC" )->setParameter ( 'idEmpresa', $idEmpresa );
+
+        	$puestos = $query->getResult (); 
+
+        	foreach($puestos as $puesto){
+		
+			$candidatosEvaluaciones = $this->getPuestoEvaluacionesQuery($puesto->getId());
+			
+			$puestosArray[]= $this->getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto);
+
+			}	
+
+			return new JsonResponse($puestosArray);
+
+
+		}
+
+	}
+
+private function getPuestoEvaluacionesQuery($idPuesto){
+
+	$em = $this->getDoctrine()->getManager();
+				
+	$query = $em->createQuery ( "SELECT IDENTITY(e.puesto) idPuesto, count(distinct c.id) cantCandidatos, count(distinct e.id) cantEvaluaciones
+   	FROM ichTestBundle:Cuestionario c JOIN ichTestBundle:Evaluacion e
+    WHERE IDENTITY(e.puesto) = :p and IDENTITY(c.evaluacion) = e.id and c.id in 
+    (SELECT c2.id FROM ichTestBundle:Cuestionario c2 where c2.estado = 1)
+    GROUP BY idPuesto" )->setParameter ( 'p', $idPuesto ); 			
+
+	return $query->getResult ();
+
+	}
+
+private function getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto){
+
+	if(count($candidatosEvaluaciones) > 0)
+			 return array (
+					'idPuesto' => $puesto->getId (),
+					'codigoPuesto' => $puesto->getCodigo(),
+					'nombrePuesto' => $puesto->getNombre(),
+					'nombreEmpresa' => $puesto->getEmpresa()->getNombre(),
+					'candidatos' => $candidatosEvaluaciones[0]['cantCandidatos'],
+					'evaluaciones' =>$candidatosEvaluaciones[0]['cantEvaluaciones'],
+					);
+			else
+				return array (
+					'idPuesto' => $puesto->getId (),
+					'codigoPuesto' => $puesto->getCodigo(),
+					'nombrePuesto' => $puesto->getNombre(),
+					'nombreEmpresa' => $puesto->getEmpresa()->getNombre(),
+					'candidatos' => "-",
+					'evaluaciones' => "-",
+					);		
+
+}
+
+	private function createOrdenMeritoBusquedaForm(){
+		
+	$form = $this->createFormBuilder ( array() )->add('codigo', 'text', array('label' => 'Código', 'required' => false))
+            ->add('puesto', 'entity', array(
+                'class' => 'ichTestBundle:Puesto',
+                'choice_label' => 'getNombre',
+                'label' => 'Puesto',
+                'placeholder' => 'Seleccione',
+                'required' => false,
+            ))
+            ->add('empresa', 'entity', array(
+                'class' => 'ichTestBundle:Empresa',
+                'choice_label' => 'getNombre',
+                'label' => 'Empresa',
+                'placeholder' => 'Seleccione',
+                'required' => false,
+            ))->add ( 'send', SubmitType::class )
+		->getForm ();
+		
+	
+	return $form;
+	
+	}
+
 
 
 	public function step2MeritoAction($id){
@@ -1525,49 +1667,6 @@ class EvaluacionController extends Controller {
 	}
 
 
-	public function buscarPuestoEmpresaAction(Request $request){
-
-
-		$codigo = $request->request->get( 'codigo' );
-
-		$puesto = $request->request->get( 'puesto' );
-
-		$empresa = $request->request->get( 'empresa' );
-
-		$em = $this->getDoctrine()->getManager();
-
-		$query = $em->createQuery($dql)->setParameter('cod',$codigo)->setParameter('p',$puesto)->setParameter('emp',$empresa);
-
-		$puestos = $query->getResult();
-
-
-		return new JsonResponse($puestos);
-
-	}
-
-
-	private function createOrdenMeritoBusquedaForm($defaultData){
-		
-	$form = $this->createFormBuilder ( $defaultData )->add('codigo', null, array('label' => 'Código'))
-            ->add('puesto', 'entity', array(
-                'class' => 'ichTestBundle:Puesto',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u');
-                },
-                'choice_label' => 'getNombre',
-                'label' => 'Puesto'
-            ))
-            ->add('empresa', 'entity', array(
-                'class' => 'ichTestBundle:Empresa',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u');
-                },
-                'choice_label' => 'getNombre',
-                'label' => 'Empresa'
-            ))->getForm ();
 	
-	return $form;
-	
-	}
 
 }

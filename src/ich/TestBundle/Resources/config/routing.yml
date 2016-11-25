@@ -134,6 +134,10 @@ ich_evaluacion_step3Merito:
     path:       /evaluacion/step3Merito
     defaults:   { _controller: ichTestBundle:Evaluacion:step3Merito }
 
+ich_evaluacion_buscarPuestoEmpresa:
+    path:       /evaluacion/buscarPuestoEmpresa
+    defaults:   { _controller: ichTestBundle:Evaluacion:buscarPuestoEmpresa }
+
 
 # Autenticacion
 

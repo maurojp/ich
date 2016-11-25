@@ -6,9 +6,8 @@
 <div class="container">
 	<div class="col-md-12">
 		<div class="page-header margin-none">
-			<h2 class="padding-none">Orden de Mérito</h2>
+			<h2 class="padding-none">Informe: Orden de Mérito</h2>
 		</div>
-		<br>
     <div class="row2">
             <div class="col-md-1"></div>
             <div class="col-md-10">
@@ -22,15 +21,15 @@
                     <thead>
                         <tr>
                             <th data-field="nombreEvaluacion">Evaluación</th>
-                            <th data-field="fechaCreacionEvaluacion">Creación</th>
+                            <th data-field="fechaCreacionEvaluacion">Creación Ev.</th>
                             <th data-field="tipoDocumento">Tipo</th>
-                            <th data-field="documento">Nro. Doc.</th>
+                            <th data-field="documento">Documento</th>
                             <th data-field="apellido">Apellido</th>
                             <th data-field="nombre">Nombre</th>
                             <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
-                            <th data-field="fechaInicio">Fecha Inicio</th>
-                            <th data-field="fechaFin">Fecha Fin</th>
-                            <th data-field="cantAccesos">Acc.</th>
+                            <th data-field="fechaInicio">Inicio</th>
+                            <th data-field="fechaFin">Finalización</th>
+                            <th data-field="cantAccesos">Accesos</th>
                         </tr>
                     </thead>
             </table> 
@@ -54,7 +53,7 @@
 <br>
 				<p>
                     <button type="button" class="btn btn-success imprimir">Imprimir</button>
-                    <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar">Cancelar</a>
+                    <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning salir">Salir</a>
                 </p>
 
             </div>
@@ -121,10 +120,9 @@
 
     })
 
-//alert(JSON.stringify({{ cuestionariosAptos | raw}}));
+
 $(function() {
 
-   
   $('#table').bootstrapTable({
     columns: [{
       field: 'evaluacionHeader'
@@ -132,7 +130,7 @@ $(function() {
     data: {{ evaluaciones | raw}},
     detailView: true,
     striped: true,
-    height: 400,
+    height: 330,
     showHeader: false,
     onExpandRow: function(index, row, $detail) {
       console.log(row)
