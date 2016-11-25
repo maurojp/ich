@@ -117,8 +117,10 @@ var file_name;
           
     });
 
-    $('.si').click( function() {   
+    $('.si').click( function() {  
+    $('#table-pagination').bootstrapTable('togglePagination'); 
     $('#table-pagination').tableExport({type:'excel', fileName: file_name});
+    $('#table-pagination').bootstrapTable('togglePagination'); 
     })
     
     $("#modalExito").on("show", function() {    // wire up the OK button to dismiss the modal when shown

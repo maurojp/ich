@@ -18,6 +18,7 @@ use ich\TestBundle\Entity\CopiaPregunta;
 use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 use ich\TestBundle\Form\CopiaPreguntaType;
 
+
 class EvaluacionController extends Controller {
 
 	public function newStep1Action(Request $request) {
@@ -1293,32 +1294,35 @@ class EvaluacionController extends Controller {
 
 				$cuestionariosCompletos = $this->getCuestionariosCompletos($evaluacion);
 
-				$cuestionariosIncompletos = $this->getCuestionariosIncompletos($evaluacion);
+				$cuestionariosNoCompletos = $this->getCuestionariosNoCompletos($evaluacion);
 
-
-				$cantCuestionariosCompletos = count($cuestionariosCompletos[0][0]['cuestionarios']) + count($cuestionariosCompletos[0][1]['cuestionarios']);
-
-				$cantCuestionariosIncompletos = count($cuestionariosIncompletos);
+				$cantCuestionariosCompletos = $cuestionariosCompletos[1]; 
+											
+				$cantCuestionariosNoCompletos = $cuestionariosNoCompletos[1]; 
 
 				$evaluacionHeader = "Reporte de Evaluación: ".''.$evaluacion->getNombre().''."-".''."Fecha: ".''.date_format($evaluacion->getFechaCreacion(), 'd-m-Y');
 
 				$cuestionariosCompletosHeader = "Cuestionarios completados: ".''.$cantCuestionariosCompletos;
 
-				$cuestionariosIncompletosHeader = "Cuestionarios incompletos: ".''.$cantCuestionariosIncompletos;
+				$cuestionariosNoCompletosHeader = "Cuestionarios no completados: ".''.$cantCuestionariosNoCompletos;
 
 				
 				$ordenMeritoEvaluaciones[] = array(
 												'evaluacionHeader' => $evaluacionHeader,
 												'cuestionarios' => array(array(
 													'header' => $cuestionariosCompletosHeader,
-													'cuestionarios' => $cuestionariosCompletos[0]), array('header' => $cuestionariosIncompletosHeader, 
-													'cuestionarios' => $cuestionariosIncompletos)
+													'cuestionarios' => $cuestionariosCompletos[0]), array('header' => $cuestionariosNoCompletosHeader, 
+													'cuestionarios' => $cuestionariosNoCompletos[0])
 												));
+
+
+				$ordenMeritoCuestionariosAptos=$this->getCuestionariosAptos($evaluacion);
+
+				$dateTimeInforme = "Informe-OrdenMerito-".''.date_format ( new \datetime (), 'Y-m-d-H-i' );
 
 			}
 
-			//print_r($ordenMeritoEvaluaciones);
-			return $this->render('ichTestBundle:Evaluacion:step3Merito.html.twig', array('evaluaciones'=>Json_encode($ordenMeritoEvaluaciones)));
+			return $this->render('ichTestBundle:Evaluacion:step3Merito.html.twig', array('evaluaciones'=>Json_encode($ordenMeritoEvaluaciones), 'cuestionariosAptos'=> Json_encode($ordenMeritoCuestionariosAptos), 'dateTimeInforme' => $dateTimeInforme));
 	
 		}
 
@@ -1327,17 +1331,18 @@ class EvaluacionController extends Controller {
 	}
 
 
-	private function getCuestionariosCompletos($evaluacion){
+	private function getCuestionariosAptos($evaluacion){;
 
-		$cuestionariosCompletos = array();
+		$cuestionariosAptos = array();
 
-		$cuestionariosCompletosAptos = array();
+		$em = $this->getDoctrine()->getManager();
 
-		$cuestionariosCompletosNoAptos = array();
+		$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy ( array (
+				'evaluacion' => $evaluacion, 'estado' => 1), array ('puntajeTotal' => 'DESC') );
 
-		foreach($evaluacion->getCuestionarios() as $cuestionario){
+		foreach($cuestionarios as $cuestionario){
 
-			if($cuestionario->getEstado() == 1){
+			if($this->ponderacionesMinimasAlcanzadas($cuestionario->getCopiaCompetencias())){
 
 				$candidato = $cuestionario->getCandidato();
 
@@ -1350,15 +1355,65 @@ class EvaluacionController extends Controller {
 						else if($candidato->getTipoDocumento() == 4)
 							$tipo = "PP";
 		
-				$datosCuestionario = array (
+				$cuestionariosAptos[]= array (
+					'nombreEvaluacion' => $evaluacion->getNombre(),
+					'fechaCreacionEvaluacion' => date_format($evaluacion->getFechaCreacion(), 'd-m-Y'),
 					'tipoDocumento' => $tipo,
 					'documento' => $candidato->getNroDocumento(),
 					'apellido' => $candidato->getApellido(),
 					'nombre' => $candidato->getNombre(),
-					'puntajeObtenido' => $cuestionario->getPuntajeTotal(),
+					'puntajeObtenido' => round($cuestionario->getPuntajeTotal(), 2),
 					'fechaInicio' => date_format($cuestionario->getComienzoEn(), 'd-m-Y'),
 					'fechaFin' => date_format($cuestionario->getEstadoEn(), 'd-m-Y'),
 					'cantAccesos' => $cuestionario->getCantAccesos());
+			
+			}	
+		}
+
+		return $cuestionariosAptos;
+	}
+		
+
+
+	private function getCuestionariosCompletos($evaluacion){
+
+		$cuestionariosCompletos = array();
+
+		$cuestionariosCompletosAptos = array();
+
+		$cuestionariosCompletosNoAptos = array();
+
+		$em = $this->getDoctrine()->getManager();
+
+		$cuestionarios = $em->getRepository ( 'ichTestBundle:Cuestionario' )->findBy ( array (
+				'evaluacion' => $evaluacion, 'estado' => '1'), array ('puntajeTotal' => 'DESC') );
+
+		$cantCuestionariosCompletos = 0;
+
+		foreach($cuestionarios as $cuestionario){
+
+			$cantCuestionariosCompletos++;
+
+			$candidato = $cuestionario->getCandidato();
+
+			if($candidato->getTipoDocumento() == 1)
+			$tipo = "DNI";
+			else if($candidato->getTipoDocumento() == 2)
+				$tipo = "LE";
+				else if($candidato->getTipoDocumento() == 3)
+					$tipo = "LC";
+					else if($candidato->getTipoDocumento() == 4)
+						$tipo = "PP";
+		
+			$datosCuestionario = array (
+				'tipoDocumento' => $tipo,
+				'documento' => $candidato->getNroDocumento(),
+				'apellido' => $candidato->getApellido(),
+				'nombre' => $candidato->getNombre(),
+				'puntajeObtenido' => round($cuestionario->getPuntajeTotal(), 2),
+				'fechaInicio' => date_format($cuestionario->getComienzoEn(), 'd-m-Y'),
+				'fechaFin' => date_format($cuestionario->getEstadoEn(), 'd-m-Y'),
+				'cantAccesos' => $cuestionario->getCantAccesos());
 
 
 			if($this->ponderacionesMinimasAlcanzadas($cuestionario->getCopiaCompetencias()))
@@ -1366,10 +1421,11 @@ class EvaluacionController extends Controller {
 			else
 				$cuestionariosCompletosNoAptos [] = $datosCuestionario;
 
-			}
 		}
 
 		$cuestionariosCompletos[] = array(array('header' => "Cuestionarios Aptos", 'cuestionarios' => $cuestionariosCompletosAptos), array('header' => "Cuestionarios No Aptos", 'cuestionarios' => $cuestionariosCompletosNoAptos));
+
+		$cuestionariosCompletos[1]= $cantCuestionariosCompletos;
 
 		return $cuestionariosCompletos;
 	}
@@ -1389,13 +1445,23 @@ class EvaluacionController extends Controller {
 	}
 
 
-		private function getCuestionariosIncompletos($evaluacion){
+		private function getCuestionariosNoCompletos($evaluacion){
+
+		$cuestionariosSinContestar = array();
 
 		$cuestionariosIncompletos = array();
+
+		$cuestionariosActivos = array();
+
+		$cuestionariosNoCompletos = array();
+
+		$cantCuestionariosNoCompletos = 0;
 
 		foreach($evaluacion->getCuestionarios() as $cuestionario){
 
 			if($cuestionario->getEstado() != 1){
+
+				$cantCuestionariosNoCompletos++;
 
 				$candidato = $cuestionario->getCandidato();
 
@@ -1409,7 +1475,7 @@ class EvaluacionController extends Controller {
 							$tipo = "PP";
 		
 				if($cuestionario->getComienzoEn())
-					$cuestionariosIncompletos [] = array (
+					$cuestionarioArray = array (
 						'tipoDocumento' => $tipo,
 						'documento' => $candidato->getNroDocumento(),
 						'apellido' => $candidato->getApellido(),
@@ -1419,7 +1485,7 @@ class EvaluacionController extends Controller {
 						'cantAccesos' => $cuestionario->getCantAccesos());
 
 				else
-					$cuestionariosIncompletos [] = array (
+					$cuestionarioArray = array (
 						'tipoDocumento' => $tipo,
 						'documento' => $candidato->getNroDocumento(),
 						'apellido' => $candidato->getApellido(),
@@ -1428,10 +1494,34 @@ class EvaluacionController extends Controller {
 						'ultimoIngreso' => "-",
 						'cantAccesos' => $cuestionario->getCantAccesos());
 
+				if($cuestionario->getEstado() == 0)
+					$cuestionariosActivos[] = $cuestionarioArray;
+
+				else if($cuestionario->getEstado() == 2)
+					$cuestionariosIncompletos[] = $cuestionarioArray;
+
+				else if($cuestionario->getEstado() == 3)
+					$cuestionariosSinContestar[] = $cuestionarioArray;
+
 			}
+
+
 		}
 
-		return $cuestionariosIncompletos;
+		$cuestionariosNoCompletos = array(array());
+
+		if(count($cuestionariosActivos) > 0)
+			$cuestionariosNoCompletos[0][] = array('header' => "Estado: ACTIVO", 'cuestionarios' => $cuestionariosActivos);
+
+		if(count($cuestionariosIncompletos) > 0)
+			$cuestionariosNoCompletos[0][] = array('header' => "Estado: INCOMPLETO", 'cuestionarios' => $cuestionariosIncompletos);
+
+		if(count($cuestionariosSinContestar) > 0)
+			$cuestionariosNoCompletos[0][] =array('header' => "Estado: SIN CONTESTAR", 'cuestionarios' => $cuestionariosSinContestar);
+
+		$cuestionariosNoCompletos[1]= $cantCuestionariosNoCompletos;
+
+		return $cuestionariosNoCompletos;
 	}
 
 

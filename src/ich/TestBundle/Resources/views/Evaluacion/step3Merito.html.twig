@@ -12,10 +12,44 @@
     <div class="row2">
             <div class="col-md-1"></div>
             <div class="col-md-10">
+
             <h3 id="titulo1" align="center">Listado de
                     Candidatos</h3>
             <table id="table">
             </table>
+
+            <table id="table2"  style="display:none;" data-tableexport-display="always"> 
+                    <thead>
+                        <tr>
+                            <th data-field="nombreEvaluacion">Evaluación</th>
+                            <th data-field="fechaCreacionEvaluacion">Creación</th>
+                            <th data-field="tipoDocumento">Tipo</th>
+                            <th data-field="documento">Nro. Doc.</th>
+                            <th data-field="apellido">Apellido</th>
+                            <th data-field="nombre">Nombre</th>
+                            <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
+                            <th data-field="fechaInicio">Fecha Inicio</th>
+                            <th data-field="fechaFin">Fecha Fin</th>
+                            <th data-field="cantAccesos">Acc.</th>
+                        </tr>
+                    </thead>
+            </table> 
+
+             <!-- set up the modal to start hidden and fade in and out -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- dialog body -->
+                <div class="modal-body">
+                    <h4 align="center">Informe no disponible: No se registran cuestionarios aptos en las evaluaciones seleccionadas.</h4>
+                </div>
+                <!-- dialog buttons -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+                </div>
+            </div>
+            </div>
+        </div>
 <br>
 <br>
 				<p>
@@ -44,9 +78,53 @@
 <script type="text/javascript">
 
 
+ $(document).on('click', '.aceptar', function() {
+                
+    $(function() {
+            $("#myModal").modal('hide');
+        });
+    })
+
+    $(function() {
+            $("#myModal").modal('hide');
+            $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+            $("#myModal").remove();
+        });
+    })
+
+     $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+            $("#myModal a.btn").on("click", function(e) {
+                console.log("button pressed"); // just as an example...
+                $("#myModal").modal('hide'); // dismiss the dialog
+            });
+        });
+
+
+     $(document).on('click', '.imprimir', function() {
+
+    $('#table2').bootstrapTable({data: {{ cuestionariosAptos | raw}}});
+
+     if(({{ cuestionariosAptos | raw}}).length == 0){              
+        $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
+            "backdrop"  : "static",
+            "keyboard"  : true,
+            "show"      : true                    // ensure the modal is shown immediately
+            });
+
+    }
+    else{
+
+        
+        $('#table2').tableExport({type:'pdf', fileName: '{{dateTimeInforme}}',  "jspdf": {"styles": { "columnWidth" : 5,"rowHeight": 8, "fontSize": 8 },
+           }});
+    }
+
+    })
+
+//alert(JSON.stringify({{ cuestionariosAptos | raw}}));
 $(function() {
 
-   // alert(JSON.stringify({{ evaluaciones | raw}}));
+   
   $('#table').bootstrapTable({
     columns: [{
       field: 'evaluacionHeader'
@@ -66,15 +144,21 @@ $(function() {
         detailView: true,
         showHeader: false,
         onExpandRow: function(index2, row2, $detail2) {
-      console.log(row2)
-      $detail2.html('<table></table>').find('table').bootstrapTable({
+        console.log(row2);
+        var fila2;
+        try { row2.cuestionarios[0]['cuestionarios'][0]['puntajeObtenido']; }
+        catch(ex){ fila2 = ex;}
+
+        if(fila2 !== "TypeError: row2.cuestionarios[0].cuestionarios[0] is undefined"){
+
+        $detail2.html('<table></table>').find('table').bootstrapTable({
         columns: [{
             field: 'header'
         }],
         data: row2.cuestionarios,
         detailView: true,
         showHeader: false,
-         onExpandRow: function(index3, row3, $detail3) {
+        onExpandRow: function(index3, row3, $detail3) {
       console.log(row3)
       $detail3.html('<table></table>').find('table').bootstrapTable({
         columns: [{
@@ -103,7 +187,7 @@ $(function() {
             },
             {
             field: 'fechaFin',
-            title: 'Fecha de Fin'
+            title: 'Fecha Finalización'
             },
             {
             field: 'cantAccesos',
@@ -112,13 +196,58 @@ $(function() {
         data: row3.cuestionarios
     }
   )}
+    })
+    }
+    else{
+
+    $detail2.html('<table></table>').find('table').bootstrapTable({
+        columns: [{
+            field: 'header'
+        }],
+        data: row2.cuestionarios,
+        detailView: true,
+        showHeader: false,
+        onExpandRow: function(index3, row3, $detail3) {
+      console.log(row3)
+      $detail3.html('<table></table>').find('table').bootstrapTable({
+        columns: [{
+            field: 'tipoDocumento',
+            title: 'Tipo Documento'
+            },
+            {
+            field: 'documento',
+            title: 'Documento'
+            },
+            {
+            field: 'apellido',
+            title: 'Apellido'
+            },
+            {
+            field: 'nombre',
+            title: 'Nombre'
+            },
+            {
+            field: 'fechaInicio',
+            title: 'Fecha Inicio'
+            },
+            {
+            field: 'ultimoIngreso',
+            title: 'Último Ingreso'
+            },
+            {
+            field: 'cantAccesos',
+            title: 'Cant. Accesos'
+            }],
+        data: row3.cuestionarios
     }
   )}
+    })
+
+    }
+            
+    }
     }
   )}})})
 
-$('.imprimir').click( function() {  
-$('#table').tableExport({type:'excel', fileName: "yo"})
-});
 </script>
 {% endblock %}
