@@ -28,7 +28,7 @@ class Puesto
     
     /**
      * @ORM\OneToOne(targetEntity="ich\TestBundle\Entity\Auditoria", inversedBy="puesto") 
-     * @ORM\JoinColumn(name="eliminado",referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="eliminado",referencedColumnName="id", nullable=true, onDelete="SET NULL")
      */
     protected $auditoria;
 

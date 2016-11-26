@@ -19,7 +19,7 @@ class PuestoCompetenciaType extends AbstractType
             ->add('competencia', 'entity', array(
                 'class' => 'ichTestBundle:Competencia',
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u');
+                    return $er->createQueryBuilder('u')->orderBy('u.nombre', 'ASC');
                 },
                 'choice_label' => 'getNombre'
             ))

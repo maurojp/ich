@@ -15,45 +15,47 @@
 				<table id="table-pagination" data-height="350" data-striped="true"
 					data-pagination="true" data-single-select="true">
 					<thead>
-					<h3 id="titulo1" align="center">Selección de Puesto</h3>
+						<h3 id="titulo1" align="center">Selección de Puesto</h3>
 						<tr>
 							<th data-field="idPuesto" data-visible="false">Id</th>
-							<th data-field="nombrePuesto" data-align="left" data-sortable="true">Puesto</th>
-							<th data-field="nombreEmpresa" data-align="left" data-sortable="true">Empresa</th>
+							<th data-field="nombrePuesto" data-align="left"
+								data-sortable="true">Puesto</th>
+							<th data-field="nombreEmpresa" data-align="left"
+								data-sortable="true">Empresa</th>
 							<th data-field="state" data-checkbox="true"></th>
 						</tr>
 					</thead>
 				</table>
 				<br>
-		
-		
-		<!-- set up the modal to start hidden and fade in and out -->
-	<div id="myModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- dialog body -->
-				<div class="modal-body">
-					<h4 align="center">Debe seleccionar un Puesto para continuar.</h4>
+
+
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="myModal" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4 align="center">Debe seleccionar un Puesto para
+									continuar.</h4>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary aceptar">Aceptar</button>
+							</div>
+						</div>
+					</div>
+
 				</div>
-				<!-- dialog buttons -->
-				<div class="modal-footer">
-				<button type="button" class="btn btn-primary aceptar">Aceptar</button>
-				</div>
-			</div>
-		</div>
-	
-		</div>	
 				<p>
-					 <a id="sig" href="{{ path('ich_evaluacion_newStep3', { id: 0 }) }}" onclick="" class="btn btn-success siguiente" >Siguiente</a>
-					<a href="{{ path('ich_test_homepage') }}" class="btn btn-warning cancelar">Cancelar</a>
+					<a id="sig" href="{{ path('ich_evaluacion_newStep3', { id: 0 }) }}"
+						onclick="" class="btn btn-success siguiente">Siguiente</a> <a
+						href="{{ path('ich_test_homepage') }}"
+						class="btn btn-warning cancelar">Cancelar</a>
 				</p>
 
+			</div>
+		</div>
 	</div>
-</div>
-	</div>
-	
-	
-
 </div>
 <br>
 <br>

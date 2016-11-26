@@ -26,7 +26,12 @@ ich_puesto_update:
     defaults:   { _controller: ichTestBundle:Puesto:update }
     methods: [POST, PUT]
     
-    
+ich_puesto_delete:
+    path:       /puesto/delete/
+    defaults:   { _controller: ichTestBundle:Puesto:delete }
+    methods: [POST]
+
+
 # Pregunta
 
 
@@ -138,7 +143,15 @@ ich_evaluacion_buscarPuestoEmpresa:
     path:       /evaluacion/buscarPuestoEmpresa
     defaults:   { _controller: ichTestBundle:Evaluacion:buscarPuestoEmpresa }
 
+ich_evaluacion_getPuestosStep1Merito:
+    path:       /evaluacion/getPuestosStep1Merito/{isXmlHttpRequest}
+    defaults:   { _controller: ichTestBundle:Evaluacion:getPuestosStep1Merito }
+    
+ich_evaluacion_buscarCandidatosEvaluar:
+    path:       /evaluacion/buscarCandidatosEvaluar
+    defaults:   { _controller: ichTestBundle:Evaluacion:buscarCandidatosEvaluar }
 
+       
 # Autenticacion
 
 ich_test_homepage:

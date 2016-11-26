@@ -8,24 +8,24 @@
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Selección de Evaluaciones</h2>
 		</div>
-    <div class="row2">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
-                <table id="table-pagination" data-height="350" data-striped="true"
-                    data-pagination="true">
-                    <thead>
-                    <h3 id="titulo1" align="center">Listado de
-                    Evaluaciones</h3>
-                        <tr>
-                            <th data-field="id" data-visible="false">Id</th>
-                            <th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
-                            <th data-field="fechaCreacion" data-width="50%" data-align="left">Fecha de Creación</th>
-                            <th data-field="state" data-checkbox="true"></th>
-                        </tr>
-                    </thead>
-                </table> 
+		<div class="row2">
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<table id="table-pagination" data-height="350" data-striped="true"
+					data-pagination="true">
+					<thead>
+						<h3 id="titulo1" align="center">Listado de Evaluaciones</h3>
+						<tr>
+							<th data-field="id" data-visible="false">Id</th>
+							<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
+							<th data-field="fechaCreacion" data-width="50%" data-align="left">Fecha
+								de Creación</th>
+							<th data-field="state" data-checkbox="true"></th>
+						</tr>
+					</thead>
+				</table>
 
-			
+
 
 				{{ form_start(form) }}
 				<fieldset>
@@ -38,55 +38,57 @@
 
 				</fieldset>
 
-			
 
-                <!-- set up the modal to start hidden and fade in and out -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- dialog body -->
-                <div class="modal-body">
-                    <h4 align="center">Debe seleccionar al menos una Evaluación para continuar.</h4>
-                </div>
-                <!-- dialog buttons -->
-                <div class="modal-footer">
-                <button type="button" class="btn btn-primary aceptarModal">Aceptar</button>
-                </div>
-            </div>
-            </div>
-        </div>
-          
 
-                          <!-- set up the modal to start hidden and fade in and out -->
-    <div id="myModal2" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- dialog body -->
-                <div class="modal-body">
-                    <h4 align="center">El Puesto seleccionado no registra Evaluaciones asociadas.</h4>
-                </div>
-                <!-- dialog buttons -->
-                <div class="modal-footer">
-                <a href="{{ path('ich_evaluacion_step1Merito')}}"
-                                    class="btn btn-primary aceptarModal">Aceptar</a>
-                </div>
-            </div>
-            </div>
-        </div>
-          
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="myModal" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4 align="center">Debe seleccionar al menos una
+									Evaluación para continuar.</h4>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary aceptarModal">Aceptar</button>
+							</div>
+						</div>
+					</div>
+				</div>
 
-               
+
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="myModal2" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4 align="center">El Puesto seleccionado no registra
+									Evaluaciones asociadas.</h4>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_evaluacion_step1Merito')}}"
+									class="btn btn-primary aceptarModal">Aceptar</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
 				<p>
 					{{ form_widget(form.send, {'label' : 'Aceptar', 'attr' : {'class' : 'btn btn-success  aceptar'} }) }}
 					<a href="{{ path('ich_test_homepage') }}"
 						class="btn btn-warning cancelar">Cancelar</a>
 				</p>
-				
-				
+
+
 				{{ form_widget(form._token) }}
 				{{ form_end(form,{ 'render_rest' : false}) }}
-			
-            </div>
+
+			</div>
 		</div>
 	</div>
 </div>
@@ -99,64 +101,64 @@
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript">
-     
+
 if(({{ evaluaciones | raw}}).length > 0){
 
 
-    $('#table-pagination').bootstrapTable({data: {{ evaluaciones | raw}}});
+	$('#table-pagination').bootstrapTable({data: {{ evaluaciones | raw}}});
 
-    $('#table-pagination').on('uncheck.bs.table', cargarForm)
+	$('#table-pagination').on('uncheck.bs.table', cargarForm)
 
-    $('#table-pagination').on('check.bs.table', cargarForm)
+	$('#table-pagination').on('check.bs.table', cargarForm)
 
-    $('#table-pagination').on('check-all.bs.table', cargarForm)
+	$('#table-pagination').on('check-all.bs.table', cargarForm)
 
-    $('#table-pagination').on('uncheck-all.bs.table', cargarForm)
+	$('#table-pagination').on('uncheck-all.bs.table', cargarForm)
 
-    $('.aceptar').on('click', function(e) {
-        
-        e.preventDefault(); 
+	$('.aceptar').on('click', function(e) {
 
-        $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
+		e.preventDefault(); 
 
-        if ($seleccionados.length == 0)
+		$seleccionados = $('#table-pagination').bootstrapTable('getSelections');
+
+		if ($seleccionados.length == 0)
             $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
-            "backdrop"  : "static",
-            "keyboard"  : true,
+            	"backdrop"  : "static",
+            	"keyboard"  : true,
             "show"      : true                    // ensure the modal is shown immediately
-            });
-        
-        else 
+        });
+
+            else 
             $('form').submit();
-            })
+        })
 
 
- function cargarForm() {
-        
-        $seleccionados = $('#table-pagination').bootstrapTable('getSelections');
+	function cargarForm() {
 
-            var idsEvaluaciones = $.map($seleccionados, function(row) {
-                return row.id;
-            });
+		$seleccionados = $('#table-pagination').bootstrapTable('getSelections');
 
-            $collectionHolder = $('div.evaluaciones');
-                
+		var idsEvaluaciones = $.map($seleccionados, function(row) {
+			return row.id;
+		});
+
+		$collectionHolder = $('div.evaluaciones');
+
                 // add a delete link to all of the existing tag form li elements
                 $collectionHolder.find('div.renglon').each(function() {
 
-                    $(this).remove();
+                	$(this).remove();
                 });
 
-            
+
                 $collectionHolder.data('index', $collectionHolder.find(':input').length);
                 var index = $collectionHolder.data('index');
 
-               for (var i=0, total = idsEvaluaciones.length; i < total; i++) {
+                for (var i=0, total = idsEvaluaciones.length; i < total; i++) {
 
-                  
-                   newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append(
-                           '<input id="form_evaluaciones_'+i+'" class="form-control" name="form[evaluaciones]['+i
-                           +']" value="'+ idsEvaluaciones[i] +'" type="hidden">'));
+
+                	newFormLi = $('<div class="row renglon"></div>').append($('<div class="col-md-2"></div>').append(
+                		'<input id="form_evaluaciones_'+i+'" class="form-control" name="form[evaluaciones]['+i
+                			+']" value="'+ idsEvaluaciones[i] +'" type="hidden">'));
 
                 // increase the index with one for the next item
                 $collectionHolder.data('index', index + 1);
@@ -164,41 +166,41 @@ if(({{ evaluaciones | raw}}).length > 0){
                 // Display the form in the page in an li, before the "Add a tag" link li
                 
                 $collectionHolder.append(newFormLi);
-               
-               
-                 
-               }
+
+
+
+            }
         }
 
-       
+
         $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-            $("#myModal").remove();
+        	$("#myModal").remove();
 
         });
 
     }
-else{
+    else{
 
          $("#myModal2").modal({                    // wire up the actual modal functionality and show the dialog
-            "backdrop"  : "static",
-            "keyboard"  : true,
+         	"backdrop"  : "static",
+         	"keyboard"  : true,
             "show"      : true                    // ensure the modal is shown immediately
-            });
+        });
 
         $("#myModal2").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-            $("#myModal2").remove();
+        	$("#myModal2").remove();
 
         });
 
-}
+    }
 
- $(document).on('click', '.aceptarModal', function() {
-                
-    $(function() {
-            $("#myModal").modal('hide');
-            $("#myModal2").modal('hide');
-        });
+    $(document).on('click', '.aceptarModal', function() {
+
+    	$(function() {
+    		$("#myModal").modal('hide');
+    		$("#myModal2").modal('hide');
+    	});
     })
-    
+
 </script>
 {% endblock %}

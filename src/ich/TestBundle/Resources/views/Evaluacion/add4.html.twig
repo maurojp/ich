@@ -5,39 +5,41 @@
 
 {{ parent() }}
 
-{# {{ r | convert_encoding('UTF-8', 'ISO-8859-1') }} #}
- <meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <div class="container">
 	<div class="col-md-12">
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Candidatos a Evaluar</h2>
 		</div>
-	<div class="row2">
+		<div class="row2">
 			<div class="col-md-1"></div>
-		<div class="col-md-9">
-		<table id="table-pagination" data-height="350" data-pagination="true">
-			<thead>
-			<h3 id="titulo1" align="center">Listado de
-			Candidatos</h3>
-				<tr>
-					<th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
-					<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
-					<th data-field="tipoDocumento" data-width="10%" data-sortable="true" data-align="left">Tipo Documento</th>
-					<th data-field="documento"  data-width="10%" data-sortable="true" data-align="left">Documento</th>
-					<th data-field="clave" data-width="15%" data-align="left">Clave</th>
-				</tr>
-			</thead>
-		</table>
-		<br>
-		
-		<!-- set up the modal to start hidden and fade in and out -->
+			<div class="col-md-9">
+				<table id="table-pagination" data-height="350"
+					data-pagination="true">
+					<thead>
+						<h3 id="titulo1" align="center">Listado de Candidatos</h3>
+						<tr>
+							<th data-field="apellido" data-align="left" data-sortable="true">Apellido</th>
+							<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
+							<th data-field="tipoDocumento" data-width="10%"
+								data-sortable="true" data-align="left">Tipo Documento</th>
+							<th data-field="documento" data-width="10%" data-sortable="true"
+								data-align="left">Documento</th>
+							<th data-field="clave" data-width="15%" data-align="left">Clave</th>
+						</tr>
+					</thead>
+				</table>
+				<br>
+
+				<!-- set up the modal to start hidden and fade in and out -->
 				<div id="modalCandidatosActivos" class="modal fade">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<!-- dialog body -->
 							<div class="modal-body">
-								<h4 align="center">Existen candidatos que tienen cuestionarios </h4>
-								  <h4 align="center"> activos y no pueden ser evaluados:</h4>
+								<h4 align="center">Existen candidatos que tienen
+									cuestionarios</h4>
+								<h4 align="center">activos y no pueden ser evaluados:</h4>
 								<br>
 								<div class="row candidatosActivos"></div>
 							</div>
@@ -49,15 +51,15 @@
 						</div>
 					</div>
 				</div>
-				
-				
+
+
 				<!-- set up the modal to start hidden and fade in and out -->
 				<div id="modalErrorModelo" class="modal fade">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<!-- dialog body -->
 							<div class="modal-body">
-							<div class="mensaje"></div>
+								<div class="mensaje"></div>
 							</div>
 							<!-- dialog buttons -->
 							<div class="modal-footer">
@@ -67,36 +69,37 @@
 						</div>
 					</div>
 				</div>
-				
-		<!-- set up the modal to start hidden and fade in and out -->
-		<div id="modalExito" class="modal fade">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<!-- dialog body -->
-					<div class="modal-body">
-						<h4>La Evaluación se ha generado con éxito.</h4>
-						<h4>¿Desea exportar la lista de candidatos y claves a un archivo Excel?</h4>
-						<br>
-					</div>
-					<!-- dialog buttons -->
-					<div class="modal-footer">
-					<a href="{{ path('ich_test_homepage') }}" class="btn btn-primary si">Si</a>
-						<a href="{{ path('ich_test_homepage') }}"
-							class="btn btn-primary">No</a>
+
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="modalExito" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4>La Evaluación se ha generado con éxito.</h4>
+								<h4>¿Desea exportar la lista de candidatos y claves a un
+									archivo Excel?</h4>
+								<br>
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_test_homepage') }}"
+									class="btn btn-primary si">Si</a> <a
+									href="{{ path('ich_test_homepage') }}" class="btn btn-primary">No</a>
+							</div>
+						</div>
 					</div>
 				</div>
+				<p>
+					<button type="button" class="btn btn-success finalizar">Finalizar</button>
+					<a href="{{ path('ich_test_homepage') }}"
+						class="btn btn-warning cancelar">Cancelar</a>
+				</p>
 			</div>
 		</div>
-		<p>
-		<button type="button" class="btn btn-success finalizar">Finalizar</button>
-		<a href="{{ path('ich_test_homepage') }}"
-			class="btn btn-warning cancelar">Cancelar</a>
-	</p>
 	</div>
-	</div>
-		</div>
 </div>
-<br>		
+<br>
 <br>
 <br>
 {% endblock %}
@@ -115,7 +118,7 @@ var file_name;
 		
 		$('#table-pagination').bootstrapTable({data: {{ candidatosSeleccionados | raw }}});
           
-    });
+    
 
     $('.si').click( function() {  
     $('#table-pagination').bootstrapTable('togglePagination'); 
@@ -157,8 +160,10 @@ var file_name;
 
     	
     $(document).on('click', '.finalizar', function() {
-    	$
-		.ajax({
+
+    	$(this).prop('disabled',true);
+    	
+    	$.ajax({
 			url : '{{ path("ich_evaluacion_newStep5") }}',
 			cache: false,
 			success : function(result) {	
@@ -174,6 +179,7 @@ var file_name;
     				},
 			
 			error: function(result) {	
+				
 				if(typeof result.responseJSON == 'string')
 				{	
 					$('div.errorModelo').remove();
@@ -232,7 +238,7 @@ var file_name;
     			}
     		}
 	    })})
-    	
+	});    	
     
 </script>
 {% endblock %}

@@ -22,7 +22,7 @@
                     <div class = 'col-md-6 form-group'>
                         {{ form_label(form.codigo) }}
                         {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control' , 
-                            'placeholder' : 'Código del puesto',
+                            'placeholder' : 'Código del puesto', 'readonly' : 'readonly'
                             } }) }}
                         <span class='text-danger'> {{form_errors(form.codigo) }} </span>
                     </div>

@@ -14,55 +14,58 @@
 		</div>
 		<div class="row2">
 			<div class="col-md-1"></div>
-		<div class="col-md-9">
-			<table id="table-pagination" data-height="350" data-pagination="true" data-card-view="true"
-				>
-				<thead>
-				<h3 id="titulo1" align="center">Listado de Competencias</h3>
-					<tr>
-						<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
-						<th data-field="codigo" data-align="left" data-sortable="true">Código</th>
-						<th data-field="descripcion" data-align="left" data-sortable="true">Descripción</th>
-						<th data-field="ponderacion" data-align="left" data-sortable="true">Ponderación</th>
-					</tr>
-				</thead>
-			</table>
-		<br>
-		<!-- set up the modal to start hidden and fade in and out -->
-	<div id="myModal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- dialog body -->
-				<div class="modal-body">
-					<h4>Existen competencias que no pueden ser evaluadas:</h4>
-					<br>
-					{% if competenciasInvalidas|length %}
-					{% for competencia in competenciasInvalidas %}
-					<td><span class="text-danger"><ul>
-								<li>{{ competencia.nombre }}</li>
-							</ul></span></td>
-					{% endfor %}
-					{% endif %}
+			<div class="col-md-9">
+				<table id="table-pagination" data-height="350"
+					data-pagination="true" data-card-view="true">
+					<thead>
+						<h3 id="titulo1" align="center">Listado de Competencias</h3>
+						<tr>
+							<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
+							<th data-field="codigo" data-align="left" data-sortable="true">Código</th>
+							<th data-field="descripcion" data-align="left"
+								data-sortable="true">Descripción</th>
+							<th data-field="ponderacion" data-align="left"
+								data-sortable="true">Ponderación</th>
+						</tr>
+					</thead>
+				</table>
+				<br>
+				<!-- set up the modal to start hidden and fade in and out -->
+				<div id="myModal" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<!-- dialog body -->
+							<div class="modal-body">
+								<h4>Existen competencias que no pueden ser evaluadas:</h4>
+								<br>
+								{% if competenciasInvalidas|length %}
+								{% for competencia in competenciasInvalidas %}
+								<td><span class="text-danger"><ul>
+											<li>{{ competencia.nombre }}</li>
+										</ul></span></td>
+								{% endfor %}
+								{% endif %}
+							</div>
+							<!-- dialog buttons -->
+							<div class="modal-footer">
+								<a href="{{ path('ich_test_homepage') }}"
+									class="btn btn-primary">Aceptar</a>
+							</div>
+						</div>
+					</div>
 				</div>
-				<!-- dialog buttons -->
-				<div class="modal-footer">
-					<a href="{{ path('ich_test_homepage') }}" class="btn btn-primary">Aceptar</a>
-				</div>
+				<p>
+					<a href="{{ path('ich_evaluacion_newStep4') }}"
+						class="btn btn-success siguiente">Siguiente</a> <a
+						href="{{ path('ich_test_homepage') }}"
+						class="btn btn-warning cancelar">Cancelar</a>
+				</p>
+
 			</div>
 		</div>
 	</div>
-	<p>
-		<a href="{{ path('ich_evaluacion_newStep4') }}"
-			class="btn btn-success siguiente">Siguiente</a>
-		<a href="{{ path('ich_test_homepage') }}"
-			class="btn btn-warning cancelar">Cancelar</a>
-	</p>
-	
-		</div>
-		</div>
-	</div>
-	
-	
+
+
 
 </div>
 <br>

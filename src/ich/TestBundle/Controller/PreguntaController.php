@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormError;
 use ich\TestBundle\Entity\Pregunta;
 use ich\TestBundle\Entity\Pregunta_OpcionRespuesta;
 use ich\TestBundle\Form\PreguntaType;
+use ich\TestBundle\Entity\Auditoria;
 
 class PreguntaController extends Controller
 {
@@ -253,7 +254,7 @@ class PreguntaController extends Controller
 	}
 	
 	
-	public function deleteAction(Request $request, $id) {
+	public function deleteAction(Request $request) {
 		$em = $this->getDoctrine ()->getManager ();
 		
 		$pregunta = $em->getRepository ( 'ichTestBundle:Pregunta' )->find ( $id );
@@ -261,18 +262,16 @@ class PreguntaController extends Controller
 		if (! $pregunta) {
 			throw $this->createNotFoundException ( 'Pregunta no encontrada.' );
 		}
+
+		$auditoria = new Auditoria;
 		
-		$form = $this->createCustomForm ( $pregunta->getId (), 'DELETE', 'ich_pregunta_delete' );
-		$form->handleRequest ( $request );
-		
-		if ($form->isSubmitted () && $form->isValid () && $request->isXMLHttpRequest ()) {
-			$em->remove ( $pregunta );
-			$em->flush ();
+		$em->remove ( $pregunta );
+		$em->flush ();
 			return new Response ( json_encode ( array (
-					'message' => 'La pregunta ha sido eliminada.' 
+					'message' => 'La Pregunta ha sido eliminada.' 
 			) ), 200, array (
 					'Content-Type' => 'application/json' 
 			) );
-		}
+		
 	}
 }

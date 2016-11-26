@@ -4,17 +4,7 @@ $(document).ready(function() {
 
         var row = $(this).parents('tr');
 
-        var id = row.data('id');
-
-        // alert(id);
-
-        var form = $('#form-delete');
-
-        var url = form.attr('action').replace(':PREGUNTA_ID', id);
-
-        var data = form.serialize();
-
-        // alert(data);
+        var data = { id : row.data('id') };
 
         bootbox.confirm(message, function(res) {
             if(res == true)

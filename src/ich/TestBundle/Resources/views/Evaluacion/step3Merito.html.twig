@@ -8,61 +8,61 @@
 		<div class="page-header margin-none">
 			<h2 class="padding-none">Informe: Orden de Mérito</h2>
 		</div>
-    <div class="row2">
+        <div class="row2">
             <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-11">
 
-            <h3 id="titulo1" align="center">Listado de
+                <h3 id="titulo1" align="center">Listado de
                     Candidatos</h3>
-            <table id="table">
-            </table>
+                    <table id="table">
+                    </table>
 
-            <table id="table2"  style="display:none;" data-tableexport-display="always"> 
-                    <thead>
-                        <tr>
-                            <th data-field="nombreEvaluacion">Evaluación</th>
-                            <th data-field="fechaCreacionEvaluacion">Creación Ev.</th>
-                            <th data-field="tipoDocumento">Tipo</th>
-                            <th data-field="documento">Documento</th>
-                            <th data-field="apellido">Apellido</th>
-                            <th data-field="nombre">Nombre</th>
-                            <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
-                            <th data-field="fechaInicio">Inicio</th>
-                            <th data-field="fechaFin">Finalización</th>
-                            <th data-field="cantAccesos">Accesos</th>
-                        </tr>
-                    </thead>
-            </table> 
+                    <table id="table2"  style="display:none;" data-tableexport-display="always"> 
+                        <thead>
+                            <tr>
+                                <th data-field="nombreEvaluacion">Evaluación</th>
+                                <th data-field="fechaCreacionEvaluacion">Creación Ev.</th>
+                                <th data-field="tipoDocumento">Tipo</th>
+                                <th data-field="documento">Documento</th>
+                                <th data-field="apellido">Apellido</th>
+                                <th data-field="nombre">Nombre</th>
+                                <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
+                                <th data-field="fechaInicio">Inicio</th>
+                                <th data-field="fechaFin">Finalización</th>
+                                <th data-field="cantAccesos">Accesos</th>
+                            </tr>
+                        </thead>
+                    </table> 
 
-             <!-- set up the modal to start hidden and fade in and out -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- dialog body -->
-                <div class="modal-body">
-                    <h4 align="center">Informe no disponible: No se registran cuestionarios aptos en las evaluaciones seleccionadas.</h4>
+                    <!-- set up the modal to start hidden and fade in and out -->
+                    <div id="myModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- dialog body -->
+                                <div class="modal-body">
+                                    <h4 align="center">Informe no disponible: No se registran cuestionarios aptos en las evaluaciones seleccionadas.</h4>
+                                </div>
+                                <!-- dialog buttons -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <p>
+                        <button type="button" class="btn btn-success imprimir">Imprimir</button>
+                        <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning salir">Salir</a>
+                    </p>
+
                 </div>
-                <!-- dialog buttons -->
-                <div class="modal-footer">
-                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
-                </div>
-            </div>
             </div>
         </div>
-<br>
-<br>
-				<p>
-                    <button type="button" class="btn btn-success imprimir">Imprimir</button>
-                    <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning salir">Salir</a>
-                </p>
-
-            </div>
-		</div>
-	</div>
-</div>
-<br>
-<br>
-<br>
+    </div>
+    <br>
+    <br>
+    <br>
 {% endblock %}
 
 
@@ -77,175 +77,180 @@
 <script type="text/javascript">
 
 
- $(document).on('click', '.aceptar', function() {
-                
+   $(document).on('click', '.aceptar', function() {
+    
     $(function() {
-            $("#myModal").modal('hide');
-        });
-    })
+        $("#myModal").modal('hide');
+    });
+})
 
-    $(function() {
-            $("#myModal").modal('hide');
+   $(function() {
+    $("#myModal").modal('hide');
             $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-            $("#myModal").remove();
-        });
-    })
+                $("#myModal").remove();
+            });
+        })
 
      $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
-            $("#myModal a.btn").on("click", function(e) {
+        $("#myModal a.btn").on("click", function(e) {
                 console.log("button pressed"); // just as an example...
                 $("#myModal").modal('hide'); // dismiss the dialog
             });
-        });
+    });
 
 
      $(document).on('click', '.imprimir', function() {
 
-    $('#table2').bootstrapTable({data: {{ cuestionariosAptos | raw}}});
+        $('#table2').bootstrapTable({data: {{ cuestionariosAptos | raw}}});
 
-     if(({{ cuestionariosAptos | raw}}).length == 0){              
+        if(({{ cuestionariosAptos | raw}}).length == 0){              
         $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
             "backdrop"  : "static",
             "keyboard"  : true,
             "show"      : true                    // ensure the modal is shown immediately
-            });
+        });
 
     }
     else{
 
         
         $('#table2').tableExport({type:'pdf', fileName: '{{dateTimeInforme}}',  "jspdf": {"styles": { "columnWidth" : 5,"rowHeight": 8, "fontSize": 8 },
-           }});
+    }});
     }
 
-    })
+})
 
 
-$(function() {
+     $(function() {
 
-  $('#table').bootstrapTable({
-    columns: [{
-      field: 'evaluacionHeader'
-    }],
-    data: {{ evaluaciones | raw}},
-    detailView: true,
-    striped: true,
-    height: 330,
-    showHeader: false,
-    onExpandRow: function(index, row, $detail) {
-      console.log(row)
-      $detail.html('<table></table>').find('table').bootstrapTable({
+      $('#table').bootstrapTable({
         columns: [{
-            field: 'header'
-        }],
-        data: row.cuestionarios,
-        detailView: true,
-        showHeader: false,
-        onExpandRow: function(index2, row2, $detail2) {
-        console.log(row2);
-        var fila2;
-        try { row2.cuestionarios[0]['cuestionarios'][0]['puntajeObtenido']; }
-        catch(ex){ fila2 = ex;}
-
-        if(fila2 !== "TypeError: row2.cuestionarios[0].cuestionarios[0] is undefined"){
-
-        $detail2.html('<table></table>').find('table').bootstrapTable({
-        columns: [{
-            field: 'header'
-        }],
-        data: row2.cuestionarios,
-        detailView: true,
-        showHeader: false,
-        onExpandRow: function(index3, row3, $detail3) {
-      console.log(row3)
-      $detail3.html('<table></table>').find('table').bootstrapTable({
-        columns: [{
-            field: 'tipoDocumento',
-            title: 'Tipo Documento'
-            },
-            {
-            field: 'documento',
-            title: 'Documento'
-            },
-            {
-            field: 'apellido',
-            title: 'Apellido'
-            },
-            {
-            field: 'nombre',
-            title: 'Nombre'
-            },
-            {
-            field: 'puntajeObtenido',
-            title: 'Puntaje %'
-            },
-            {
-            field: 'fechaInicio',
-            title: 'Fecha Inicio'
-            },
-            {
-            field: 'fechaFin',
-            title: 'Fecha Finalización'
-            },
-            {
-            field: 'cantAccesos',
-            title: 'Cant. Accesos'
+          field: 'evaluacionHeader'
+      }],
+      data: {{ evaluaciones | raw}},
+      detailView: true,
+      striped: true,
+      height: 330,
+      showHeader: false,
+      onExpandRow: function(index, row, $detail) {
+          console.log(row);
+          $detail.html('<table></table>').find('table').bootstrapTable({
+            columns: [{
+                field: 'header'
             }],
-        data: row3.cuestionarios
-    }
-  )}
-    })
-    }
-    else{
+            data: row.cuestionarios,
+            detailView: true,
+            showHeader: false,
+            onExpandRow: function(index2, row2, $detail2) {
+                console.log(row2);
+                try{
+                 if(row2.cuestionarios[0]['header'] == "Cuestionarios Aptos"){
 
-    $detail2.html('<table></table>').find('table').bootstrapTable({
-        columns: [{
-            field: 'header'
-        }],
-        data: row2.cuestionarios,
-        detailView: true,
-        showHeader: false,
-        onExpandRow: function(index3, row3, $detail3) {
-      console.log(row3)
-      $detail3.html('<table></table>').find('table').bootstrapTable({
-        columns: [{
-            field: 'tipoDocumento',
-            title: 'Tipo Documento'
-            },
-            {
-            field: 'documento',
-            title: 'Documento'
-            },
-            {
-            field: 'apellido',
-            title: 'Apellido'
-            },
-            {
-            field: 'nombre',
-            title: 'Nombre'
-            },
-            {
-            field: 'fechaInicio',
-            title: 'Fecha Inicio'
-            },
-            {
-            field: 'ultimoIngreso',
-            title: 'Último Ingreso'
-            },
-            {
-            field: 'cantAccesos',
-            title: 'Cant. Accesos'
-            }],
-        data: row3.cuestionarios
-    }
-  )}
+                    $detail2.html('<table></table>').find('table').bootstrapTable({
+                        columns: [{
+                            field: 'header'
+                        }],
+                        data: row2.cuestionarios,
+                        detailView: true,
+                        showHeader: false,
+                        onExpandRow: function(index3, row3, $detail3) {
+                            console.log(row3);
+                            $detail3.html('<table></table>').find('table').bootstrapTable({
+                                columns: [{
+                                    field: 'tipoDocumento',
+                                    title: 'Tipo Documento'
+                                },
+                                {
+                                    field: 'documento',
+                                    title: 'Documento'
+                                },
+                                {
+                                    field: 'apellido',
+                                    title: 'Apellido'
+                                },
+                                {
+                                    field: 'nombre',
+                                    title: 'Nombre'
+                                },
+                                {
+                                    field: 'puntajeObtenido',
+                                    title: 'Puntaje %'
+                                },
+                                {
+                                    field: 'fechaInicio',
+                                    title: 'Fecha Inicio'
+                                },
+                                {
+                                    field: 'fechaFin',
+                                    title: 'Fecha Finalización'
+                                },
+                                {
+                                    field: 'cantAccesos',
+                                    title: 'Cant. Accesos'
+                                }],
+                                data: row3.cuestionarios
+                            }
+                            )}
+                        })
+
+                }
+                else{
+
+                    $detail2.html('<table></table>').find('table').bootstrapTable({
+                        columns: [{
+                            field: 'header'
+                        }],
+                        data: row2.cuestionarios,
+                        detailView: true,
+                        showHeader: false,
+                        onExpandRow: function(index3, row3, $detail3) {
+                          console.log(row3);
+                          $detail3.html('<table></table>').find('table').bootstrapTable({
+                            columns: [{
+                                field: 'tipoDocumento',
+                                title: 'Tipo Documento'
+                            },
+                            {
+                                field: 'documento',
+                                title: 'Documento'
+                            },
+                            {
+                                field: 'apellido',
+                                title: 'Apellido'
+                            },
+                            {
+                                field: 'nombre',
+                                title: 'Nombre'
+                            },
+                            {
+                                field: 'fechaInicio',
+                                title: 'Fecha Inicio'
+                            },
+                            {
+                                field: 'ultimoIngreso',
+                                title: 'Último Ingreso'
+                            },
+                            {
+                                field: 'cantAccesos',
+                                title: 'Cant. Accesos'
+                            }],
+                            data: row3.cuestionarios
+                        }
+                        )}
+                      })
+
+                    
+                }
+            }
+            catch(ex){}
+        }
     })
 
-    }
-            
-    }
-    }
-  )}})})
+}
+
+})})
+
+
 
 </script>
 {% endblock %}

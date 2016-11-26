@@ -8,88 +8,95 @@
 			<div class="page-header">
 				<h2>Cuestionario</h2>
 			</div>
-            <div class="panel-group">
+			<div class="panel-group">
 
-  
-            <fieldset>
 
-                {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
+				<fieldset>
 
-                {% if not form.copiaPreguntas|length %}
-                    <h4 class="text-info">Todos los bloques han sido respondidos.</h4>
-                {% endif %}
+					{{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
 
-                <div class="panel panel-warning">
-                {% for copiaPregunta in form.copiaPreguntas %}
-                     <div class="panel-heading">
-                         <div class="col-md-6">{{ form_widget(copiaPregunta.id) }}</div>
+					{% if not form.copiaPreguntas|length %}
+					<h4 class="text-info">Todos los bloques han sido respondidos.</h4>
+					{% endif %}
 
-                        {{ form_widget(copiaPregunta.pregunta) }}<h4>{{copiaPregunta.pregunta.vars.value}}</h4>
-                         </div>
-                    <div class="panel-body">
-                    {% set respondida = false %}
-                    {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
-                        {% set checked  %}{{ opcion.vars.checked }}{% endset %}
-                        {% if checked %}
-                            {% set respondida = true %}
-                        {% endif %}
+					<div class="panel panel-warning">
+						{% for copiaPregunta in form.copiaPreguntas %}
+						<div class="panel-heading">
+							<div class="col-md-6">
+								{{ form_widget(copiaPregunta.id) }}
+							</div>
 
-                    {% endfor %}
-                    {% if respondida %}
-                        {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
-                            <div class="list-group">
-                            {{ form_widget(opcion, {'attr' : {'disabled' : 'disabled'} }) }}   
-                            {{ opcion.vars.label }}
-                            </div>
-                        {% endfor %}
-                    {% endif %} 
-                    {% if not respondida %}
-                        {% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
-                            <div class="list-group">
-                            {{ form_widget(opcion) }}   
-                            {{ opcion.vars.label }}
-                            </div>
-                            {% endfor %}
-                    {% endif %}
-                    {% set respondida = false %}  
-                    </div>
-                {% endfor %}
-                </div>
-           
+							{{ form_widget(copiaPregunta.pregunta) }}
+							<h4>
+								{{copiaPregunta.pregunta.vars.value}}
+							</h4>
+						</div>
+						<div class="panel-body">
+							{% set respondida = false %}
+							{% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+							{% set checked  %}
+							{{ opcion.vars.checked }}
+							{% endset %}
+							{% if checked %}
+							{% set respondida = true %}
+							{% endif %}
 
-            </fieldset>
+							{% endfor %}
+							{% if respondida %}
+							{% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+							<div class="list-group">
+								{{ form_widget(opcion, {'attr' : {'disabled' : 'disabled'} }) }}
+								{{ opcion.vars.label }}
+							</div>
+							{% endfor %}
+							{% endif %}
+							{% if not respondida %}
+							{% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
+							<div class="list-group">
+								{{ form_widget(opcion) }}
+								{{ opcion.vars.label }}
+							</div>
+							{% endfor %}
+							{% endif %}
+							{% set respondida = false %}
+						</div>
+						{% endfor %}
+					</div>
 
-            </div>
 
- <!-- set up the modal to start hidden and fade in and out -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- dialog body -->
-                <div class="modal-body">
-                    <h4>Debe responder las siguientes Preguntas para continuar:</h4>
-                    <br>
-                    {% if preguntasNoRespondidas|length %}
-                    {% for nroPregunta in preguntasNoRespondidas %}
-                    <td><span class="text-danger"><ul>
-                                <li>Pregunta {{ nroPregunta }}</li>
-                            </ul></span></td>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-                <!-- dialog buttons -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary aceptar">Aceptar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+				</fieldset>
 
-		<p>
-          {{ form_widget(form.send, {'label' : 'Finalizar', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
-          <a href="{{ path('ich_test_ingresocandidato') }}"
-            class="btn btn-warning salir">Salir</a>
-        </p>
+			</div>
+
+			<!-- set up the modal to start hidden and fade in and out -->
+			<div id="myModal" class="modal fade">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<!-- dialog body -->
+						<div class="modal-body">
+							<h4>Debe responder las siguientes Preguntas para continuar:</h4>
+							<br>
+							{% if preguntasNoRespondidas|length %}
+							{% for nroPregunta in preguntasNoRespondidas %}
+							<td><span class="text-danger"><ul>
+										<li>Pregunta {{ nroPregunta }}</li>
+									</ul></span></td>
+							{% endfor %}
+							{% endif %}
+						</div>
+						<!-- dialog buttons -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary aceptar">Aceptar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<p>
+				{{ form_widget(form.send, {'label' : 'Finalizar', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
+				<a href="{{ path('ich_test_ingresocandidato') }}"
+					class="btn btn-warning salir">Salir</a>
+			</p>
 
 			{{ form_widget(form._token) }}
 			{{ form_end(form,{ 'render_rest' : false}) }}

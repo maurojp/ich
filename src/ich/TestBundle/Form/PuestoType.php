@@ -23,9 +23,10 @@ class PuestoType extends AbstractType
             ->add('empresa', 'entity', array(
                 'class' => 'ichTestBundle:Empresa',
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('u');
+                    return $er->createQueryBuilder('u')->orderBy('u.nombre', 'ASC');
                 },
-                'choice_label' => 'getNombre'
+                'choice_label' => 'getNombre',
+                'required' => true
             ))
             ->add('competencias', CollectionType::class, array(
                 'entry_type' => PuestoCompetenciaType::class,
