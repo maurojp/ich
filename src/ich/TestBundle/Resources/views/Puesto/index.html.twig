@@ -5,7 +5,8 @@
 {{ parent() }}
 
 {{ include('ichTestBundle:Puesto:messages/success.html.twig')}}
-{{ include('ichTestBundle:Puesto:messages/danger.html.twig')}} 
+{{ include('ichTestBundle:Puesto:messages/danger.html.twig')}}
+{{ include('ichTestBundle:Puesto:messages/modals.html.twig')}}  
         <div class="container">
             <div class="col-md-12">
                     <div class="page-header margin-none">
@@ -81,28 +82,11 @@
                     </div>
                 </div>
             </div>
-
-            <div id="modalEliminar" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <!-- dialog body -->
-                            <div class="modal-body">
-                                <h4>Los datos del Puesto serán eliminados del sistema.</h4>
-                                <h4>¿Desea continuar?</h4>
-                                <br>
-                            </div>
-                            <!-- dialog buttons -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary eliminar">Si</button>
-                                <button type="button" class="btn btn-primary noEliminar">No</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
         </div>
         
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript" src="{{ asset('bundles/ichtest/js/delete-puesto.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/alertOnEmptyFieldsSearch-puesto.js') }}"></script>
 {% endblock %}
