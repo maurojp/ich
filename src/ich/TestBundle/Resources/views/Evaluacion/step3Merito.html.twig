@@ -1,6 +1,5 @@
 
 {% extends 'layout.html.twig'%}
-
 {% block body %}
 {{ parent() }}
 <div class="container">
@@ -11,246 +10,47 @@
         <div class="row2">
             <div class="col-md-1"></div>
             <div class="col-md-11">
+                <h3 align="center">Listado de Candidatos</h3>
+                <table id="table-evaluaciones">
+                </table>
 
-                <h3 id="titulo1" align="center">Listado de
-                    Candidatos</h3>
-                    <table id="table">
-                    </table>
+                <table id="table-candidatosAptos"  style="display:none;" data-tableexport-display="always"> 
+                    <thead>
+                        <tr>
+                            <th data-field="nombreEvaluacion">Evaluación</th>
+                            <th data-field="fechaCreacionEvaluacion">Creación Ev.</th>
+                            <th data-field="tipoDocumento">Tipo</th>
+                            <th data-field="documento">Documento</th>
+                            <th data-field="apellido">Apellido</th>
+                            <th data-field="nombre">Nombre</th>
+                            <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
+                            <th data-field="fechaInicio">Inicio</th>
+                            <th data-field="fechaFin">Finalización</th>
+                            <th data-field="cantAccesos">Accesos</th>
+                        </tr>
+                    </thead>
+                </table> 
+                <br>
+                <br>
+                <p>
+                    <button type="button" class="btn btn-success imprimir">Imprimir</button>
+                    <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning salir">Salir</a>
+                </p>
 
-                    <table id="table2"  style="display:none;" data-tableexport-display="always"> 
-                        <thead>
-                            <tr>
-                                <th data-field="nombreEvaluacion">Evaluación</th>
-                                <th data-field="fechaCreacionEvaluacion">Creación Ev.</th>
-                                <th data-field="tipoDocumento">Tipo</th>
-                                <th data-field="documento">Documento</th>
-                                <th data-field="apellido">Apellido</th>
-                                <th data-field="nombre">Nombre</th>
-                                <th data-field="puntajeObtenido" data-width="20%">Puntaje %</th>
-                                <th data-field="fechaInicio">Inicio</th>
-                                <th data-field="fechaFin">Finalización</th>
-                                <th data-field="cantAccesos">Accesos</th>
-                            </tr>
-                        </thead>
-                    </table> 
-
-                    <!-- set up the modal to start hidden and fade in and out -->
-                    <div id="myModal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <!-- dialog body -->
-                                <div class="modal-body">
-                                    <h4 align="center">Informe no disponible: No se registran cuestionarios aptos en las evaluaciones seleccionadas.</h4>
-                                </div>
-                                <!-- dialog buttons -->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary aceptar">Aceptar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <br>
-                    <p>
-                        <button type="button" class="btn btn-success imprimir">Imprimir</button>
-                        <a href="{{ path('ich_test_homepage') }}" class="btn btn-warning salir">Salir</a>
-                    </p>
-
-                </div>
             </div>
         </div>
     </div>
-    <br>
-    <br>
-    <br>
+</div>
+<br>
+<br>
+<br>
+{{ include('ichTestBundle:Evaluacion:messages/modals-step3Merito.html.twig')}} 
 {% endblock %}
-
-
 {% block javascripts %}
 {{ parent() }}
-<script src=" {{ asset('assets/vendor/dist/extensions/flat-json/bootstrap-table-flat-json.js') }} "></script>
-<script src=" {{ asset('assets/vendor/tableExport/libs/FileSaver/FileSaver.min.js') }} "></script>
-<script src=" {{ asset('assets/vendor/tableExport/libs/js-xlsx/xlsx.core.min.js') }} "></script>
-<script src=" {{ asset('assets/vendor/tableExport/tableExport.min.js') }} "></script>
-<script type="text/javascript" src="{{asset('assets/vendor/tableExport/libs/jsPDF/jspdf.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/vendor/tableExport/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js')}}"></script>
 <script type="text/javascript">
-
-
-   $(document).on('click', '.aceptar', function() {
-    
-    $(function() {
-        $("#myModal").modal('hide');
-    });
-})
-
-   $(function() {
-    $("#myModal").modal('hide');
-            $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-                $("#myModal").remove();
-            });
-        })
-
-     $("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
-        $("#myModal a.btn").on("click", function(e) {
-                console.log("button pressed"); // just as an example...
-                $("#myModal").modal('hide'); // dismiss the dialog
-            });
-    });
-
-
-     $(document).on('click', '.imprimir', function() {
-
-        $('#table2').bootstrapTable({data: {{ cuestionariosAptos | raw}}});
-
-        if(({{ cuestionariosAptos | raw}}).length == 0){              
-        $("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
-            "backdrop"  : "static",
-            "keyboard"  : true,
-            "show"      : true                    // ensure the modal is shown immediately
-        });
-
-    }
-    else{
-
-        
-        $('#table2').tableExport({type:'pdf', fileName: '{{dateTimeInforme}}',  "jspdf": {"styles": { "columnWidth" : 5,"rowHeight": 8, "fontSize": 8 },
-    }});
-    }
-
-})
-
-
-     $(function() {
-
-      $('#table').bootstrapTable({
-        columns: [{
-          field: 'evaluacionHeader'
-      }],
-      data: {{ evaluaciones | raw}},
-      detailView: true,
-      striped: true,
-      height: 330,
-      showHeader: false,
-      onExpandRow: function(index, row, $detail) {
-          console.log(row);
-          $detail.html('<table></table>').find('table').bootstrapTable({
-            columns: [{
-                field: 'header'
-            }],
-            data: row.cuestionarios,
-            detailView: true,
-            showHeader: false,
-            onExpandRow: function(index2, row2, $detail2) {
-                console.log(row2);
-                try{
-                 if(row2.cuestionarios[0]['header'] == "Cuestionarios Aptos"){
-
-                    $detail2.html('<table></table>').find('table').bootstrapTable({
-                        columns: [{
-                            field: 'header'
-                        }],
-                        data: row2.cuestionarios,
-                        detailView: true,
-                        showHeader: false,
-                        onExpandRow: function(index3, row3, $detail3) {
-                            console.log(row3);
-                            $detail3.html('<table></table>').find('table').bootstrapTable({
-                                columns: [{
-                                    field: 'tipoDocumento',
-                                    title: 'Tipo Documento'
-                                },
-                                {
-                                    field: 'documento',
-                                    title: 'Documento'
-                                },
-                                {
-                                    field: 'apellido',
-                                    title: 'Apellido'
-                                },
-                                {
-                                    field: 'nombre',
-                                    title: 'Nombre'
-                                },
-                                {
-                                    field: 'puntajeObtenido',
-                                    title: 'Puntaje %'
-                                },
-                                {
-                                    field: 'fechaInicio',
-                                    title: 'Fecha Inicio'
-                                },
-                                {
-                                    field: 'fechaFin',
-                                    title: 'Fecha Finalización'
-                                },
-                                {
-                                    field: 'cantAccesos',
-                                    title: 'Cant. Accesos'
-                                }],
-                                data: row3.cuestionarios
-                            }
-                            )}
-                        })
-
-                }
-                else{
-
-                    $detail2.html('<table></table>').find('table').bootstrapTable({
-                        columns: [{
-                            field: 'header'
-                        }],
-                        data: row2.cuestionarios,
-                        detailView: true,
-                        showHeader: false,
-                        onExpandRow: function(index3, row3, $detail3) {
-                          console.log(row3);
-                          $detail3.html('<table></table>').find('table').bootstrapTable({
-                            columns: [{
-                                field: 'tipoDocumento',
-                                title: 'Tipo Documento'
-                            },
-                            {
-                                field: 'documento',
-                                title: 'Documento'
-                            },
-                            {
-                                field: 'apellido',
-                                title: 'Apellido'
-                            },
-                            {
-                                field: 'nombre',
-                                title: 'Nombre'
-                            },
-                            {
-                                field: 'fechaInicio',
-                                title: 'Fecha Inicio'
-                            },
-                            {
-                                field: 'ultimoIngreso',
-                                title: 'Último Ingreso'
-                            },
-                            {
-                                field: 'cantAccesos',
-                                title: 'Cant. Accesos'
-                            }],
-                            data: row3.cuestionarios
-                        }
-                        )}
-                      })
-
-                    
-                }
-            }
-            catch(ex){}
-        }
-    })
-
-}
-
-})})
-
-
-
-</script>
+var evaluaciones = {{ evaluaciones | raw}}, cuestionariosAptos = {{ cuestionariosAptos | raw}}, dateTimeInforme = '{{dateTimeInforme}}', nombrePuesto = '{{nombrePuesto}}', nombreEmpresa = '{{nombreEmpresa}}';
+</script> 
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/step3Merito.js') }}"></script>
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/print-table.js') }}"></script>
 {% endblock %}

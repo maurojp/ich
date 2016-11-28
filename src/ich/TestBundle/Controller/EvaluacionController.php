@@ -1247,7 +1247,7 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 			'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('u')->orderBy('u.nombre', 'ASC');
                 }, 
-			) )->add ( 'send', SubmitType::class )->getForm ();
+			) )->add ( 'send', SubmitType::class )->setAction ( $this->generateUrl ( 'ich_evaluacion_buscarPuestoEmpresa' ) )->getForm ();
 
 			return $form;
 		}
@@ -1347,13 +1347,16 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 
 					$ordenMeritoCuestionariosAptos = $this->getCuestionariosAptos ( $evaluacion );
 
-					$dateTimeInforme = "Informe-OrdenMerito-" . '' . date_format ( new \datetime (), 'Y-m-d-H-i' );
+					$dateTimeInforme = date_format ( new \datetime (), 'd/m/Y H:i' );
+
+					$nombrePuesto = $evaluacion->getPuesto()->getNombre();
+					$nombreEmpresa = $evaluacion->getPuesto()->getEmpresa()->getNombre();
 				}
 
 				return $this->render ( 'ichTestBundle:Evaluacion:step3Merito.html.twig', array (
 					'evaluaciones' => Json_encode ( $ordenMeritoEvaluaciones ),
 					'cuestionariosAptos' => Json_encode ( $ordenMeritoCuestionariosAptos ),
-					'dateTimeInforme' => $dateTimeInforme 
+					'dateTimeInforme' => $dateTimeInforme, 'nombrePuesto' => $nombrePuesto , 'nombreEmpresa' => $nombreEmpresa
 					) );
 			}
 

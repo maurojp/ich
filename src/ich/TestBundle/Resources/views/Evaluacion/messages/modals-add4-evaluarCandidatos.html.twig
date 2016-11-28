@@ -1,0 +1,59 @@
+<!-- set up the modal to start hidden and fade in and out -->
+<div id="modalCandidatosActivos" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <h4 align="center">Existen candidatos que tienen
+                    cuestionarios</h4>
+                <h4 align="center">activos y no pueden ser evaluados:</h4>
+                <br>
+                <div class="row candidatosActivos"></div>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <a href="{{ path('ich_evaluacion_newStep1')}}"
+                    class="btn btn-primary">Aceptar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- set up the modal to start hidden and fade in and out -->
+<div id="modalErrorModelo" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <div class="mensaje"></div>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <a href="{{ path('ich_evaluacion_newStep1')}}"
+                    class="btn btn-primary">Aceptar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- set up the modal to start hidden and fade in and out -->
+<div id="modalExito" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <h4>La Evaluación se ha generado con éxito.</h4>
+                <h4>¿Desea exportar la lista de candidatos y claves a un
+                    archivo Excel?</h4>
+                <br>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <a href="{{ path('ich_test_homepage') }}"
+                    class="btn btn-primary si">Si</a> <a
+                    href="{{ path('ich_test_homepage') }}" class="btn btn-primary">No</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,267 +4,86 @@
 
 {{ parent() }}
 
+
 <div class="container">
-	<div class="col-md-12">
-		<div class="page-header margin-none">
-			<h2 class="padding-none">Informe: Orden de Mérito</h2>
-		</div>
-		<div class="row">
-			<div class='col-md-1'></div>
-			<div class='col-md-3 form-group'>
-				{{ form_start(form, {'attr' : {'novalidate' : 'novalidate', 'role' : 'form'} }) }}
-				{{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control', 'placeholder' : 'Código del Puesto'
-                            } }) }}
-			</div>
-
-			<div class='col-md-3 form-group'>
-				{{ form_widget(form.puesto, { 'attr' : { 'class' : 'form-control' 
-                            } }) }}
-			</div>
-
-			<div class='col-md-3 form-group'>
-				{{ form_widget(form.empresa, { 'attr' : { 'class' : 'form-control'
-                            } }) }}
-			</div>
-			<div class='col-md-1 form-group'>
-				{{ form_widget(form.send, {'label' : 'Buscar', 'attr' : {'class' : 'btn btn-info  buscar'} }) }}
-				{{ form_widget(form._token) }}
-				{{ form_end(form,{ 'render_rest' : false}) }}
-			</div>
-		</div>
-		<div class="row2">
-			<div class="col-sm-1"></div>
-			<div class="col-md-10">
-				<table id="table-pagination" data-height="350" data-striped="true"
-					data-pagination="true" data-single-select="true">
-					<div class="fixed-table-toolbar">
-						<div class="columns columns-right btn-group pull-right">
-							<button class="btn btn-default refresh" type="button"
-								name="refresh" title="Refrescar">
-								<i class="glyphicon glyphicon-refresh icon-refresh"></i>
-							</button>
-						</div>
-					</div>
-					<thead>
-						<h3 id="titulo1" align="center">Selección de Puesto</h3>
-						<tr>
-							<th data-field="idPuesto" data-visible="false">Id</th>
-							<th data-field="codigoPuesto" data-align="left"
-								data-sortable="true">Código</th>
-							<th data-field="nombrePuesto" data-align="left"
-								data-sortable="true">Puesto</th>
-							<th data-field="nombreEmpresa" data-width="30%" data-align="left"
-								data-sortable="true">Empresa</th>
-							<th data-field="candidatos" data-align="left"
-								data-sortable="true">Candidatos</th>
-							<th data-field="evaluaciones" data-align="left"
-								data-sortable="true">Evaluaciones Completas</th>
-							<th data-field="state" data-checkbox="true"></th>
-						</tr>
-					</thead>
-				</table>
-				<br>
-
-				<div id="busquedaModal" class="modal fade">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<!-- dialog body -->
-							<div class="modal-body">
-								<h4 align="center">Debe completar un campo de búsqueda.</h4>
-							</div>
-							<!-- dialog buttons -->
-							<div class="modal-footer">
-								<button type="button" class="btn btn-primary aceptarModal">Aceptar</button>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- set up the modal to start hidden and fade in and out -->
-				<div id="myModal" class="modal fade">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<!-- dialog body -->
-							<div class="modal-body">
-								<h4 align="center">Debe seleccionar un Puesto para
-									continuar.</h4>
-							</div>
-							<!-- dialog buttons -->
-							<div class="modal-footer">
-								<button type="button" class="btn btn-primary aceptarModal">Aceptar</button>
-							</div>
-						</div>
-					</div>
-
-
-
-				</div>
-				<p>
-					<a id="sig"
-						href="{{ path('ich_evaluacion_step2Merito', { id: 0 }) }}"
-						onclick="" class="btn btn-success aceptar">Aceptar</a> <a
-						href="{{ path('ich_test_homepage') }}"
-						class="btn btn-warning cancelar">Cancelar</a>
-				</p>
-
-			</div>
-		</div>
-	</div>
-
-
-
+   <div class="col-md-12">
+      <div class="page-header margin-none">
+         <h2 class="padding-none">Informe: Orden de Mérito</h2>
+      </div>
+      <div class="row">
+         <div class='col-md-1'></div>
+         <div class='col-md-3 form-group'>
+            {{ form_start(form, {'attr' : {'novalidate' : 'novalidate', id: 'form', 'role' : 'form'} }) }}
+            {{ form_widget(form.codigo, { 'attr' : { 'class' : 'form-control', 'placeholder' : 'Código del Puesto'
+            } }) }}
+         </div>
+         <div class='col-md-3 form-group'>
+            {{ form_widget(form.puesto, { 'attr' : { 'class' : 'form-control' 
+            } }) }}
+         </div>
+         <div class='col-md-3 form-group'>
+            {{ form_widget(form.empresa, { 'attr' : { 'class' : 'form-control'
+            } }) }}
+         </div>
+         <div class='col-md-1 form-group'>
+            {{ form_widget(form.send, {'label' : 'Buscar', 'attr' : {'class' : 'btn btn-primary  buscar'} }) }}
+            {{ form_widget(form._token) }}
+            {{ form_end(form,{ 'render_rest' : false}) }}
+         </div>
+      </div>
+      <div class="row2">
+         <div class="col-sm-1"></div>
+         <div class="col-md-10">
+            <table id="table-pagination" data-height="350" data-striped="true"
+               data-pagination="true" data-single-select="true" >
+               <div class="fixed-table-toolbar">
+                  <div class="columns columns-right btn-group pull-right">
+                     <button class="btn btn-default refresh" type="button"
+                        name="refresh" title="Refrescar">
+                     <i class="glyphicon glyphicon-refresh icon-refresh"></i>
+                     </button>
+                  </div>
+               </div>
+               <thead>
+                  <h3 align="center">Selección de Puesto</h3>
+                  <tr>
+                     <th data-field="idPuesto" data-visible="false">Id</th>
+                     <th data-field="codigoPuesto" data-align="left"
+                        data-sortable="true">Código</th>
+                     <th data-field="nombrePuesto" data-align="left"
+                        data-sortable="true">Puesto</th>
+                     <th data-field="nombreEmpresa" data-width="30%" data-align="left"
+                        data-sortable="true">Empresa</th>
+                     <th data-field="candidatos" data-align="left"
+                        data-sortable="true">Candidatos</th>
+                     <th data-field="evaluaciones" data-align="left"
+                        data-sortable="true">Evaluaciones Completas</th>
+                     <th data-field="state" data-checkbox="true"></th>
+                  </tr>
+               </thead>
+            </table>
+            <br>
+            <p>
+               <a id="sig"
+                  href="{{ path('ich_evaluacion_step2Merito', { id: 0 }) }}"
+                  onclick="" class="btn btn-success aceptar">Aceptar</a> <a
+                  href="{{ path('ich_test_homepage') }}"
+                  class="btn btn-warning cancelar">Cancelar</a>
+            </p>
+         </div>
+      </div>
+   </div>
+</div>
 </div>
 <br>
 <br>
 <br>
+{{ include('ichTestBundle:Evaluacion:messages/modals-step1Merito.html.twig')}} 
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript">
-
-
-$(document).ready(function(){
-
- $(document).on('click', '.refresh', function() {
-
-    $.ajax({
-      type: 'get',
-      url: '{{ path("ich_evaluacion_getPuestosStep1Merito", { isXmlHttpRequest: 1 }) }}',
-      success: function(data) {
-
-          $('#table-pagination').bootstrapTable('load', data);	
-
-      }
-  })
-})
-
-
- $('.buscar').on('click', function(e) {
-
-    e.preventDefault(); 
-
-    if ($("#form_puesto").val().length == 0 && $("#form_empresa").val().length == 0 && $("#form_codigo").val().length == 0)
-            $("#busquedaModal").modal({                    // wire up the actual modal functionality and show the dialog
-                "backdrop"  : "static",
-                "keyboard"  : true,
-            "show"      : true                    // ensure the modal is shown immediately
-        });
-        
-        else{
-
-        	if($("#form_puesto").val().length == 0)
-               $puesto = 0;
-           else
-               $puesto = $("#form_puesto").val();	
-
-           if($puesto != 0 || $("#form_empresa").val().length == 0)
-               $empresa = 0;
-           else
-               $empresa = $("#form_empresa").val();	
-
-           if($puesto != 0 || $("#form_codigo").val().length == 0)
-               $codigo = null;
-           else
-               $codigo = $("#form_codigo").val();	
-
-           var data = {
-               codigo: $codigo,
-               puesto: $puesto,
-               empresa: $empresa,
-           };
-
-           $.ajax({
-               type: 'post',
-               url: '{{ path("ich_evaluacion_buscarPuestoEmpresa") }}',
-               data: data,
-               success: function(data) {
-
-                   $('#table-pagination').bootstrapTable('load', data);	
-
-               }
-           })
-       }
-   })
-})
-
-var hrefOriginal;
-
-$(document).ready(function() {
-
-    $('#table-pagination').bootstrapTable({data: {{ puestos | raw }}});
-
-    $opt= document.getElementById('sig');
-    if (null != $opt){
-       $opt.id = '#sinSeleccion'; 
-       hrefOriginal = $opt.href; 
-       $opt.href = '#'; 
-       $opt.setAttribute('onclick', 'mostrarAdvertencia();');
-   }
-
-});
-
-$('#table-pagination').on('uncheck.bs.table', function(row, $element) {	
-
-  $opt= document.getElementById('sig');
-  if (null != $opt)
-  {	
-      $opt.setAttribute('onclick', 'mostrarAdvertencia();');
-      $opt.id = '#sinSeleccion';
-      $opt.href = '#';  
-  } 
-})
-
-
-
-$('#table-pagination').on('check.bs.table', function(row, $element) {
-
-   $opt= document.getElementById('#sinSeleccion');
-
-   if (null != $opt) 
-   {	
-      $opt.setAttribute('onclick', '');
-      $opt.id = 'sig';
-      $opt.href = hrefOriginal.replace('0',$element.idPuesto);  
-  }
-  else  
-  {
-      $opt= document.getElementById('sig');
-      $opt.href = hrefOriginal.replace('0',$element.idPuesto);
-  }
-}
-);  
-
-
-$(document).on('click', '.aceptarModal', function() {
-
-	$(function() {
-		$("#busquedaModal").modal('hide');
-     $("#myModal").modal('hide');
-			 // dismiss the dialog
-          });
-})
-
-		$("#busquedaModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-			$("#busquedaModal").remove();
-
-		});
-
-
-		$("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-			$("#myModal").remove();
-
-		});
-
-
-        function mostrarAdvertencia() {
-
-     	$("#myModal").modal({                    // wire up the actual modal functionality and show the dialog
-             "backdrop"  : "static",
-             "keyboard"  : true,
-    	  "show"      : true                    // ensure the modal is shown immediately
-    	});
-     }
-
-
+var puestos={{ puestos | raw }}, href_refresh = '{{ path("ich_evaluacion_getPuestosStep1Merito", { isXmlHttpRequest: 1 }) }}';
 </script>
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/step1Merito.js') }}"></script>
 {% endblock %}

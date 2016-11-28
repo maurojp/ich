@@ -1,0 +1,24 @@
+<!-- set up the modal to start hidden and fade in and out -->
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <h4>Existen competencias que no pueden ser evaluadas:</h4>
+                <br>
+                {% if competenciasInvalidas|length %}
+                {% for competencia in competenciasInvalidas %}
+                <td><span class="text-danger"><ul>
+                            <li>{{ competencia.nombre }}</li>
+                        </ul></span></td>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <a href="{{ path('ich_test_homepage') }}"
+                    class="btn btn-primary">Aceptar</a>
+            </div>
+        </div>
+    </div>
+</div>

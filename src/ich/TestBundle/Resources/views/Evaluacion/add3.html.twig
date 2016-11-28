@@ -18,7 +18,7 @@
 				<table id="table-pagination" data-height="350"
 					data-pagination="true" data-card-view="true">
 					<thead>
-						<h3 id="titulo1" align="center">Listado de Competencias</h3>
+						<h3 align="center">Listado de Competencias</h3>
 						<tr>
 							<th data-field="nombre" data-align="left" data-sortable="true">Nombre</th>
 							<th data-field="codigo" data-align="left" data-sortable="true">Código</th>
@@ -30,30 +30,6 @@
 					</thead>
 				</table>
 				<br>
-				<!-- set up the modal to start hidden and fade in and out -->
-				<div id="myModal" class="modal fade">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<!-- dialog body -->
-							<div class="modal-body">
-								<h4>Existen competencias que no pueden ser evaluadas:</h4>
-								<br>
-								{% if competenciasInvalidas|length %}
-								{% for competencia in competenciasInvalidas %}
-								<td><span class="text-danger"><ul>
-											<li>{{ competencia.nombre }}</li>
-										</ul></span></td>
-								{% endfor %}
-								{% endif %}
-							</div>
-							<!-- dialog buttons -->
-							<div class="modal-footer">
-								<a href="{{ path('ich_test_homepage') }}"
-									class="btn btn-primary">Aceptar</a>
-							</div>
-						</div>
-					</div>
-				</div>
 				<p>
 					<a href="{{ path('ich_evaluacion_newStep4') }}"
 						class="btn btn-success siguiente">Siguiente</a> <a
@@ -64,46 +40,16 @@
 			</div>
 		</div>
 	</div>
-
-
-
 </div>
 <br>
 <br>
 <br>
+{{ include('ichTestBundle:Evaluacion:messages/modals-add3-evaluarCandidatos.html.twig')}}
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript">
-
-           
-if(({{ competencias | raw}}).length > 0) {
-
-
-	$('#table-pagination').bootstrapTable({data: {{ competencias | raw }}});
-
-
-	} else {
-		$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
-			$("#myModal a.btn").on("click", function(e) {
-				console.log("button pressed"); // just as an example...
-				$("#myModal").modal('hide'); // dismiss the dialog
-			});
-		});
-		$("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
-			$("#myModal a.btn").off("click");
-		});
-
-		$("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-			$("#myModal").remove();
-		});
-
-		$("#myModal").modal({ // wire up the actual modal functionality and show the dialog
-			"backdrop" : "static",
-			"keyboard" : true,
-			"show" : true
-		// ensure the modal is shown immediately
-		});
-	}
+competencias = {{ competencias | raw }};
 </script>
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/add3-evaluarCandidatos.js') }}"></script>
 {% endblock %}
