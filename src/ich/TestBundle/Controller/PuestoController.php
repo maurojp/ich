@@ -230,7 +230,7 @@ class PuestoController extends Controller
             if($this->esPuestoEnUso($puesto)){
 
                 $response = new JsonResponse ( null, 500 );
-                $response->setData ( "El puesto " .''.$puesto->getNombre().''." esta siendo usado en la base de datos y no puede eliminarse." );
+                $response->setData ( "El puesto " .''.$puesto->getNombre().''." está siendo usado en la base de datos y no puede eliminarse." );
                 return $response;
             }
 

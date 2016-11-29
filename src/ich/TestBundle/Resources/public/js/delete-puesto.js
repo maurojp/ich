@@ -10,6 +10,12 @@ $(document).ready(function() {
 
         id = row.data('id');
 
+        nombrePuesto = row.find('td').eq(1).text();
+
+        $('div.alertModelo').remove();
+        $('.mensaje').append($('<div class="alertModelo"></div>').append(
+            '<h4>Los datos del Puesto '+ nombrePuesto +' serán eliminados del sistema.</h4><p><h4>¿Desea continuar?</h4></p>'));
+
         $("#modalEliminar").modal({                    
             "backdrop"  : "static",
             "keyboard"  : true,

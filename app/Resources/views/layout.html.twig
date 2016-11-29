@@ -16,6 +16,9 @@
                 {{ include('menu.html.twig') }}
             {% endif %}
         {% endblock %}
+        {% block audios %}
+        <audio id="alert" src="{{ asset('public/audios/error.mp3')}}" type="audio/mp3">
+        {% endblock %}
         {% block javascripts %}
         <script src=" {{ asset('public/js/jquery-1.11.3.js') }} "></script>
         <script src=" {{ asset('public/js/bootstrap.min.js') }} "></script>

@@ -117,7 +117,8 @@ $('.siguiente').on('click', function(e) {
                 "backdrop"  : "static",
                 "keyboard"  : true,
                 "show"      : true                     // ensure the modal is shown immediately
-                });     
+                }); 
+   
             }
 
             else 

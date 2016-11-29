@@ -53,7 +53,7 @@
 			<div class="panel panel-warning">
 				<div class="panel-heading">
 					<h4><b>Al aceptar los términos dispondrá de:</b></h4>
-					{% if "0:" in condiciones.tiempoMax %}
+					{% if "0:" in condiciones.tiempoMax and condiciones.cantAccesos != 0 %}
 					<span class="text-danger"><ul>
 							<li><h4>
 									<b> {{condiciones.tiempoMax[2:]}}
@@ -61,7 +61,7 @@
 								</h4></li>
 						</ul></span>
 					{% endif %}
-					{% if "0:" not in condiciones.tiempoMax %}
+					{% if "0:" not in condiciones.tiempoMax and condiciones.cantAccesos != 0 %}
 					<span class="text-danger"><ul>
 							<li><h4>
 									<b> {{condiciones.tiempoMax}}
@@ -70,12 +70,22 @@
 						</ul></span>
 					{% endif %}
 					{% if "0:" in condiciones.tiempoMaxActivo %}
-					<span class="text-danger"><ul>
+						{% if condiciones.cantAccesos == 0 %}
+						<span class="text-danger"><ul>
+							<li><h4>
+									<b> {{condiciones.tiempoMaxActivo[2:]}}
+									minutos </b> para completar el cuestionario.
+								</h4></li>
+						</ul></span>
+						{% endif %}
+						{% if condiciones.cantAccesos != 0 %}
+						<span class="text-danger"><ul>
 							<li><h4>
 									<b> {{condiciones.tiempoMaxActivo[2:]}}
 									minutos </b> para permanecer activo.
 								</h4></li>
 						</ul></span>
+						{% endif %}
 					{% endif %}
 					{% if "0:" not in condiciones.tiempoMaxActivo %}
 					<span class="text-danger"><ul>

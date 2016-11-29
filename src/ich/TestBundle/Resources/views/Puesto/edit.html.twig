@@ -93,6 +93,10 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('bundles/ichtest/js/list-form.js') }}"></script>
+    <script type="text/javascript">
+        if(!'{{ form.vars.valid }}')
+        $("#alert")[0].play();
+    </script>
 {% endblock %}
 
 {% macro model_prototype(puestocompetencia) %}

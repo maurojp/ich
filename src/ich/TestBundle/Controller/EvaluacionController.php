@@ -665,7 +665,7 @@ public function verificarEstadoCuestionarioAction(Request $request, $id, $esUlti
 			'mensaje' => "El cuestionario ha sido completado. Acceso denegado." 
 			) );
 
-		// REQUEST GET, ENTONCES ACABA DE INGRESAR AL CUESTIONARIO
+	// REQUEST GET, ENTONCES ACABA DE INGRESAR AL CUESTIONARIO
 	if ($method == 'GET') {
 		$cantAccesos = $cuestionario->getCantAccesos ();
 		
@@ -902,7 +902,7 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 		$condiciones = array (
 			'tiempoMax' => $this->floatTimeToString ( $cuestionario->getTiempoMax () ),
 			'tiempoMaxActivo' => $this->floatTimeToString ( $cuestionario->getTiempoMaxActivo () ),
-			'cantAccesos' => ($cuestionario->getCantMaxAccesos () - 1) 
+			'cantAccesos' => ($cuestionario->getCantMaxAccesos () - $cuestionario->getCantAccesos ()) 
 			);
 
 		return $this->render ( 'ichTestBundle:Evaluacion:instrucciones.html.twig', array (

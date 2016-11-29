@@ -10,13 +10,13 @@
 
     <div class="container">
 		<form action="{{ path('ich_test_login_check') }}" method="post" class="form-signin">
-			<h3 class="form-signin-heading">{{ 'Ingreso como Consultor' }}</h3>
+			<h3 align="center" class="form-signin-heading">{{ 'Ingreso como Consultor' }}</h3>
 
             {% if error %}
             <div class="text-danger">
                 <p>
                     <strong>
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                        El usuario o la contraseña no son válidos.
                     </strong>
                 </p>
             </div>
@@ -35,4 +35,11 @@
 		    <a href="{{ path('ich_test_prelogin') }}" class="btn btn-lg btn-default btn-block">Volver</a>
 		</form>
     </div> <!-- /container -->
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+<script type="text/javascript">
+if({{error}})
+    $("#alert")[0].play();
+</script>
 {% endblock %}

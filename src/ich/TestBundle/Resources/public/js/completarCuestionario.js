@@ -6,6 +6,8 @@ $(document).ready(function(){
 
     if(preguntasNoRespondidas.length > 0) {
 
+        $("#alert")[0].play();
+        
         $("#myModal").modal({ // wire up the actual modal functionality and show the dialog
             "backdrop" : "static",
             "keyboard" : true,

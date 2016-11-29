@@ -33,25 +33,25 @@
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript">
-	$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
+	$("#alert")[0].play();
+	$("#myModal").on("show", function() { 
 		$("#myModal a.btn").on("click", function(e) {
-			console.log("button pressed"); // just as an example...
-			$("#myModal").modal('hide'); // dismiss the dialog
+			console.log("button pressed"); 
+			$("#myModal").modal('hide'); 
 		});
 	});
-	$("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+	$("#myModal").on("hide", function() { 
 		$("#myModal a.btn").off("click");
 	});
 
-	$("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+	$("#myModal").on("hidden", function() { 
 		$("#myModal").remove();
 	});
 
-	$("#myModal").modal({ // wire up the actual modal functionality and show the dialog
+	$("#myModal").modal({
 		"backdrop" : "static",
 		"keyboard" : true,
 		"show" : true
-	// ensure the modal is shown immediately
 	});
 </script>
 {% endblock %}

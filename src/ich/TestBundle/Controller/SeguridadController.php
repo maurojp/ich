@@ -7,6 +7,7 @@ use Symfony\Component\httpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormError;
 
 class SeguridadController extends Controller
@@ -20,7 +21,11 @@ class SeguridadController extends Controller
     {
         $authUtils = $this->get('security.authentication_utils');
         
-        $error = $authUtils->getLastAuthenticationError();
+        if($authUtils->getLastAuthenticationError())
+            $error = 1;
+
+        else
+            $error = 0;
         
         $lastUsername = $authUtils->getLastUsername();
         
@@ -34,13 +39,17 @@ class SeguridadController extends Controller
     
     public function ingresocandidatoAction(Request $request)
     {
-        $datosIngreso = array('mensaje' => 'Ingrese los datos de Ingreso.');
+        $datosIngreso = array('mensaje' => 'Complete los datos de Ingreso.');
         $form = $this->createFormBuilder($datosIngreso)
+            ->add('tipoDocumento', ChoiceType::class, array(
+            'choices' => array('DNI' => 1, 'LE' => 2, 'LC' => 3, 'PP' => 4),
+            'choices_as_values' => true,
+            'placeholder' => "Tipo de Documento"))
             ->add('nroDocumento', IntegerType::Class)
             ->add('clave', PasswordType::Class)
             ->add('ingresar', SubmitType::Class)
             ->getForm();
-        
+
         $form->handleRequest($request);
         
         if ($form->isValid())
@@ -49,7 +58,7 @@ class SeguridadController extends Controller
             
             $repositorio = $this->getDoctrine()->getRepository('ichTestBundle:Candidato');
             
-            $candidato = $repositorio->findOneBy(array('nroDocumento' => $data['nroDocumento']));
+            $candidato = $repositorio->findOneBy(array('nroDocumento' => $data['nroDocumento'], 'tipoDocumento' => $data['tipoDocumento']));
             
             if (!$candidato) 
             {
