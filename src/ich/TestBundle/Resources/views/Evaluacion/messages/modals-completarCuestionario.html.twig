@@ -1,0 +1,23 @@
+<!-- set up the modal to start hidden and fade in and out -->
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+                <h4>Debe responder las siguientes Preguntas para continuar:</h4>
+                <br>
+                {% if preguntasNoRespondidas|length %}
+                {% for nroPregunta in preguntasNoRespondidas %}
+                <td><span class="text-danger"><ul>
+                            <li>Pregunta {{ nroPregunta }}</li>
+                        </ul></span></td>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary aceptar">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>

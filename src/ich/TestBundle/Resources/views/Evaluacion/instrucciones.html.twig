@@ -20,7 +20,7 @@
 					{% for linea in instrucciones %}
 					{% if linea ends with ':' %}
 					<br> <span class="text-warning"><h4>
-							{{linea}}
+							<b>{{linea}}</b>
 						</h4></span>
 					{% endif %}
 					{% if linea ends with '.' %}
@@ -31,40 +31,60 @@
 					</ul>
 					{% endif %}
 					{% endfor %}
+					{% if condiciones.cantAccesos == 1  %}
+					<span><ul>
+							<li><h4>
+									Dispone de <b> {{condiciones.cantAccesos}}
+									acceso </b> restante permitido.
+								</h4></li>
+						</ul></span>
+					{% endif %}
+					{% if condiciones.cantAccesos > 1 or condiciones.cantAccesos == 0 %}
+					<span><ul>
+							<li><h4>
+									Dispone de <b> {{condiciones.cantAccesos}}
+									accesos </b> restantes permitidos.
+								</h4></li>
+						</ul></span>
+					{% endif %}
 					<br>
 				</div>
 			</div>
 			<div class="panel panel-warning">
 				<div class="panel-heading">
-					<h4>Al aceptar las instrucciones dispondrá de:</h4>
+					<h4><b>Al aceptar los términos dispondrá de:</b></h4>
+					{% if "0:" in condiciones.tiempoMax %}
 					<span class="text-danger"><ul>
 							<li><h4>
-									{{condiciones.tiempoMax}}
-									horas para completar el cuestionario.
-								</h4></li>
-						</ul></span> <span class="text-danger"><ul>
-							<li><h4>
-									{{condiciones.tiempoMaxActivo}}
-									horas para permanecer activo.
-								</h4></li>
-						</ul></span>
-					{% if condiciones.cantAccesos == 1  %}
-					<span class="text-danger"><ul>
-							<li><h4>
-									{{condiciones.cantAccesos}}
-									acceso restante permitido.
+									<b> {{condiciones.tiempoMax[2:]}}
+									minutos </b> para completar el cuestionario.
 								</h4></li>
 						</ul></span>
 					{% endif %}
-					{% if condiciones.cantAccesos > 1 or condiciones.cantAccesos == 0 %}
+					{% if "0:" not in condiciones.tiempoMax %}
 					<span class="text-danger"><ul>
 							<li><h4>
-									{{condiciones.cantAccesos}}
-									accesos restantes permitidos.
+									<b> {{condiciones.tiempoMax}}
+									horas </b> para completar el cuestionario.
 								</h4></li>
 						</ul></span>
 					{% endif %}
-
+					{% if "0:" in condiciones.tiempoMaxActivo %}
+					<span class="text-danger"><ul>
+							<li><h4>
+									<b> {{condiciones.tiempoMaxActivo[2:]}}
+									minutos </b> para permanecer activo.
+								</h4></li>
+						</ul></span>
+					{% endif %}
+					{% if "0:" not in condiciones.tiempoMaxActivo %}
+					<span class="text-danger"><ul>
+							<li><h4>
+									<b> {{condiciones.tiempoMaxActivo}}
+									horas </b> para permanecer activo.
+								</h4></li>
+						</ul></span>
+					{% endif %}
 				</div>
 			</div>
 			<br>
@@ -84,26 +104,4 @@
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
-<script type="text/javascript">
-	$("#myModal").on("show", function() { // wire up the OK button to dismiss the modal when shown
-		$("#myModal a.btn").on("click", function(e) {
-			console.log("button pressed"); // just as an example...
-			$("#myModal").modal('hide'); // dismiss the dialog
-		});
-	});
-	$("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
-		$("#myModal a.btn").off("click");
-	});
-
-	$("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-		$("#myModal").remove();
-	});
-
-	$("#myModal").modal({ // wire up the actual modal functionality and show the dialog
-		"backdrop" : "static",
-		"keyboard" : true,
-		"show" : true
-	// ensure the modal is shown immediately
-	});
-</script>
 {% endblock %}

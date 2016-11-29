@@ -1199,33 +1199,49 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 	}
 	private function getPuestoEvaluacionesQuery($idPuesto) {
 		$em = $this->getDoctrine ()->getManager ();
-
-		$query = $em->createQuery ( "SELECT IDENTITY(e.puesto) idPuesto, count(distinct c.id) cantCandidatos, count(distinct e.id) cantEvaluaciones
+		
+		$query = $em->createQuery ( "SELECT IDENTITY(e.puesto) idPuesto, count(distinct c.id) cantCandidatos
 			FROM ichTestBundle:Cuestionario c JOIN ichTestBundle:Evaluacion e
-			WHERE IDENTITY(e.puesto) = :p and IDENTITY(c.evaluacion) = e.id and c.id in 
-			(SELECT c2.id FROM ichTestBundle:Cuestionario c2 where c2.estado = 1)
+			WHERE IDENTITY(c.evaluacion) = e.id and IDENTITY(e.puesto) = :p
 			GROUP BY idPuesto" )->setParameter ( 'p', $idPuesto );
 
-		return $query->getResult ();
+		$resultado = $query->getResult ();
+
+		if(count($resultado) > 0)
+			$cantCandidatos = $resultado[0] ['cantCandidatos'];
+		else
+			$cantCandidatos = 0;
+
+		if($cantCandidatos > 0){
+
+			$query = $em->createQuery ( "SELECT IDENTITY(e.puesto) idPuesto, count(distinct e.id) cantEvaluacionesCompletas
+				FROM ichTestBundle:Cuestionario c JOIN ichTestBundle:Evaluacion e
+				WHERE IDENTITY(c.evaluacion) = e.id and IDENTITY(e.puesto) = :p and c.id IN 
+				(SELECT c2.id FROM ichTestBundle:Cuestionario c2 where c2.estado = 1)
+				GROUP BY idPuesto" )->setParameter ( 'p', $idPuesto );
+
+			$resultado = $query->getResult ();
+
+			if(count($resultado) > 0)
+				$cantEvaluacionesCompletas = $resultado[0] ['cantEvaluacionesCompletas'];
+			else
+				$cantEvaluacionesCompletas = 0;
+
+			return array('cantCandidatos' => $cantCandidatos, 'cantEvaluacionesCompletas' => $cantEvaluacionesCompletas);
+		}
+
+		else 
+			return array('cantCandidatos' => 0, 'cantEvaluacionesCompletas' => 0);
+
 	}
 	private function getPuestoEvaluacionesArray($candidatosEvaluaciones, $puesto) {
-		if (count ( $candidatosEvaluaciones ) > 0)
 			return array (
 				'idPuesto' => $puesto->getId (),
 				'codigoPuesto' => $puesto->getCodigo (),
 				'nombrePuesto' => $puesto->getNombre (),
 				'nombreEmpresa' => $puesto->getEmpresa ()->getNombre (),
-				'candidatos' => $candidatosEvaluaciones [0] ['cantCandidatos'],
-				'evaluaciones' => $candidatosEvaluaciones [0] ['cantEvaluaciones'] 
-				);
-		else
-			return array (
-				'idPuesto' => $puesto->getId (),
-				'codigoPuesto' => $puesto->getCodigo (),
-				'nombrePuesto' => $puesto->getNombre (),
-				'nombreEmpresa' => $puesto->getEmpresa ()->getNombre (),
-				'candidatos' => "-",
-				'evaluaciones' => "-" 
+				'cantCandidatos' => $candidatosEvaluaciones['cantCandidatos'],
+				'cantEvaluacionesCompletas' => $candidatosEvaluaciones['cantEvaluacionesCompletas'] 
 				);
 	}
 	private function createOrdenMeritoBusquedaForm() {

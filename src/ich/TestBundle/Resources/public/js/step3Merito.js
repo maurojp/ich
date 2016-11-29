@@ -77,35 +77,43 @@ $(document).ready(function(){
                             $detail3.html('<table></table>').find('table').bootstrapTable({
                                 columns: [{
                                     field: 'tipoDocumento',
-                                    title: 'Tipo Documento'
+                                    title: 'Tipo Documento',
+                                    sortable: true
                                 },
                                 {
                                     field: 'documento',
-                                    title: 'Documento'
+                                    title: 'Documento',
+                                    sortable: true
                                 },
                                 {
                                     field: 'apellido',
-                                    title: 'Apellido'
+                                    title: 'Apellido',
+                                    sortable: true
                                 },
                                 {
                                     field: 'nombre',
-                                    title: 'Nombre'
+                                    title: 'Nombre',
+                                    sortable: true
                                 },
                                 {
                                     field: 'puntajeObtenido',
-                                    title: 'Puntaje %'
+                                    title: 'Puntaje %',
+                                    sortable: true
                                 },
                                 {
                                     field: 'fechaInicio',
-                                    title: 'Fecha Inicio'
+                                    title: 'Fecha Inicio',
+                                    sortable: true
                                 },
                                 {
                                     field: 'fechaFin',
-                                    title: 'Fecha Finalización'
+                                    title: 'Fecha Finalización',
+                                    sortable: true
                                 },
                                 {
                                     field: 'cantAccesos',
-                                    title: 'Cant. Accesos'
+                                    title: 'Cant. Accesos',
+                                    sortable: true
                                 }],
                                 data: row3.cuestionarios
                             }
@@ -127,31 +135,38 @@ $(document).ready(function(){
                           $detail3.html('<table></table>').find('table').bootstrapTable({
                             columns: [{
                                 field: 'tipoDocumento',
-                                title: 'Tipo Documento'
+                                title: 'Tipo Documento',
+                                sortable: true
                             },
                             {
                                 field: 'documento',
-                                title: 'Documento'
+                                title: 'Documento',
+                                sortable: true
                             },
                             {
                                 field: 'apellido',
-                                title: 'Apellido'
+                                title: 'Apellido',
+                                sortable: true
                             },
                             {
                                 field: 'nombre',
-                                title: 'Nombre'
+                                title: 'Nombre',
+                                sortable: true
                             },
                             {
                                 field: 'fechaInicio',
-                                title: 'Fecha Inicio'
+                                title: 'Fecha Inicio',
+                                sortable: true
                             },
                             {
                                 field: 'ultimoIngreso',
-                                title: 'Último Ingreso'
+                                title: 'Último Ingreso',
+                                sortable: true
                             },
                             {
                                 field: 'cantAccesos',
-                                title: 'Cant. Accesos'
+                                title: 'Cant. Accesos',
+                                sortable: true
                             }],
                             data: row3.cuestionarios
                             }

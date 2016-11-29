@@ -34,10 +34,7 @@
 						<div class="panel-body">
 							{% set respondida = false %}
 							{% for opcion in copiaPregunta.copiaOpcionesRespuesta %}
-							{% set checked  %}
-							{{ opcion.vars.checked }}
-							{% endset %}
-							{% if checked %}
+							{% if opcion.vars.checked %}
 							{% set respondida = true %}
 							{% endif %}
 
@@ -68,30 +65,6 @@
 
 			</div>
 
-			<!-- set up the modal to start hidden and fade in and out -->
-			<div id="myModal" class="modal fade">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<!-- dialog body -->
-						<div class="modal-body">
-							<h4>Debe responder las siguientes Preguntas para continuar:</h4>
-							<br>
-							{% if preguntasNoRespondidas|length %}
-							{% for nroPregunta in preguntasNoRespondidas %}
-							<td><span class="text-danger"><ul>
-										<li>Pregunta {{ nroPregunta }}</li>
-									</ul></span></td>
-							{% endfor %}
-							{% endif %}
-						</div>
-						<!-- dialog buttons -->
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary aceptar">Aceptar</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<p>
 				{{ form_widget(form.send, {'label' : 'Finalizar', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
 				<a href="{{ path('ich_test_ingresocandidato') }}"
@@ -104,42 +77,12 @@
 		</div>
 	</div>
 </div>
+{{ include('ichTestBundle:Evaluacion:messages/modals-completarCuestionario.html.twig')}} 
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
 <script type="text/javascript">
-
- $('form').bind('submit', function () {
-    $(this).find(':input').prop('disabled', false);
-      });
-
-    if(({{ preguntasNoRespondidas|json_encode() }}).length > 0) {
-
-        $("#myModal").modal({ // wire up the actual modal functionality and show the dialog
-            "backdrop" : "static",
-            "keyboard" : true,
-            "show" : true,
-        // ensure the modal is shown immediately
-        })
-   
-        $("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
-            $("#myModal a.btn").off("click");
-        })
-
-        $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
-            $("#myModal").remove();
-        })
-    
-        $(document).on('click', '.aceptar', function() {
-
-            $("#myModal").modal('hide');// dismiss the dialog
-
-        })
-
-    }
-
-   
-
-
+var preguntasNoRespondidas = {{ preguntasNoRespondidas|json_encode() }};
 </script>
+<script type="text/javascript" src="{{ asset('bundles/ichtest/js/completarCuestionario.js') }}"></script>
 {% endblock %}
