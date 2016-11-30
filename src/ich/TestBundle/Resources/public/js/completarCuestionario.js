@@ -8,26 +8,53 @@ $(document).ready(function(){
 
         $("#alert")[0].play();
         
-        $("#myModal").modal({ // wire up the actual modal functionality and show the dialog
+        $("#myModal").modal({
             "backdrop" : "static",
             "keyboard" : true,
             "show" : true,
-        // ensure the modal is shown immediately
+
         })
    
-        $("#myModal").on("hide", function() { // remove the event listeners when the dialog is dismissed
+        $("#myModal").on("hide", function() { 
             $("#myModal a.btn").off("click");
         })
 
-        $("#myModal").on("hidden", function() { // remove the actual elements from the DOM when fully hidden
+        $("#myModal").on("hidden", function() { 
             $("#myModal").remove();
         })
     
         $(document).on('click', '.aceptar', function() {
 
-            $("#myModal").modal('hide');// dismiss the dialog
+            $("#myModal").modal('hide');
 
         })
 
     }
+
+
+    $(document).on('click', '.salir', function() {
+
+        $("#salirCuestionarioModal").modal({
+        "backdrop" : "static",
+        "keyboard" : true,
+        "show" : true,
+        })
+   
+        $("#salirCuestionarioModal").on("hide", function() { 
+            $("#salirCuestionarioModal a.btn").off("click");
+        })
+
+        $("#salirCuestionarioModal").on("hidden", function() { 
+            $("#salirCuestionarioModal").remove();
+        })
+
+
+        })
+    
+
+     $(document).on('click', '.no', function() {
+
+            $("#salirCuestionarioModal").modal('hide');
+
+        })
 })

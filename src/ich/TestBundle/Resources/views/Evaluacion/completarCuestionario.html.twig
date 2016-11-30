@@ -68,8 +68,7 @@
 
 			<p>
 				{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
-				<a href="{{ path('ich_test_ingresocandidato') }}"
-					class="btn btn-warning salir">Salir</a>
+				<button type="button" class="btn btn-warning salir">Salir</button>
 			</p>
 
 			{{ form_widget(form._token) }}

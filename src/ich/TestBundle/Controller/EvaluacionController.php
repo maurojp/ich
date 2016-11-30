@@ -685,6 +685,8 @@ public function verificarEstadoCuestionarioAction(Request $request, $id, $esUlti
 				Acceso denegado." 
 				) );
 		}
+		//Establecer Fecha y Hora del último ingreso
+		$cuestionario->setEstadoEn ( new \DateTime () );
 		
 		$em->persist ( $cuestionario );
 		
