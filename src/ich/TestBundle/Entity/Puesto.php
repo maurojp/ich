@@ -33,6 +33,7 @@ class Puesto
     protected $auditoria;
 
     /**
+     * @Assert\NotNull()
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Empresa",inversedBy="puestos")
      * @ORM\JoinColumn(name="empresa_id",referencedColumnName="id", nullable=false)
      */

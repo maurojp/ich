@@ -40,6 +40,7 @@ class Auditoria
     protected $grupoOpciones;
     
     /**
+     * @Assert\NotBlank()
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Usuario", inversedBy="auditorias") 
      * @ORM\JoinColumn(name="usuario_id",referencedColumnName="id", nullable=false)
      */

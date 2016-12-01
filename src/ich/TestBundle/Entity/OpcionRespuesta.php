@@ -19,6 +19,7 @@ class OpcionRespuesta
 	protected $preguntas;
 	
 	/**
+     * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\GrupoOpciones", inversedBy="opcionesRespuesta")
 	 * @ORM\JoinColumn(name="grupoOpciones_id",referencedColumnName="id", nullable=false)
 	 */

@@ -15,6 +15,7 @@ class CopiaFactor
 {
 	
 	/**
+     * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\CopiaCompetencia", inversedBy="copiaFactores")
 	 * @ORM\JoinColumn(name="copiaCompetencia_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */

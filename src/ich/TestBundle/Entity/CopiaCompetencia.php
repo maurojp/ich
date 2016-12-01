@@ -20,6 +20,7 @@ class CopiaCompetencia
     protected $copiaFactores;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\ManyToOne(targetEntity="Cuestionario", inversedBy="copiaCompetencias")
      * @ORM\JoinColumn(name="cuestionario_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
      */

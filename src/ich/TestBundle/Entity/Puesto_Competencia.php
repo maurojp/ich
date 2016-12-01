@@ -26,12 +26,14 @@ class Puesto_Competencia
     private $id;
 	
     /**
+     * @Assert\NotNull()
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="competencias") 
      * @ORM\JoinColumn(name="puesto_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     protected $puesto;
   
     /**
+     * @Assert\NotNull()
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="puestos") 
      * @ORM\JoinColumn(name="competencia_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */

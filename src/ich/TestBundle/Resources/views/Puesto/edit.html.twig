@@ -101,7 +101,8 @@
 
 {% macro model_prototype(puestocompetencia) %}
     <div class="col-md-4">{{ form_widget(puestocompetencia.competencia,{'attr' : {'class' : 'form-control'} }) }}</div>
-    <div class="col-md-4">{{ form_widget(puestocompetencia.ponderacion,{'attr' : {'class' : 'form-control'} }) }}
+    <div class="col-md-4">
+        {{ form_widget(puestocompetencia.ponderacion,{'attr' : {'class' : 'form-control','placeholder' : 'Ponderación'} }) }}
         <span class="pull-left text-danger">{{ form_errors(puestocompetencia.ponderacion) }}</span>
     </div>
     <div class = 'col-md-1 checkbox'>

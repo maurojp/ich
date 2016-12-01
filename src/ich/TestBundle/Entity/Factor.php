@@ -17,6 +17,7 @@ class Factor
 {
 	
 	/**
+     * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Competencia", inversedBy="factores")
 	 * @ORM\JoinColumn(name="competencia_id",referencedColumnName="id", nullable=false)
 	 */

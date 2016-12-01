@@ -13,12 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Cuestionario
 {
     /** 
+     * @Assert\NotBlank()    
      * @ORM\ManyToOne(targetEntity="Candidato", inversedBy="cuestionarios")
      * @ORM\JoinColumn(name="candidato_id", referencedColumnName="id",nullable=false, onDelete="CASCADE")
      */
     protected $candidato;
     
     /**
+     * @Assert\NotBlank()
      * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Evaluacion", inversedBy="cuestionarios")
      * @ORM\JoinColumn(name="evaluacion_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */

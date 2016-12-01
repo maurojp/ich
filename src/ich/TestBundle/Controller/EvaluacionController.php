@@ -1086,8 +1086,6 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 
 		$cuestionario->setEstadoEn ( new \DateTime () );
 
-		$cuestionario->setCantAccesos ( 1 );
-
 		$em->persist ( $cuestionario );
 
 		$em->flush ();

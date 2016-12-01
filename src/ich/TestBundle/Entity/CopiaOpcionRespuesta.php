@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CopiaOpcionRespuesta
 {
 	/**
+     * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\CopiaPregunta", inversedBy="copiaOpcionesRespuesta")
 	 * @ORM\JoinColumn(name="copiaPregunta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */

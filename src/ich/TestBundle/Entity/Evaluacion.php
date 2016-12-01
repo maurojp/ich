@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Evaluacion
 {
 	/**
+     * @Assert\NotBlank()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Puesto", inversedBy="evaluaciones")
 	 * @ORM\JoinColumn(name="puesto_id",referencedColumnName="id", nullable=false)
 	 */

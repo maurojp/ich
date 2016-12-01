@@ -36,12 +36,14 @@ class Pregunta_OpcionRespuesta
 	private $ponderacion;
 	
 	/**
+	 * @Assert\NotNull()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\Pregunta", inversedBy="opcionesRespuesta")
 	 * @ORM\JoinColumn(name="pregunta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
 	protected $pregunta;
 		
 	/**
+	 * @Assert\NotNull()
 	 * @ORM\ManyToOne(targetEntity="ich\TestBundle\Entity\OpcionRespuesta",inversedBy="preguntas")
 	 * @ORM\JoinColumn(name="opcionRespuesta_id",referencedColumnName="id", nullable=false, onDelete="CASCADE")
 	 */
