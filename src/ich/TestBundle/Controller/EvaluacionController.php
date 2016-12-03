@@ -126,7 +126,8 @@ class EvaluacionController extends Controller {
 				if ($candidato->getNroCandidato () == $data [$i])
 					$datosCandidatosActivos [] = array (
 						'apellido' => $candidato->getApellido (),
-						'nombre' => $candidato->getNombre () 
+						'nombre' => $candidato->getNombre (),
+						'nroCandidato' => $candidato->getNroCandidato()
 						);
 			}
 		}

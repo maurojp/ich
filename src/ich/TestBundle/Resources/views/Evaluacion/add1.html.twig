@@ -26,7 +26,7 @@
 			</div>
 		</div>
 		<br>
-		<div class="row1">
+		<div class="row">
 			<div class="col-md-6">
 				<table id="table-pagination" data-height="350" data-striped="true"
 					class="table table-condensed" data-pagination="true">
@@ -74,8 +74,17 @@
 						</tr>
 					</thead>
 				</table>
-
-
+			</div>
+		</div>
+		<br>
+		<div class="row">	
+			<div class="col-md-12">
+				<p>
+					{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
+					<a href="{{ path('ich_test_homepage') }}"
+						class="btn btn-warning cancelar">Cancelar</a>
+				</p>
+			</div>
 
 				{{ form_start(form) }}
 				<fieldset>
@@ -88,21 +97,11 @@
 
 				</fieldset>
 
-			</div>
-		<div class="col-md-12">
-
-			<p>
-				{{ form_widget(form.send, {'label' : 'Siguiente', 'attr' : {'class' : 'btn btn-success  siguiente'} }) }}
-				<a href="{{ path('ich_test_homepage') }}"
-					class="btn btn-warning cancelar">Cancelar</a>
-			</p>
-
-
-			{{ form_widget(form._token) }}
-			{{ form_end(form,{ 'render_rest' : false}) }}
-
+				{{ form_widget(form._token) }}
+				{{ form_end(form,{ 'render_rest' : false}) }}
 		</div>
 	</div>
+</div>
 	<br> <br> <br>
 {{ include('ichTestBundle:Evaluacion:messages/modals-add1-evaluarCandidatos.html.twig')}} 
 {% endblock %}
