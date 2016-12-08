@@ -19,7 +19,6 @@ use ich\TestBundle\Entity\CopiaOpcionRespuesta;
 use ich\TestBundle\Form\CopiaPreguntaType;
 use Doctrine\ORM\EntityRepository;
 
-
 class EvaluacionController extends Controller {
 	public function newStep1Action(Request $request) {
 		$em = $this->getDoctrine ()->getManager ();
@@ -1317,6 +1316,8 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 
 			$ordenMeritoEvaluaciones = array ();
 
+			$ordenMeritoCuestionariosAptos = array();
+
 			$form->handleRequest ( $request );
 
 			if ($form->isValid ()) {
@@ -1362,7 +1363,10 @@ private function createBloqueCuestionarioForm($copiasPreguntasByNroOrden, $idCue
 							) 
 						);
 
-					$ordenMeritoCuestionariosAptos = $this->getCuestionariosAptos ( $evaluacion );
+					$cuestionariosAptosEvaluacion = $this->getCuestionariosAptos ( $evaluacion );
+
+					foreach($cuestionariosAptosEvaluacion as $cuestionarioApto)
+					$ordenMeritoCuestionariosAptos[]= $cuestionarioApto;
 
 					$dateTimeInforme = date_format ( new \datetime (), 'd/m/Y H:i' );
 
